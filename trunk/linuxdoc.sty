@@ -1,0 +1,44 @@
+%% This is linuxdoc-qwertz.sty, for use with SGML-generated LaTeX
+%% by Matt Welsh (mdw@sunsite.unc.edu)
+%%
+%% Based on linuxdoc.sty by Michael K. Johnson, and latex.tex by 
+%% Leslie Lamport. 
+%%
+%% some annoying macros removed by Sven Goldt <25 Oct 94>
+
+\typeout{Linux Documentation Style `linuxdoc-qwertz', version 0.01 <22 Feb 94>}
+
+%% Titlepage stuff
+
+\gdef\@title{}
+\gdef\title#1{\gdef\@title{#1}}
+\gdef\@date{}
+\gdef\date#1{\gdef\@date{#1}}
+\gdef\@author{}
+\gdef\author#1{\gdef\@author{#1}}
+\gdef\@abstract{}
+\gdef\abstract#1{\gdef\@abstract{#1}}
+
+%%% USEFUL MACROS
+
+\newcommand{\key}[1]{{\fbox{\small\tt #1}}}   % Use this to mark keys, like
+				              % \key{del} for the delete key.
+\newcommand{\ret}{\fbox{\sf return}}    % Special case for the return key.
+\newcommand{\st}{\small\tt}             % Small typewriter -- comes in handy.
+%\newcommand{\lb}{{\tt\char '173}}       % Left Brace '{'
+%\newcommand{\rb}{{\tt\char '175}}       % Right Brace '}'
+\newcommand{\lbr}{$\langle$}		% Left Bracket '<'
+\newcommand{\rbr}{$\rangle$}		% Right Bracket '>'
+\newcommand{\bs}{{\tt\char '134}}       % BackSlash '\'
+\newcommand{\tm}{${}^{\mbox{\tiny\sf TM}}$}
+\newcommand{\TM}{\tm}                   % TM trademark symbol in
+				        % either case
+\newcommand{\cparam}[1]{{\rm \lbr{\sl #1}\rbr}}
+					% Metavariables.
+
+%% the tscreen environment automatically goes into typewriter type,
+%%  but is otherwise like the screen environment
+
+\newenvironment{tscreen}%
+ {\begin{quote}\bgroup\small\tt}%
+ {\egroup\end{quote}}

@@ -1,0 +1,18 @@
+\author {Sven Goldt}
+\chapter {'szwajcarski wojskowy scyzoryk' - ioctl}
+
+ioctl odpowiedzialny jest za kontrolê wej¶cia/wyj¶cia oraz u¿ywany jest do
+manipulacji urz±dzeniami znakowymi poprzez deskryptory plików. Funkcja ioctl ma postaæ\\
+{\it ioctl(unsigned int fd, unsigned int ¿±danie, unsigned long argument)}.\\
+Zwracan± warto¶ci± jest -1 je¿eli wyst±pi³ b³±d lub warto¶æ >= 0
+je¿eli powiod³o siê (tak jak w innych wywo³aniach systemowych).
+J±dro obs³uguje dwa rodzaje plików: specjalne i normalne.
+Specjalne pliki znajduj± siê g³ównie w /dev i /proc. Ró¿ni± siê tym od zwyk³ych,
+ ¿e s± one interfejsem do sterownika, a nie zwyk³ym plikiem zawieraj±cym tekst 
+lub dane binarne. Taka jest filozofia Unixa - mo¿liwo¶æ u¿ycia normalnych 
+operacji odczytu/zapisu na ka¿dym pliku. Jednak¿e gdy musisz zrobiæ co¶ wiêcej
+z plikiem specjalnym lub zwyk³ym mo¿esz to zrobiæ przy pomocy ... oczywi¶cie - ioctl. 
+Czê¶ciej bêdziesz potrzebowa³ ioctl do operacji na plikach specjalnych 
+ni¿ na zwyk³ych, ale warto pamiêtaæ ¿e u¿ywanie ioctl na zwyk³ych plikach jest mo¿liwe.
+
+\endinput

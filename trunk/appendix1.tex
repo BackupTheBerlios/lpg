@@ -1,0 +1,223 @@
+\chapter{Wywo³ania systemowe w porz±dku alfabetycznym}
+ 
+\author {Sven Goldt}
+
+\tablehead{ % \\
+\multicolumn{1}{l|}{\bf Nazwa} &
+\multicolumn{1}{l}{\bf Opis} \\
+\hline }
+
+\begin{supertabular}{l|l}
+\_exit & podobny do exit, wykonuje mniej zadañ (m+c)\\
+accept & odbiera po³±czenie z gniazda (m+c!)\\
+access & pobiera prawa u¿ytkownika do pliku (m+c)\\
+acct & niezaimplementowane (mc)\\
+adjtimex & ustawia/pobiera zmienne czasu j±dra (-c)\\
+afs\_syscall & wywo³anie zarezerwowane dla andrew filesystem (-)\\
+alarm & wysy³a SIGALRM w okre¶lonym czasie (m+c)\\
+bdflush & zapisuje brudne bufory na dysk (-c)\\
+bind & nazwij gniazdo dla komunikacji miêdzyprocesowej (m!c)\\
+break & niezaimplementowane (-)\\
+brk & zmieñ rozmiar segmentu danych (mc)\\
+chdir & zmieñ katalog roboczy (m+c)\\
+chmod & zmieñ atrybuty pliku (m+c)\\
+chown & zmieñ w³a¶ciciela pliku (m+c)\\
+chroot & ustaw bazowy katalog (mc)\\
+clone & zobacz fork (m-)\\
+close & zamknij plik przez referencjê (m+c)\\
+connect & po³±cz 2 gniazda (m!c)\\
+creat & stwórz plik (m+c)\\
+create\_module & zajmij miejsce na ³adowalny modu³ j±dra (-)\\
+delete\_module & usuñ modu³ z j±dra (-)\\
+dup & utwórz kopiê deskryptora pliku (m+c)\\
+dup2 & kopiuj deskryptor pliku (m+c)\\
+execl, execlp, execle, ...& zobacz execve (m+!c)\\
+execve & wykonaj plik (m+c)\\
+exit & zakoñcz program (m+c)\\
+fchdir & zmieñ katalog roboczy referencj± ()\\
+fchmod & zobacz chmod (mc)\\
+fchown & zmieñ w³a¶ciciela pliku (mc)\\
+fclose & zamknij plik przez referencjê (m+!c)\\
+fcntl & kontrola pliku/deskryptora pliku (m+c)\\
+flock & zmieñ sposób blokowania pliku (m!c)\\
+fork & utwórz proces potomny (m+c)\\
+fpathconf & pobierz informacjê o pliku poprzez referencjê (m+!c)\\
+fread & odczytaj tablicê danych binarnych ze strumienia (m+!c)\\
+fstat & pobierz status pliku (m+c)\\
+fstatfs & pobierz status systemu plików przez referencjê (mc)\\
+fsync & zapisz bufor pliku na dysk (mc)\\
+ftime & pobierz strefê czasow± i ilo¶æ sekund od 1.1.1970 (m!c)\\
+ftruncate & zmieñ rozmiar pliku (mc)\\
+fwrite & zapisz tablicê danych binarnych do strumienia (m+!c)\\
+get\_kernel\_syms & pobierz tablicê symboli j±dra lub jej rozmiar (-)\\
+getdomainname & pobierz nazwê domeny systemu (m!c)\\
+getdtablesize & pobierz rozmiar tablicy deskryptora pliku (m!c)\\
+getegid & pobierz efektywne id grupy (m+c)\\
+geteuid & pobierz efektywne id u¿ytkownika (m+c)\\
+getgid & pobierz prawdziwe id grupy (m+c)\\
+getgroups & pobierz dodatkowe grupy (m+c)\\
+gethostid & pobierz unikalny identyfikator hosta (m!c)\\
+gethostname & pobierz hostname systemu (m!c)\\
+getitimer & pobierz warto¶æ wewnêtrznego timera (mc)\\
+getpagesize & pobierz rozmiar strony systemowej (m-!c)\\
+getpeername & pobierz addres pod³±czonego gniazda peer (m!c)\\
+getpgid & pobierz id procesu rodzica (+c)\\
+getpgrp & pobierz id grupy procesu rodzica (m+c)\\
+getpid & pobierz id aktualnego procesu (m+c)\\
+getppid & pobierz id procesu rodzica (m+c)\\
+getpriority & pobierz priorytety procesu/grupy/u¿ytkownika (mc)\\
+getrlimit & pobierz limit zasobów (mc)\\
+getrusage & pobierz wykorzystanie zasobów (m)\\
+getsockname & pobierz adres gniazda (m!c)\\
+getsockopt & pobierz ustawienia gniazda (m!c)\\
+gettimeofday & pobierz strefê czasow± i sekundy od 1.1.1970 (mc)\\
+getuid & pobierz rzeczywisty uid (m+c)\\
+gtty & niezaimplementowane ()\\
+idle & zrób proces kandydatem do zapisu do pliku wymiany (mc)\\
+init\_module & za³aduj ³adowalny modu³ j±dra (-)\\
+ioctl & manipuluj urz±dzeniem znakowym (mc)\\
+ioperm & ustaw niektóre prawa portu we/wy (m-c)\\
+iopl & ustaw wszytkie prawa portu we/wy (m-c)\\
+ipc & komunikacja miedzyprocesowa (-c)\\
+kill & wy¶lij sygna³ do procesu (m+c)\\
+killpg & wy¶lij sygna³ grupie procesów (mc!)\\
+klog & zobacz syslog (-!)\\
+link & utwórz twarde dowi±zanie do istniej±cego pliku (m+c)\\
+listen & nas³uchuj po³±czeñ do gniazda (m!c)\\
+llseek & lseek dla du¿ych plików (-)\\
+lock & niezaimplementowane ()\\
+lseek & zmieñ wska¼nik po³o¿enia w deskryptorze pliku (m+c)\\
+lstat & pobierz status pliku (mc)\\
+mkdir & stwórz katalog (m+c)\\
+mknod & stwórz urz±dzenie (mc)\\
+mmap & mapuj plik do pamiêci (mc)\\
+modify\_ldt & zapisz lub odczytaj lokaln± tablicê deskryptorów (-)\\
+mount & zamontuj system plików (mc)\\
+mprotect & odczytaj, zapisz lub wykonaj pamiêæ chronion± (-)\\
+mpx & niezaimplementowane ()\\
+msgctl & kontrola wiadomo¶ci ipc (m!c)\\
+msgget & pobierz id kolejki wiadomo¶ci ipc (m!c)\\
+msgrcv & odbierz wiadomo¶æ ipc (m!c)\\
+msgsnd & wy¶lij wiadomo¶æ ipc (m!c)\\
+munmap & odmapuj plik z pamiêci (mc)\\
+nice & zmieñ priorytet procesu (mc)\\
+oldfstat & ju¿ nie istnieje\\
+oldlstat & ju¿ nie istnieje\\
+oldolduname & ju¿ nie istnieje\\
+oldstat & ju¿ nie istnieje\\
+olduname & ju¿ nie istnieje\\
+open & otwórz plik (m+c)\\
+pathconf & pobierz informacje o pliku (m+!c)\\
+pause & ¶pij dopóki nie nadejdzie sygna³ (m+c)\\
+personality & zmieñ aktualn± domenê wykonawcz± dla ibcs (-)\\
+phys & niezaimplementowane (m)\\
+pipe & stwórz potok (m+c)\\
+prof & niezaimplementowane ()\\
+profil & mierzy czas wykonania funkcji (m!c)\\
+ptrace & ¶led¼ proces potomny (mc)\\
+quotactl & niezaimplementowano ()\\
+read & odczytaj dane z pliku (m+c)\\
+readv & odczytaj tablicê z pliku (m!c)\\
+readdir & odczytaj katalog (m+c)\\
+readlink & pobierz zawarto¶æ symbolicznego odno¶nika (mc)\\
+reboot & restartuj lub w³±cz/wy³acz ¶wiêt± trójcê (-mc)\\
+recv & odbierz wiadomo¶æ z pod³±czonego gniazda (m!c)\\
+recvfrom & odbierz wiadomo¶æ z gniazda (m!c)\\
+rename & przenie¶/zmieñ nazwê pliku (m+c)\\
+rmdir & usuñ pusty katalog (m+c)\\
+sbrk & zobacz brk (mc!)\\
+select & ¶pij czekaj±c na akcjê na deskryptorze pliku (mc)\\
+semctl & kontrola semaforów ipc (m!c)\\
+semget & pobierz identyfikator zestawu semaforów ipc (m!c)\\
+semop & wykonaj operacjê na elemencie zestawu semaforów ipc (m!c)\\
+send & wy¶lij wiadomo¶æ do pod³±czonego gniazda (m!c)\\
+sendto & wy¶lij wiadomo¶æ do gniazda (m!c)\\
+setdomainname & ustaw nazwê domeny systemu (mc)\\
+setfsgid & ustaw id grupy systemu plików ()\\
+setfsuid & ustaw id u¿ytkownika systemu plików ()\\
+setgid & ustaw rzeczywiste id grupy (m+c)\\
+setgroups & ustaw dodatkowe grupy (mc)\\
+sethostid & ustaw unikalny identyfikator hosta (mc)\\
+sethostname & ustaw hostname systemu (mc)\\
+setitimer & ustaw wewnêtrzny timer (mc)\\
+setpgid & ustaw id grupy procesu (m+c)\\
+setpgrp & brak dzia³ania (mc!)\\
+setpriority & ustaw priorytet procesu/grupy/u¿ytkownika (mc)\\
+setregid & ustaw rzeczywiste i efektywne id grupy (mc)\\
+setreuid & ustaw rzeczywiste i efektywne id u¿ytkownika (mc)\\
+setrlimit & ustaw limit zasobów (mc)\\
+setsid & stwórz sesjê (+c)\\
+setsockopt & zmieñ ustawienia gniazda (mc)\\
+settimeofday & ustaw strefê czasow±+sekundy od 1.1.1970 (mc)\\
+setuid & ustaw rzeczywiste id  u¿ytkownika (m+c)\\
+setup & inicjuj urz±dzenia i montuj roota (-)\\
+sgetmask & zobacz siggetmask (m)\\
+shmat & pod³±cz pamiêæ dzielon± do segmentu danych (m!c)\\
+shmctl & manipuluj pamiêci± dzielon± ipc (m!c)\\
+shmdt & od³±cz pamiêæ dzielon± od segmentu danych (m!c)\\
+shmget & pobierz/stwórz segment pamiêci dzielonej (m!c)\\
+shutdown & wy³±cz gniazdo (m!c)\\
+sigaction & ustaw/pobierz obs³ugê sygna³u (m+c)\\
+sigblock & zablokuj sygna³y (m!c)\\
+siggetmask & pobierz blokowanie sygna³ów aktywnego procesu (!c)\\
+signal & ustaw obs³ugê sygna³u (mc)\\
+sigpause & u¿yj now± maskê sygna³u do czasu sygna³u (mc)\\
+sigpending & pobierz nadchodz±ce, ale zablokowane sygna³y (m+c)\\
+sigprocmask & ustaw/poberz blokowanie sygna³ów przez aktywny proces (+c)\\
+sigreturn & powróæ z obs³ugi synga³u i oczy¶æ ramkê stosu (m)\\
+sigsetmask & ustaw blokowanie sygna³ów przez proces (c!)\\
+sigsuspend & zastêpstwo sigpause (m+c)\\
+sigvec & zobacz sigaction (m!)\\
+socket & stwórz koñcówkê komunikacyjn± gniazda (m!c)\\
+socketcall & mno¿nik wywo³añ gniazd (-)\\
+socketpair & stwórz 2 pod³±czone gniazda (m!c)\\
+ssetmask & zobacz sigsetmask (m)\\
+stat & pobierz status pliku (m+c)\\
+statfs & pobierz status systemu plików (mc)\\
+stime & ustaw sekundy od 1.1.1970 (mc)\\
+stty & niezaimplementowane ()\\
+swapoff & przestañ swapowaæ do pliku/urz±dzenia (m-c)\\
+swapon & uruchom swapowanie do pliku/urz±dzenia (m-c)\\
+symlink & uwtórz symboliczny odno¶nik do pliku (m+c)\\
+sync & synchronizuj bufory dyskowe z pamiêci± (mc)\\
+syscall & uruchom wywo³anie systemowe przez numer (-!c)\\
+sysconf & pobierz warto¶æ zmiennej systemowej (m+!c)\\
+sysfs & pobierz informacje o skonfigurowanych systemach plików ()\\
+sysinfo & pobierz informacjê o systemie Linux (m-)\\
+syslog & manipuluj logowaniem przez systemu (m-c)\\
+system & uruchom polecenie pow³oki (m!c)\\
+time & pobierz sekundy od 1.1.1970 (m+c)\\
+times & pobierz czasy procesu (m+c)\\
+truncate & zmieñ rozmiar pliku (mc)\\
+ulimit & pobierz/ustaw limity pliku (c!)\\
+umask & ustaw maskê tworzenia plików (m+c)\\
+umount & odmontuj system plików (mc)\\
+uname & pobierz informacjê o systemie (m+c)\\
+unlink & usuñ plik je¿eli jest nieu¿ywany (m+c)\\
+uselib & u¿yj biblioteki wspó³dzielonej (m-c)\\
+ustat & pobierz statystykê systemu plików (c)\\
+utime & modyfikuj czas dostêpu lub modyfikacji i-wêz³a (m+c)\\
+utimes & zobacz utime (m!c)\\
+vfork & zobacz fork (m!c)\\
+vhangup & wirtualnie odwie¶ aktualn± tty (m-c)\\
+vm86 & przejd¼ do wirtualnego trybu 8086 (m-c)\\
+wait & czekaj na zakoñczenie procesu (m+!c)\\
+wait3 & bsd, czekaj na okre¶lony proces (m!c)\\
+wait4 & bsd, czekaj na okre¶lony proces (mc)\\
+waitpid & czekaj na okre¶lony proces (m+c)\\
+write & zapisz dane do pliku (m+c)\\
+writev & zapisz tablicê do pliku (m!c)\\
+
+\end{supertabular}
+
+\bigskip
+\noindent
+\\
+(m) istnieje strona podrêcznika. \\
+(+) zgodne z POSIX. \\
+(-) specyficzne dla Linuxa. \\
+(c) w libc. \\
+(!) nie jest to czyste wywo³anie systemowe, korzysta z innego wywo³ania systemowego.\\
+\\
+Od t³umacza: czê¶æ z wywo³añ jest ju¿ prawdopodobnie zaimplementowana, musisz to sprawdziæ sam.
+\endinput

@@ -1,0 +1,18 @@
+Begin
+Title        = Linux Programmer's Guide
+Version      = 0.4
+Desc1        = Parê s³ów na temat programowania w C dla Linuxa
+Author       = Linux Documentation Project
+AuthorEmail  = DOC channel
+Maintainer   = Sven Goldt, t³umaczeniem zajmuje siê Pawe³ Niewiadomski
+MaintEmail   = goldt@math.tu-berlin.de ( autor ), lilo@poczta.pnet.pl ( t³umacz )
+Site1        = free.poltronic.net
+Path1        = lilo
+Site2        = sunsite.unc.edu ( orygina³ )
+Path2        = /pub/Linux/docs/?
+CopyPolicy1  = mo¿esz kopiowaæ
+Keywords     = programowanie system przenoszenie ldp
+Entered      = Kwiecieñ 1995 ( t³umaczenie 2000 )
+EnteredBy    = Pawe³ Niewiadomski
+CheckedEmail = lilo@poczta.pnet.pl
+End

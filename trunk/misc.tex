@@ -1,0 +1,63 @@
+\author{Sven Goldt}
+
+\chapter{Linux - system operacyjny}
+
+  W marcu 1991 Linus Benedict Torvalds kupi³ dla swojego AT 386 wielozadaniowy 
+  system Minix. Na podstawie tego systemu stworzy³ swój w³asny
+  system, który nazwa³ Linuxem. We wrze¶niu 1991 wys³a³ e-mailem
+  prototyp systemu do kilku u¿ytkowników Minixa w internecie, to by³
+  pocz±tek projektu Linux. Od tamtego czasu wielu programistów zaczê³o 
+  wspomagaæ Linuxa. Dodali oni sterowniki urz±dzeñ, stworzyli aplikacje,
+  oraz uczynili go zgodnym z POSIX. Linux sta³ siê potê¿ny, a jednocze¶nie, 
+  co jest jego najlepsz± stron±, jest darmowy.  Trwaj± prace nad 
+  przeniesieniem Linuxa na inne platformy (istniej± wersje na platformy: alpha, 
+  arm, m68k, mips, ppc, sparc, sparc64 - przyp. t³um.).
+
+\chapter{J±dro Linuxa}
+
+ Podstaw± Linuxa jest j±dro. Mo¿esz wymieniæ ka¿d± dowoln± bibliotekê, 
+ jednak dopóki j±dro Linuxa pozostaje jest to ci±gle Linux. 
+ J±dro zawiera sterowniki urz±dzeñ, zarz±dzanie pamiêci±, procesami i komunikacj±. 
+ Guru od hackowania j±dra ( a propos siêgnij do Hacker-HOWTO aby dowiedzieæ siê 
+ kim jest hacker, przyp. t³um.) 
+ uwzglêdniaj± wytyczne POSIX co czasami u³atwia programowanie a czasami 
+ utrudnia. Je¿eli twoje programy zachowuj± siê inaczej na nowym j±drze Linuxa, 
+ bardzo prawdopodobne, ¿e zosta³y zaimplementowane nowe wytyczne POSIX. Na 
+ temat programistycznych informacji o j±drze Linuxa przeczytaj Linux 
+ Kernel Hacker's Guide.
+
+\chapter{Pakiet libc}
+
+\noindent
+{\obeylines
+libc: ISO 8859.1, $<linux/param.h>$, funkcje YP (?), kryptograficzne, 
+kilka podstawowych procedur shadow (domy¶lnie nie w³±czone), ...
+stare procedury (dla kompatybilno¶ci) s± w libcompat (domy¶lnie wy³±czone),
+angielskie, francuskie oraz niemieckie komunikaty b³êdów (obecnie pakiet libc6 
+posiada znacznie wiêcej t³umaczeñ, przyp. t³um.), procedury obs³ugi ekranu 
+zgodne z BSD4.4lite znajduj± siê w libcurses, procedury kompatybilne z BSD
+w libbsd, obs³uga ekranu w libtermcap, zarz±dzanie bazami danych w libdbm, 
+funkcje matematyczne w libm, wej¶cie do uruchamiania programów w crt0.o ???,
+informacji o p³ci bajtu (byte sex) w libieee ??? (czy kto¶ mo¿e daæ jakie¶ 
+informacje zamiast ¶miechu ?), ustawienia przestrzeni u¿ytkownika w libgmon.
+Chcia³bym aby kto¶ z twórców pakietu libc napisa³ ten rozdzia³.
+Jedyne co mogê powiedzieæ obecnie jest to, ¿e zanosi siê na zmianê formatu 
+plików wykonywalnych z a.out na elf (executable and linkable format - wykonywalny 
+i '³±czliwy' format), co równie¿ oznacza zmianê w budowaniu bibliotek dzielonych.
+Obecnie oba formaty (a.out i elf) s± obs³ugiwane.
+\medskip}
+
+  Wiêksza czê¶æ pakietu libc jest na licencji GNU Public License, 
+  poniek±d niektóre czê¶ci, jak crt0.o, s± na pewnej odmianie licencji copyright.
+  Dla komercyjnych programów oznacza to, ¿e zabrania siê statycznego ³±czenia
+  bibliotek z programem. Jednocze¶nie dynamicznie ³±czone programy s± równie¿ 
+  pewnym wyj±tkiem, o którym Richard Stallman z FSF powiedzia³:
+
+  {\smallskip \noindent \it [...] Wydaje mi siê, ¿e powinni¶my jednoznacznie
+  zezwoliæ na dystrybucjê dynamicznie ³±czonych programów
+  *bez* towarzystwa bibliotek zak³adaj±c, i¿ binaria (object files), które tworz±
+  program nie s± ograniczone zgodnie z sekcj± nr 5 [...] Podejmê decyzjê 
+  zezwalaj±ca na to. Na razie aktualizacja LGPL musi poczekaæ do czasu kiedy stworzê
+  i sprawdzê now± wersjê. (od t³um.: zobacz GPL w.2)}
+
+\endinput

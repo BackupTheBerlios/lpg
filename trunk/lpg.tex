@@ -1,0 +1,129 @@
+\documentclass[11pt]{book}
+\usepackage{multicol}
+\usepackage{a4}
+
+\usepackage{linuxdoc}
+\usepackage{qwertz}
+
+\usepackage{polski}
+\usepackage[latin2]{inputenc}
+
+\usepackage{graphicx}
+\usepackage{supertabular}
+
+\begin{document}
+\title{The Linux Programmer's Guide
+\vspace {1 cm}
+\includegraphics[width=200pt,height=200pt]{lpg.ps}} 
+
+\author{ Sven Goldt\\Sven van der Meer\\Scott Burkett\\Matt Welsh }
+\date{Wersja~3 \\
+Pa¼dziernik 2000\\
+\footnotetext {Nasza trwaj±ca misja:
+ogarn±æ wiedzê o C, zrozumieæ dziwne polecenia\\
+Unixa i ¶mia³o programowaæ to o czym nikt nie ma podrêcznika.}
+}
+ 
+\typeout{Copyright Sven Goldt 1994, 1995}
+\maketitle
+ 
+\newpage
+ 
+\tableofcontents
+ 
+\clearpage
+
+\thispagestyle{plain}
+\begin {itemize}
+\item {Copyright \\
+  The Linux Programmer's Guide Copyright \copyright ~1994, 1995 Sven Goldt \\
+  Sven Goldt, Sachsendamm 47b, 10829 Berlin, Germany \\
+  $<goldt@math.tu-berlin.de>.$ \\
+  Rozdzia³ \ref{vdm} Copyright \copyright ~1994, 1995 Sven van der Meer 
+  $<vdmeer@cs.tu-berlin.de>.$\\
+  Rozdzia³ \ref{scott} Copyright \copyright ~1995 Scott Burkett
+  $<scottb@IntNet.net>.$\\
+  Rozdzia³ \ref{mdw} Copyright \copyright ~1994, 1995 Matt Welsh
+  $<mdw@cs.cornell.edu>.$\\
+  Specjalne podziêkowanie przesy³am Johnnowi D. Harperowi $<jharper@uiuc.edu>$ 
+  za merytoryczne sprawdzenie (proofreading) tego podrêcznika.\\
+  Zezwala siê na reprodukcjê tego dokumentu w ca³o¶ci lub czê¶ci pod
+  warunkiem ¿e zostan± spe³nione nastêpuj±ce warunki: 
+    \begin {enumerate}
+    \item {Informacja o copyright pozostaje nienaruszona i jest zawarta.}
+    \item {Je¿eli zarabiasz na tym pieni±dze musisz podzieliæ siê z nami.}
+    \item {Autorzy nie ponosz± ¿adnej odpowiedzialno¶ci za szkody, które mog±
+           powstaæ na skutek u¿ycia.}
+    \end {enumerate} }
+
+\item {S³owo od t³umacza\\
+ Zabraniam w³asnorêcznego poprawiania - wszelkie zastrze¿enia kieruj do mnie,
+ nie chcê aby istnia³o tyle ró¿nych kopii ilu czytelników. \\
+ Wersja oryginalna, oraz przyk³ady znajduj± siê pod adresem:
+ $<http://metalab.unc.edu/pub/Linux/docs/linux-doc-project/programmers-guide/>$. \\
+ Autor t³umaczenia: Pawe³ Niewiadomski $<new@linuxpl.org>$\\
+ Je¿eli zarabiasz na tym t³umaczeniu, rozprowadzasz je na p³ytach, itp. skontaktuj siê ze mn±.\\
+ Copyright \copyright  ~t³umaczenia 1999-2000 Pawe³ Niewiadomski, ul. Krakusa i Wandy 5/2, 75-824, Koszalin, Polska.\\
+ {\tt Je¿eli masz sprzêt, który prze¿y³ swe lata ¶wietno¶ci wy¶lij mi go - bêdê bardzo wdziêczny.}
+ }
+
+\item {Podziêkowania\\
+ Przemys³aw Nowak $<mother@poczta.fm>$ - przet³umaczenie sound.tex\\
+ {\bf Marcin Dawcewicz $<marcel@linux.com.pl>$} - to dziêki niemu mo¿esz poznaæ tajniki programowania sieciowego.\\
+ }
+
+\item {S³owo wstêpne \\
+ Podrêcznik ten nie jest kompletny i aby siê takim sta³ trzeba wiele zrobiæ.\\
+ Pierwsza wersja 0.1 zosta³a stworzona we wrze¶niu 1994.
+ Poniewa¿ brakowa³o ludzi i informacji skoncentrowana by³a na wywo³aniach systemowych.\\
+ Planowane s±: opis funkcji bibliotecznych oraz g³ówne zmiany w j±drach, jak
+ równie¿ opisy tak wa¿nych rzeczy jak sieci, d¼wiêk, grafika 
+ oraz asynchroniczne I/O.  Mo¿e równie¿ zostan± do³±czone: napomkniêcie o tym jak zbudowaæ
+ biblioteki dzielone oraz odwo³ania do u¿ytecznych narzêdzi.\\
+ Podrêcznik ten stanie siê ca³o¶ci± oraz sukcesem tylko z hojn± pomoc± w
+ formie informacji oraz mo¿e t³umaczenia ca³ych rozdzia³ów.
+ }
+
+\item {Wstêp \\
+  Pewnego dnia zainstalowa³em na moim PC Linuxa aby dowiedzieæ siê wiêcej o
+  administrowaniu systemami. Próbowa³em zainstalowaæ serwer slip, jednak¿e nie
+  chcia³ dzia³aæ z shadow i mgetty. Musia³em po³ataæ (patch) sliplogin, po tym
+  dzia³a³ dopóki nie pojawi³ siê Linux 1.1. Nikt nie móg³ mi wyt³umaczyæ co siê
+  sta³o. Nie by³o ¿adnej dokumentacji na temat zmian j±dra od wersji 0.99,
+  oprócz podsumowania zmian w j±drze tworzonych przez Russa Nelsona, niestety
+  zbytnio mi nie pomog³y w rozwi±zaniu moich problemów.
+
+  Projekt Linux Programmer's Guide zosta³ stworzony w celu, tak jak nazwa mówi, 
+  pomocy programistom w zrozumieniu w³a¶ciwo¶ci Linuxa.  
+  Oznacza to równie¿, ¿e powinien byæ u¿yteczny przy przenoszeniu programów
+  z innych systemów do Linuxa.  Dlatego przewodnik musi opisywaæ wywo³ania systemowe
+  oraz g³ówne zmiany w j±drach, które wp³ywaj± na starsze programy, dotyczy to zw³aszcza
+  szeregowego I/O oraz sieci. }
+
+\end {itemize}
+
+\input{misc}
+ 
+\input{systemcalls}
+ 
+\input{ioctl}
+ 
+\input{ipc}
+
+\input{gniazda}
+
+\input{gniazda_za}
+
+\input{sound}
+ 
+\input{graphic}
+
+\input{async}
+ 
+\input{porting}
+ 
+\input{appendix1}
+ 
+\input{abbreviations}
+
+\end{document}

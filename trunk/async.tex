@@ -1,0 +1,113 @@
+\author {Sven Goldt}
+\title {The Linux Programmer's Guide}
+
+\chapter {Programowanie portów We/Wy}
+Zazwyczaj pecet ma przynajmniej 2 porty szeregowe i jeden równoleg³y.
+Interfejsy te to urz±dzenia specjalne przedstawiane jako:
+
+\begin {itemize}
+\item $/dev/ttyS0 - /dev/ttyS{\bf n}$\\
+S± to RS232 ( porty szeregowe ) w granicach 0-{\bf n}, {\bf n} zale¿y od sprzêtu.
+\item $/dev/cua0 - /dev/cua{\bf n}$\\
+S± to RS232 ( porty szeregowe ) w granicach 0-{\bf n}, {\bf n} zale¿y od sprzêtu.
+\item $/dev/lp0 - /dev/lp{\bf n}$\\
+Porty równoleg³e 0-{\bf n}, {\bf n} zale¿y od sprzêtu.
+\item $/dev/js0 - /dev/js{\bf n}$\\
+£±cza dla joysticków 0-{\bf n} gdzie $ 0<= {\bf n} <= 1 $.
+\end {itemize}
+Ró¿nic± pomiêdzy urz±dzeniami $/dev/ttyS*$ i $/dev/cua*$ jest sposób
+obs³ugi wywo³ania open(). Urz±dzenia $/dev/cua*$ u¿ywane s± jako urz±dzenia
+wywo³uj±ce, dlatego przekazuje siê im poprzez wywo³anie open()
+inne domy¶lne ustawienia, ni¿ dla urz±dzeñ $/dev/ttyS*$, które inicjuje siê
+dla wywo³añ wychodz±cych i przychodz±cych. Domy¶lnie pliki urz±dzeñ kontroluj±
+urz±dzenia dla procesu który je otworzy³.
+Normalnie ¿±danie ioctl() powinno obs³u¿yæ wszystkie pliki specjalne, jednak
+POSIX preferuje u¿ycie nowych funkcji obs³uguj±cych niesynchroniczne terminale,
+s± one znacz±co zale¿ne od struktury termios. Obie metody wymagaj± w³±czenia
+pliku $<termios.h>$.\\
+
+\begin {enumerate}
+\item Metoda ioctl:\\
+TCSBRK, TCSBRKP, TCGETA ( pobieranie atrybutów ), TCSETA ( ustawianie atrybutów )\\
+¯±dania kontroluj±ce We/Wy terminala ( TIOC ):\\
+TIOCGSOFTCAR ( ustaw programow± karetkê ), TIOCSSOFTCAR ( pobierz programow± karetkê ), 
+TIOCSCTTY ( ustaw kontroluj±c± tty ), 
+TIOCMGET ( pobierz modemlines(?) ), TIOCMSET ( ustaw modemlines ), 
+TIOCGSERIAL, TIOCSSERIAL, TIOCSERCONFIG, TIOCSERGWILD, TIOCSERSWILD, 
+TIOCSERGSTRUCT, TIOCMBIS, TIOCMBIC, ...\\
+\item Metoda POSIX:\\
+tcgetattr(), tcsetattr(), tcsendbreak(), tcdrain(), tcflush(), tcflow(), 
+tcgetpgrp(), tcsetpgrp()\\
+cfsetispeed(), cfgetispeed(), cfsetospeed(), cfgetospeed()\\
+\item Inne metody:\\
+outb,inb dla programowania sprzêtu ( np.: u¿ycie portu drukarki nie dla drukarki ).\\
+\end {enumerate}
+\clearpage
+
+\section {Programowanie myszki}
+Myszka pod³±czona jest do portu szeregowego lub bezpo¶rednio do szyny AT, do
+tego ró¿ne typy myszek wysy³aj± ró¿ne typy danych co powoduje, i¿ zaprogramowanie
+myszki jest nieco trudniejsze.
+Andrew Haylett by³ tak mi³y i nada³ takie copyright swojemu programowi {\em selection\/}, i¿
+mo¿esz u¿yæ jego funkcji w swoim programie.
+Programuj±c dla X11 nie musisz go u¿ywaæ, gdy¿ ¶rodowisko to dostarcza wygodnego
+API myszki. \\
+Potrzebujesz tylko modu³ów mouse.c i mouse.h z pakietu {\em selection\/}
+Aby odebraæ zdarzenia z myszki musisz wywo³aæ ms\_init() i get\_ms\_event().
+ms\_init wymaga nastêpuj±cych 10 argumentów:\\
+\begin {enumerate}
+\item {\it int acceleration}\\
+wspó³czynnik akceleracji. Je¿eli przesuniesz muszkê wiêcej ni¿
+{\it delta} pixeli ruch stanie siê szybszy zale¿nie od tej warto¶ci. 
+\item {\it int baud} \\
+prêdko¶æ w bps z jak± pracuje myszka ( normalnie 1200 ).
+\item {\it int delta}\\
+ilo¶æ pixeli o ile nale¿y przesun±æ myszkê zanim zostanie
+w³±czona akceleracja .
+\item {\it char *device}\\
+nazwa urz±dzenia myszki ( np.: /dev/mouse ).
+\item {\it int toggle}\\
+w³±cza DTR, RTS lub oba jednocze¶nie podczas inicjalizacji ( normalnie 0 ).
+\item {\it int sample}\\
+rozdzielczo¶æ ( dpi ) myszki ( normalnie 100 ).
+\item {\it mouse\_type mouse}\\
+identyfikator pod³±czonej myszy, np. P\_MSC (Mouse Systems Corp.) dla
+mojej myszki ;).
+\item {\it int slack}\\
+amount of slack for wraparound which means if slack is -1 a try to move the
+mouse over the screen border will leave the mouse at the border.
+Values $>=$ 0 mean that the mouse cursor will wrap to the other end after
+moving the mouse {\it slack} pixels against the border.
+\item {\it int maxx}\\
+rozdzielczo¶æ x terminala. Przy domy¶lnej czcionce znak ma 10 pixeli szeroko¶ci
+co daje nam rozdzielczo¶æ 10*80-1.
+\item {\it int maxy}\\
+rozdzielczo¶æ y terminala. Przy domy¶lnej czcionce znak ma 12 pixeli wysoko¶ci
+co daje nam rozdzielczo¶æ 12*25-1.
+\end {enumerate}
+get\_ms\_event() potrzebuje tylko wska¼nika do struktury ms\_event.
+Je¿eli get\_ms\_event() zwróci -1 - nast±pi³ b³±d. Zero oznacza sukces, a 
+struktura ms\_event zawiera aktualny stan myszki.
+
+\section {Programowanie modemu}
+Zobacz przyk³ad miniterm.c\\
+U¿yj termios aby kontrolowaæ port rs232.\\
+U¿yj poleceñ Hayesa aby kontrolowaæ modem.
+
+\section {Programowanie drukarki}
+Zobacz przyk³ad checklp.c\\
+Nie u¿ywaj termios aby kontrolowaæ port drukarki.
+U¿yj ioctl, oraz inb/outb w razie konieczno¶ci.\\
+U¿yj poleceñ Epson, Postscript, PCL, itp. aby kontrolowaæ drukarkê.\\
+$<linux/lp.h>$\\
+wywo³anie ioctl: LPCHAR, LPTIME, LPABORT, LPSETIRQ, LPGETIRQ, LPWAIT\\
+inb/outb dla kontroli lub odczytu statusu portu.
+
+\section {Programowanie joysticka}
+Zobacz przyk³ad js.c w pakiecie ³adowalnego modu³u j±dra.\\
+$<linux/joystick.h>$\\
+wywo³ania ioctl: JS\_SET\_CAL, JS\_GET\_CAL, JS\_SET\_TIMEOUT, JS\_GET\_TIMEOUT,
+JS\_SET\_TIMELIMIT, JS\_GET\_TIMELIMIT, JS\_GET\_ALL, JS\_SET\_ALL.\\
+Operacja odczytu z /dev/js{\bf n} zwróci strukturê JS\_DATA\_TYPE.
+
+\endinput

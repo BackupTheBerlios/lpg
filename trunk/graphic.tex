@@ -1,0 +1,3112 @@
+\author{Sven van der Meer}
+\date{v0.3.3, 19 Jan 1995}
+
+\newcommand{\notenm}[1]{( {\bf Uwaga:} #1. )}%                 normal Note:
+\newcommand{\noteni}{\notenm{jeszcze nie zaimplementowano}}%         Note: not implemented
+\newcommand{\notenie}[1]{\notenm{jeszcze nie zaimplementowano, #1}}% Note + #1 on begin
+\newcommand{\notenib}[1]{\notenm{#1 jeszcze nie zaimplementowano}}%  Note + #1 on end
+
+\newcommand{\vdmarg}[1]{{\tt #1}}  % function arguments in description
+\newcommand{\vdmfunc}[1]{{\bf #1}} % functions in description
+\newcommand{\vdmunix}[1]{{\sl#1}}  % unix related stuff in description
+\newcommand{\vdmscr}[1]{{\sl#1}}   % stdscr and curscr
+\newcommand{\vdmlines}[1]{{\sl#1}} % for LINES and COLS
+
+\newcommand{\tabref}[1]{tabeli \ref{#1} na stronie \pageref{#1}}    % dla tabeli
+\newcommand{\figref}[1]{figura \ref{#1} na stronie \pageref{#1}}   % figur
+\newcommand{\secref}[1]{sekcja \ref{#1} na stronie \pageref{#1}}  % sekcji
+\newcommand{\funref}[1]{\pageref{#1}}          % odno¶nik do funkcji
+
+\newcommand{\ncver}{1.8.6}   % 'aktualna' wersja ncurses
+
+\title{Semigrafika}
+% \chapter{\label{vdm}Semigrafika}
+W rozdziale tym porozmawiamy o wej¶ciu i wyj¶ciu na ekran opartym na znakach.
+Znak nale¿y rozumieæ jako grupê pixeli zmienian± zale¿nie od zestawu znaków.
+Twoja karta graficzna zawiera jeden lub wiêcej zestawów, oraz pracuje domy¶lnie
+w trybie znakowym, dzieje siê tak poniewa¿ text jest przetwarzany znacznie
+szybciej ni¿ grafika. Z terminalem mo¿esz zrobiæ du¿o wiêcej ni¿ nudne
+wy¶wietlanie znaczków. Opiszê jak korzystaæ ze specjalnych cech terminala linuxowego, 
+zw³aszcza konsoli.\\\\
+Od t³umacza:\\
+Przy wielu funkcjach zaznaczone by³o, ¿e nie s± zaimplemetowane, usun±³em
+te oznaczenia, gdy¿ po sprawdzeniu plików nag³ówkowych doszed³em do wniosku,
+¿e siê to zmieni³o. Gdybym siê jednak gdzie¶ pomyli³: proszê, powiadom mnie o tym.
+
+\begin{itemize}
+  \item {\bf printf, sprintf, fprintf, scanf, sscanf, fscanf} \\
+	Za pomoc± tych funkcji z \vdmunix{libc} mo¿esz wyprowadzaæ
+	sformatowane ci±gi na \vdmunix{stdout} ( standardowe wyj¶cie ),
+	\vdmunix{stderr} ( wyj¶cie b³êdów ) lub do innych strumieni
+	zadeklarowanych jako \vdmarg{FILE *stream} ( np.: pliki ).
+	\vdmfunc{Scanf(...)} dostarcza podobny sposób na wczytywanie
+	sformatowanego wej¶cia z \vdmunix{stdin}.
+	
+  \item {\bf termcap} \\
+	Baza TERMinal CAPabilitie ( mo¿liwo¶ci terminala ) jest zbiorem
+	ASCII ( /etc/termcap ) zawieraj±cym pola opisuj±ce w jaki sposób
+	wy¶wietlaæ znaki specjalne, jak przeprowadzaæ operacje ( usuwanie, 
+	wstawianie, itd. ), oraz jak zainicjowaæ terminal. Baza danych jest
+	u¿ywana dla przyk³adu przez program vi. Istniej± funkcje czytaj±ce
+	i u¿ywaj±ce termcap ( \vdmunix{zobacz termcap(3x) } ). Dziêki
+	tej bazie programy mog± pracowaæ z ró¿nymi programami bez zmiany
+	kodu. Baza termcap i funkcje z biblioteki dostarczaj± tylko
+	niskopoziomowego dostêpu do terminala. Zmiana kolorów,
+	sparametryzowane wyj¶cie i optymalizacja musisz zrobiæ na
+	w³asn± rêkê.
+	
+\item  {\bf baza danych terminfo} \\
+	Baza danych TERMinal INFOrmation ( informacje o terminalu ) jest
+	oparta na bazie danych termcap, opisuje mo¿liwo¶ci terminala
+	na wy¿szym poziomie ni¿ termcap. U¿ywaj±c terminfo mo¿esz
+	³atwo zmieniaæ kolory, u¿ywaæ specjalnych klawiszy, itd.
+	Bazê danych mo¿esz znale¼æ w \vdmunix{/usr/lib/terminfo/[A-z,0-9]*}.
+	Jeden plik opisuje jeden terminal.
+
+  \item {\bf curses} \\
+	Terminfo jest dobr± baz± dla programów obs³uguj±cych terminal. 
+	Biblioteka (BSD-)CURSES daje ci dostêp wysokiego poziomu
+	do terminala i jest ona oparta na terminfo. Biblioteka pozwala
+	na otwieranie i manipulacjê oknami, dostarcza pe³ny zestaw
+	funkcji we/wy, na ponad 150 terminalach mo¿esz zmieniaæ	
+	atrybuty ekranu w niezale¿ny od nich sposób. Bibliotekê
+	curses mo¿esz znale¼æ w \vdmunix{/usr/lib/libcurses.a}.
+	Jest to wersja BSD.
+	
+  \item {\bf ncurses} \\
+        Ncurses jest kolejnym usprawnieniem. W wersji \ncver
+	biblioteka powinna byæ zgodna z curses AT\&T zdefiniowanymi
+	w SVR4, oraz posiadaæ pewne rozszerzenia: manipulacjê kolorami,
+	specyficzn± dla terminala optymalizacjê, itd. Zosta³a
+	przetestowana na wielu systemach, m.in.: Sun-OS, HP, Linux.
+	Polecam u¿ywaæ j± zamiast innych. W Unixach SYSV ( np. Sun Solaris )
+	powinna istnieæ biblioteka z takimi samymi mo¿liwo¶ciami jak
+	ncurses ( obecnie curses Solaris maj± wiêcej funkcji i obs³ugê
+	myszki ).
+	
+\end{itemize}
+
+	W nastêpuj±cych rozdzia³ach omówiê sposoby u¿ywania odmiennych
+	pakietów dostêpu do terminala. W Linuksie mamy wersjê GNU
+	termcap oraz mo¿emy u¿ywaæ ncurses zamiast curses.
+	
+\section{Funkcje We/Wy w libc}
+
+\subsection{Sformatowane wyj¶cie}\label{sec_formout}
+
+Funkcje \vdmfunc{printf(...)} z \vdmunix{libc} dostarczaj± sformatowane
+wyj¶cie i transformacje argumentów.
+
+\begin{itemize}
+  \item {\tt int fprintf(FILE *stream, const char *format, ...),} \label{fun_fprintf}\\
+	przeformatuje wyj¶cie ( argumenty wype³niaj±ce \vdmarg{...}) i
+	zapisze w \vdmarg{stream}. Format zdefiniowany w \vdmarg{format}
+	zostanie równie¿ zapisany. Funkcja zwróci ilo¶æ zapisanych znaków
+	lub warto¶æ ujemn± je¿eli nast±pi³ b³±d.
+	
+        \vdmarg{format} zawiera dwa rodzaje obiektów
+        \begin{enumerate}
+         \item  normalne znaki dla wyj¶cia i
+         \item  informacje jak przekszta³ciæ lub sformatowaæ argumenty.
+        \end{enumerate}
+
+        Informacje formatuj±ce musz± zaczynaæ siê od {\it \%} poprzedzaj±cego
+	warto¶æ opcji formatuj±cej i znak formatowania ( aby wypisaæ \% musisz
+	u¿yæ nastêpuj±c± kombinacjê {\it  \%\%}). Warto¶ci opcji formatuj±cych:
+
+	\begin{itemize}
+	 \item Flagi
+		  \begin{itemize}
+		   \item {\tt -} \\
+			    Sformatowany argument zostanie wypisany z lewym marginesem ( domy¶lnym jest
+			    prawy ).
+		   \item {\tt +} \\
+			    Ka¿da liczba zostanie wypisana ze znakiem, np: {\tt +12} lub {\tt -2.32}.
+		  \end{itemize}
+	 \item Puste \\
+		  Kiedy znak nie jest pierwszy zostanie wstawiona pustka.
+	 \item {\tt 0} \\
+		  Dla transformacji numerycznych pole zostanie wype³nione {\tt 0} po lewej
+		  stronie.
+	 \item {\tt \#} \\
+		  Alternatywne wyj¶cie zale¿ne od transformacji argumentu 
+		 Alternate output depending on the transformation for the argument
+	  	\begin{itemize}
+		   \item  Dla {\it o} piersz± cyfr± jest {\it 0}.
+		   \item  Dla {\it x} lub {\it X} {\it 0x} lub {\it 0X} zostanie wstawione
+			   poprzedzaj±c argument.
+		   \item  Dla {\it e}, {\it E}, {\it f} lub {\it F} wyj¶cie jest liczb± dziesiêtn±.
+		   \item  Dla {\it g} lub {\it G} zera na koñcu argumentu s± drukowane.
+		\end{itemize}
+        \end{itemize}
+ \item Minimalny rozmiar pola.\\
+  Sformatowany argument jest drukowany w pole, które jest co najmniej tak
+  du¿e jak argument. Podaj±c liczbê mo¿esz zwiêkszyæ to pole. Je¿eli
+  argument jest mniejszy puste pole zostanie wype³nione zerami lub pozostanie
+  puste.
+ \item  Kropka aby odseparowaæ szeroko¶æ i precyzjê pola.
+ \item  Precyzja.
+\end{itemize}
+
+        Mo¿liwe warto¶ci transformacji s± w \tabref{tab_printf}.
+\begin{itemize}
+\item {\tt int printf(const char *format, ...)} \label{fun_printf}\\
+        To samo co \vdmfunc{fprintf(stdout, ...)}.
+
+\item {\tt int sprintf(char *s, const char *format, ...)} \label{fun_sprintf}\\
+        To samo co \vdmfunc{printf(...)}, przy czym wyj¶cie zostanie zapisane
+	pod adresem wskazywanym przez \vdmarg{s} ( bêdzie zakoñczone \verb+\+0 ).
+
+        \notenm{Musisz przygotowaæ odpowiedni± ilo¶æ pamiêci dla \vdmarg{s}}
+
+\item {\tt vprintf(const char *format, va\_list arg)} \label{fun_vprintf}\\
+      {\tt vfprintf(FILE *stream, const char *format, va\_list arg)} \label{fun_vfprintf}\\
+      {\tt vsprintf(char *s, const char *format, va\_list arg)} \label{fun_vsprintf}\\
+      To samo co funkcje powy¿ej przy czym lista argumentów ustawiona jest na
+      \vdmarg{arg}.
+\end{itemize}
+
+\begin{table}
+  \caption{Libc - transformacje dla printf} \label{tab_printf}
+  \begin{center}
+    \begin{tabular}{c|l}
+    {\bf Znak} &  {\bf Formatowanie} \\ \hline
+    d,i &  {\it int} liczba ze znakiem\\
+    o   &  {\it int} unsigned, ósemkowo, bez poprzedzaj±cego 0 \\
+    x,X &  {\it int} unsigned, szesnastkowo, bez poprzedzaj±cego 0x \\
+    u   &  {\it int} unsigned, dziesiêtnie \\
+    c   &  {\it int} (unsigned) pojedynczy znak \\
+    s   &  {\it char *} a¿ do \verb+\+0 \\
+    f   &  {\it double} jako [-]mmm.ddd \\
+    e,E &  {\it double} jako [-]m.dddddde$\pm$xx \\
+    g,G &  {\it double} u¿yj \%e lub \%f je¿eli musisz \\
+    p   &  {\it void *} \\
+    n   &  {\it int *} \\
+    \%  &  {\it \%} \\
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\subsection{Sformatowane wej¶cie}\label{sec_formin}
+
+Tak jak \vdmfunc{printf(...)} jest u¿ywane dla sformatowanego wyj¶cia, 
+\vdmfunc{scanf(...)} s³u¿y do formatowania wej¶cia.
+
+\begin{itemize}
+  \item {\tt int fscanf(FILE *stream, const char *format, ...)} \label{fun_fscanf}\\
+        \vdmfunc{fscanf(...)} czyta \vdmarg{stream} i przekszta³ca wej¶cie
+	zgodnie z zasadami zadeklarowanymi w \vdmarg{format}. Wyniki
+	bêd± umieszczone w \vdmarg{...}\notenm{argumenty {\bf musz±} byæ
+	wska¼nikami}. Odczyt zostaje zakoñczony po przetworzeniu wszystkich
+	zasad zawartych w \vdmarg{format}. \vdmfunc{fscanf(...)} zwróci
+	EOF gdy pierwsze przekszta³cenie koniec pliku lub nast±pi jaki¶
+	b³±d, inaczej zwróci liczbê przetworzonych argumentów.
+	
+        \vdmarg{format} mo¿e zawieraæ zasady formatowania wej¶cia ( zobacz
+	\tabref{tab_scanf} ). Mo¿e równie¿ zawieraæ:
+        \begin{itemize}
+          \item Spacje lub tabulatory, które s± ignorowane.
+          \item inne znaki (oprócz \%). Znaki te musz± znale¼æ siê na odpowiedniej
+	        pozycji w wej¶ciu.
+          \item zasady transformacji, które po³±czone z {\it \%}, opcjonalnym
+	        znakiem {\it *} ( to zezwala \vdmfunc{fscanf(...)} zapisaæ
+		argument ), opcjonaln± liczbê, znak {\it h, l lub L} ( d³ugo¶æ
+		celu ) i znak transformacji.
+\end{itemize}
+
+  \item {\tt int scanf(const char *format, ...)} \label{fun_scanf}\\
+        To samo co \vdmfunc{fscanf(stdin,...)}.
+
+  \item {\tt int sscanf(char *str, const char *format, ...)} \label{fun_sscanf}\\
+        To samo co \vdmfunc{scanf(...)}, przy czym wej¶cie pochodzi z \vdmarg{str}.
+\end{itemize}
+
+
+\begin{table}
+  \caption{Libc - przekszta³cenia scanf} \label{tab_scanf}
+  \begin{center}
+    \begin{tabular}{c|l}
+    {\bf Znak} &  {\bf Wej¶cie - typ argumentu} \\ \hline
+    d   &  dziesiêtny, integer - {\it int *}\\
+    i   &  integer - {\it int *} ( wej¶cie mo¿e byæ ósemkowe lub szesnastkowe )\\
+    o   &  ósemkowy, integer - {\it int *} ( z lub bez pierwszego 0)\\
+    u   &  dziesiêtny, unsigned - {\it unsigned int *}\\
+    x   &  hexadecymalny, integer - {\it int *} ( z lub bez 0x )\\
+    c   &  jeden lub wiêcej znaków - {\it char *} ( bez \verb+\+0 )\\
+    s   &  znaki ( bez spacji, tabulatorów ...) - {\it char *} ( z \verb+\+0 )\\
+e,f,gf  &  float - {\it float *} ( np.: [-]m.dddddde$\pm$xx )\\
+    p   &  wska¼nik - {\it void *}\\
+    n   &  liczba przekszta³conych argumentów - {\it int *}\\
+$[...]$ &  nie puste znaki w wej¶ciu - {\it char *}\\
+$[$\^{}$...]$ &  wy³±cz nie puste znaki - {\it char *}\\
+    \%  &  {\it \%}\\ \hline
+    \multicolumn{2}{l}{{\it h} mo¿e byæ przed d,i,n,o,u i x gdy wska¼nikiem jest {\it short}}\\
+    \multicolumn{2}{l}{{\it l} mo¿e byæ przed d,i,n,o,u i x gdy wska¼nikiem jest {\it long}}\\
+    \multicolumn{2}{l}{{\it l} mo¿e byæ przed e,f i g gdy the wska¼nikiem jest {\it double}}\\
+    \multicolumn{2}{l}{{\it L} mo¿e byæ przed e,f i g gdy the wska¼nikiem jest {\it long double}}\\
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\section{Biblioteka Termcap}
+
+
+\subsection{Wstêp}
+
+Biblioteka termcap to API ( advanced programming interface - zaawansowany 
+interfejs programowania ) dla zbioru termcap, który mo¿na znale¼æ w \vdmunix{/etc/termcap/}.
+Funkcje biblioteki zezwalaj± na nastêpuj±ce akcje:
+
+\begin{itemize}
+  \item Pobranie opisu aktualnego terminala: \vdmfunc{tgetent(...)}.
+  \item Przeszukaj opis w poszukiwaniu informacji:
+        \vdmfunc{tgetnum(...)}, \vdmfunc{tgetflag(...)}, 
+        \vdmfunc{tgetstr(...)}.
+  \item Zakoduj parametry liczbowe w sposób specyficzny dla terminala: 
+        \vdmfunc{tparam(...)}, \vdmfunc{tgoto(...)}.
+  \item Oblicz i wykonaj wy¶cielanie (padding?) \vdmfunc{tputs(...)}.
+\end{itemize}
+
+Programy korzystaj±ce z biblioteki termcap musz± do³±czyæ plik
+\vdmunix{termcap.h}, oraz musz± byæ nastêpuj±co kompilowane:
+\begin{tscreen}
+\begin{verbatim}
+    gcc [flagi] pliki -ltermcap
+\end{verbatim}
+\end{tscreen}
+
+Funkcje termcap s± niezale¿ne od terminala, jednocze¶nie udostêpniaj± tylko
+niskopoziomowy dostêp do terminala. Pakietami udostêpniaj±cymi wysokopoziomowy
+dostêp s± \{n\}curses.
+
+\subsection{Szukanie opisu terminala}
+
+\begin{itemize}
+  \item {\tt int tgetent(void *buffer, const char *termtype)} \label{fun_tgetent}\\
+      W Linuksie nazwa aktualnego terminala zawarta jest w zmiennej
+      ¶rodowiskowej \vdmunix{TERM}. \vdmarg{termtype} jest wynikiem
+      wywo³ania \vdmunix{getenv(3)}.
+
+      U¿ywaj±c wersjê GNU termcap nie musisz allokowaæ ¿adnej pamiêci 
+      dla \vdmarg{buffer}. W innym wypadku musisz mapowaæ 2048 bajtów
+      ( gwoli ¶cis³o¶ci, \vdmarg{buffer} potrzebuje tylko 1024, jednak
+      rozmiar musi byæ podwojony ).
+      
+     \vdmfunc{tgetent(...)} zwraca 1 je¿eli sukces, 0 je¿eli znaleziono
+     zbiór danych niezawieraj±cy wpisu dla TERM. Inne b³êdy zwróc± odmienne
+     warto¶ci.
+     
+     Poni¿szy przyk³ad powinien przedstawiæ sposób u¿ycia \vdmfunc{tgetent(...)}:
+
+\begin{tscreen}
+\begin{verbatim}
+    #define buffer 0
+    char *termtype=getenv("TERM");
+    int ok;
+
+    ok=tgetent(buffer,termtype);
+    if(ok==1)
+      /* ok, mamy wpis */
+    else if(ok==0)
+     /* uups, co¶ nie w porz±dku z TERM
+      * sprawd¼ najpierw termtype, pó¿niej termcap
+      */
+    else
+     /* ee, b³±d krytyczny */
+\end{verbatim}
+\end{tscreen}
+
+	Domy¶lnie termcap u¿ywa	pliku \vdmunix{/etc/termcap/}.
+	Je¿eli ustawisz zmienn± TERMCAP na \vdmunix{\$HOME/mytermcap}
+	wszystkie funkcje korzystaæ bêd± z \vdmunix{mytermcap}.
+	Natomiast wszelkie wpisy bez wiod±cego uko¶nika potraktowane
+	bêd± jako nazwa terminala.
+\end{itemize}
+
+\subsection{Spojrzenie na opis terminala}
+
+Ka¿da, pojedyñcza informacja nazywana jest zdolno¶ci±, ka¿da zdolno¶æ
+posiada dwuliterowy kod, po ka¿dym kodzie nastêpuje warto¶æ zdolno¶ci.
+Mo¿liwymi typami s±:
+
+\begin{itemize}
+  \item  {\bf Numeryczny}: np.: {\it co} - liczba kolumn
+  \item  {\bf Logiczny} lub {\bf Flaga}: {\it hc} - to jest hardcopy terminal
+  \item  {\bf £añcuchowy}: {\it st} - ustawienie tab stop
+\end{itemize}
+
+Ka¿dej zdolno¶ci przypisany jest jeden typ ( {\it co} jest zawsze liczb±, 
+{\it hc} jest zawsze flag± i {\it st} jest zawsze ³añcuchem ).
+Istniej± trzy ró¿ne typy, wiêc istniej± trzy ró¿ne funkcje. \vdmarg{char *name} jest
+dwuliterowym kodem oznaczaj±cym zdolno¶æ.
+
+\begin{itemize}
+  \item {\tt int tgetnum(char *name)} \label{fun_tgetnum}\\
+	Pobierz warto¶æ numerycznej zdolno¶ci ( np: {\it co} ).
+	\vdmfunc{tgetnum(...)} zwraca warto¶æ numeryczn± je¿eli
+	zdolno¶æ jest dostêpna, inaczej 1.
+        ( UWAGA: nie jest zwracana warto¶æ ujemna )
+
+  \item {\tt int tgetflag(char *name)} \label{fun_tgetflag}\\
+	Pobierz warto¶æ zdolno¶ci logicznej ( lub flagi ).
+	Zwraca jednykê je¿eli flaga jest ustawiona, inaczej 0.
+
+  \item {\tt char *tgetstr(char *name, char **area)} \label{fun_tgetstr}\\
+	Pobierz warto¶æ zdolno¶ci ³añcuchowej. Zwraca wska¼nik
+	do ³añcucha lub NULL. W wersji GNU je¿eli \vdmarg{area} równa
+	siê NULL termcap zaallokuje odpowiedni± ilo¶æ pamiêci.
+	Termcap zapomina o tym wska¼niku wiêc musisz samemu
+	zwolniæ pamiêæ po \vdmarg{name}. Jest to zalecana metoda, gdy¿
+	nie wiesz ile termcap potrzebuje pamiêci, nie on siê tym zajmie.
+\end{itemize}
+
+
+\begin{tscreen}
+\begin{verbatim}
+    char *clstr, *cmstr;
+    int   lines,  cols;
+
+    void term_caps()
+    {
+    char *tmp;
+
+     clstr=tgetstr("cl",0); /* wyczy¶æ ekran */
+     cmstr=tgetstr("cm",0); /* przesuñ y,x     */
+
+     lines=tgetnum("li"); /* wiersze terminala */
+     cols=tgetnum("co");  /* kolumny terminala */
+
+     tmp=tgetstr("pc",0); /* znak wype³niaj±cy */
+
+     PC=tmp ? *tmp : 0;
+     BC=tgetstr("le",0); /* kursor w lewo jeden znak */
+     UP=tgetstr("up",0); /* kursor w górê o jedn± liniê */
+    }
+\end{verbatim}
+\end{tscreen}
+
+\subsection{Zdolno¶ci termcap}
+
+\subsubsection{Zdolno¶ci logiczne}
+
+\begin{small}
+\tablehead{ %
+\hline
+}
+\begin{supertabular}{c|l}
+{\tt 5i} &   Drukarka nie powtarza na ekran\\
+{\tt am} &   Automatyczne marginesy, oznacza to automatyczne zawijanie linii\\
+{\tt bs} &   Control-H ( 8 dziesiêtnie ) dzia³a jak backspace\\
+{\tt bw} &   Backspace na lewy margines przenosi do poprzedniej prawego marginesu linii\\
+{\tt da} &   Wy¶wietlacz zachowa³ powy¿szy ekran\\
+{\tt db} &   Wy¶wietlacz zachowa³ poni¿szy ekran\\
+{\tt eo} &   Spacja wymazuje wszystkie znaki pod kursorem\\
+{\tt es} &   Sekwencje z escape, oraz specjalne znaki dzia³aj± w linii statusu\\
+{\tt gn} &   Urz±dzenie ogólne\\
+{\tt hc} &   Jest to hardcopy terminal\\
+{\tt HC} &   Kursor jest trudny do zobaczenia w dolnej linii\\
+{\tt hs} &   Posiada liniê statusu\\
+{\tt hz} &   Ma³a pluskwa Hazla - terminal nie drukuje znaku tyldy\\
+{\tt in} &   Terminal wstawia nulle zamiast spacji przy wype³nianiu pustki\\
+{\tt km} &   Terminal posiada klawisz meta\\
+{\tt mi} &   Przestawianie kursora dzia³a w trybie wstawiania\\
+{\tt ms} &   Przestawianie kursora dzia³a w trybach wyró¿niania/podkre¶lania\\
+{\tt NP} &   Brak znaku wype³niaj±cego\\
+{\tt NR} &   ti nie odwraca te\\
+{\tt nx} &   Brak wype³niania, musisz u¿yæ XON/XOFF\\
+{\tt os} &   Terminal mo¿e przekre¶laæ\\
+{\tt ul} &   Terminal podkre¶la, lecz nie przekre¶la\\
+{\tt xb} &   F1 wysy³a ESCAPE, F2 wysy³a \^{}C\\
+{\tt xn} &   Prze³±cznik (glitch???) nowa linia/zawijanie\\
+{\tt xo} &   Terminal u¿ywa protoko³u xon/xoff\\
+{\tt xs} &   Text nadpisuj±cy wyró¿nienie zostanie wy¶wietlony jako wyró¿niony\\
+{\tt xt} &   Teleray glitch(?), destruktywne tabulatory i dziwny tryb wyró¿niania\\
+\end{supertabular}
+
+\end{small}
+
+%\clearpage
+
+\subsubsection{Zdolno¶ci numeryczne}
+\begin{small}
+
+\tablehead{ %
+\hline
+}
+\begin{supertabular}{c|l}
+{\tt co} &   Liczba kolumn\\
+{\tt dB} &   Opó¼nienie ( milisekundy ) backspace na terminalach hardcopy\\
+{\tt dC} &   Opó¼nienie ( milisekundy ) powrotu karetki na terminalach hardcopy\\
+{\tt dF} &   Opó¼nienie ( milisekundy ) wysuniêcia strony na terminalach hardcopy\\
+{\tt dN} &   Opó¼nienie ( milisekundy ) nowej linii na terminalach hardcopy\\
+{\tt dT} &   Opó¼nienie ( milisekundy ) zatrzymania tabulatora na terminalach hardcopy\\
+{\tt dV} &   Opó¼nienie ( milisekundy ) zatrzymania pionowego tabulatora na terminalach hardcopy\\
+{\tt it} &   Ró¿nice pomiêdzy pozycjami tabulatora\\
+{\tt lh} &   Wysoko¶æ etykiet programowalnych\\
+{\tt lm} &   Linie pamiêci\\
+{\tt lw} &   Szeroko¶æ etykiet programowalnych\\
+{\tt li} &   Liczba wierszy\\
+{\tt Nl} &   Liczba etykiet programowalnych\\
+{\tt pb} &   Najni¿sza prêdko¶æ w bodach, która wymaga wype³niania\\
+{\tt sg} &   Wyró¿nienie glitch\\
+{\tt ug} &   Podkre¶lenie glitch\\
+{\tt vt} &   Numer wirtualnego terminala\\
+{\tt ws} &   Szeroko¶æ linii statusu je¿eli jest ona odmienna od szeroko¶ci ekranu\\
+\end{supertabular}
+
+\end{small}
+%\clearpage
+
+\subsubsection{Zdolno¶ci ³añcuchowe}
+\begin{small}
+
+\tablehead{ %
+\hline
+}
+\begin{supertabular}{c|l}
+{\tt !1} &   Klawisz wraz z shift: zachowaj\\
+{\tt !2} &   Klawisz wraz z shift: zawie¶\\
+{\tt !3} &   Klawisz wraz z shift: odwo³aj\\
+{\tt \#1} &  Klawisz wraz z shift: pomoc\\
+{\tt \#2} &  Klawisz wraz z shift: home\\
+{\tt \#3} &  Klawisz wraz z shift: wej¶cie\\
+{\tt \#4} &  Klawisz wraz z shift: kursor w lewo\\
+{\tt \%0} &  Klawisz: powtórz\\
+{\tt \%1} &  Klawisz: pomoc\\
+{\tt \%2} &  Klawisz: zaznacz\\
+{\tt \%3} &  Klawisz: wiadomo¶æ\\
+{\tt \%4} &  Klawisz: przesuñ\\
+{\tt \%5} &  Klawisz: nastêpny obiekt\\
+{\tt \%6} &  Klawisz: otwórz\\
+{\tt \%7} &  Klawisz: opcje\\
+{\tt \%8} &  Klawisz: poprzedni obiekt\\
+{\tt \%9} &  Klawisz: drukuj\\
+{\tt \%a} &  Klawisz wraz z shift: wiadomo¶æ\\
+{\tt \%b} &  Klawisz wraz z shift: przesuñ\\
+{\tt \%c} &  Klawisz wraz z shift: nastêpny\\
+{\tt \%d} &  Klawisz wraz z shift: opcje\\
+{\tt \%e} &  Klawisz wraz z shift: poprzedni\\
+{\tt \%f} &  Klawisz wraz z shift: drukuj\\
+{\tt \%g} &  Klawisz wraz z shift: powtórz\\
+{\tt \%h} &  Klawisz wraz z shift: zamieñ\\
+{\tt \%i} &  Klawisz wraz z shift: kursor w prawo\\
+{\tt \%j} &  Klawisz wraz z shift: wznów\\
+{\tt \&0} &  Klawisz wraz z shift: anuluj\\
+{\tt \&1} &  Klawisz: informacja\\
+{\tt \&2} &  Klawisz: od¶wie¿\\
+{\tt \&3} &  Klawisz: zamieñ\\
+{\tt \&4} &  Klawisz: restartuj\\
+{\tt \&5} &  Klawisz: wznów\\
+{\tt \&6} &  Klawisz: zachowaj\\
+{\tt \&7} &  Klawisz: zawie¶\\
+{\tt \&8} &  Klawisz: odwo³aj\\
+{\tt \&9} &  Klawisz wraz z shift: pocz±tek\\
+{\tt *0} &   Klawisz wraz z shift: znajd¼\\
+{\tt *1} &   Klawisz wraz z shift: polecenie\\
+{\tt *2} &   Klawisz wraz z shift: kopiuj\\
+{\tt *3} &   Klawisz wraz z shift: utwórz\\
+{\tt *4} &   Klawisz wraz z shift: usuñ znak\\
+{\tt *5} &   Klawisz wraz z shift: usuñ liniê\\
+{\tt *6} &   Klawisz: wybór\\
+{\tt *7} &   Klawisz wraz z shift: koniec\\
+{\tt *8} &   Klawisz wraz z shift: wyczy¶æ liniê\\
+{\tt *9} &   Klawisz wraz z shift: wyjd¼\\
+{\tt \@0} &  Klawisz: znajd¼\\
+{\tt \@1} &  Klawisz: pocz±tek\\
+{\tt \@2} &  Klawisz: anuluj\\
+{\tt \@3} &  Klawisz: zamknij\\
+{\tt \@4} &  Klawisz: polecenie\\
+{\tt \@5} &  Klawisz: kopiuj\\
+{\tt \@6} &  Klawisz: stwórz\\
+{\tt \@7} &  Klawisz: koniec\\
+{\tt \@8} &  Klawisz: wstaw/wy¶lij znak\\
+{\tt \@9} &  Klawisz: zakoñcz\\
+{\tt al} &   Wstaw jedn± liniê\\
+{\tt AL} &   Wstaw \%1 linii\\
+{\tt ac} &   Para blokowych znaków graficznych mapuj±cych alternatywny zestaw znaków\\
+{\tt ae} &   Zakoñcz alternatywny zestaw znaków\\
+{\tt as} &   Rozpocznij alternatywny zestaw znaków dla blokowych znaków graficznych\\
+{\tt bc} &   Backspace, inaczej \^{}H\\
+{\tt bl} &   Dzwonek\\
+{\tt bt} &   Przesuñ do poprzedniego tabulatora\\
+{\tt cb} &   Wyczy¶æ od pocz±tku linii do pozycji kursora\\
+{\tt cc} &   G³upi znak polecenia\\
+{\tt cd} &   Wyczy¶æ do koñca ekranu\\
+{\tt ce} &   Wyczy¶æ do koñca linii\\
+{\tt ch} &   Przesuñ kursor poziomo do kolumny \%1\\
+{\tt cl} &   Wyczy¶æ ekran i start kursora\\
+{\tt cm} &   Przesuñ kursor do wiersza \%1 i kolumny \%2 ( na ekranie )\\
+{\tt CM} &   Przesuñ kursor do wiersza \%1 i kolumny \%2 ( w pamiêci )\\
+{\tt cr} &   Powrót karetki\\
+{\tt cs} &   Przesuñ region z linii \%1 do \%2\\
+{\tt ct} &   Usuñ tabulatory\\
+{\tt cv} &   Przesuñ kursor pionowo tylko do linii \%1\\
+{\tt dc} &   Usuñ jeden znak\\
+{\tt DC} &   Usuñ \%1 znaków\\
+{\tt dl} &   Usuñ jedn± liniê\\
+{\tt DL} &   Usuñ  \%1 linii\\
+{\tt dm} &   W³±cz tryb usuwania\\
+{\tt do} &   Kursor w dó³ o jedn± liniê\\
+{\tt DO} &   Kursor w dó³ o \%1 linii\\
+{\tt ds} &   Wy³±cz liniê statusu\\
+{\tt eA} &   W³±cz alternatywny zestaw znaków\\
+{\tt ec} &   Usuñ \%1 znaków zaczynaj±c od pozycji kursora\\
+{\tt ed} &   Zakoñcz tryb usuwania\\
+{\tt ei} &   Zakoñcz tryb wstawiania\\
+{\tt ff} &   Znak wysuniêcia strony na terminalach hardcopy\\
+{\tt fs} &   Przywróæ oryginaln± pozycjê znaku przed prze³±czeniem siê do linii statusu\\
+{\tt F1} &   £añcuch wysy³any przez klawisz funkcyjny f11\\
+{\tt F2} &   £añcuch wysy³any przez klawisz funkcyjny f12\\
+{\tt F3} &   £añcuch wysy³any przez klawisz funkcyjny f13\\
+         &   ...  ...\\
+{\tt F9} &   £añcuch wysy³any przez klawisz funkcyjny f19\\
+{\tt FA} &   £añcuch wysy³any przez klawisz funkcyjny f20\\
+{\tt FB} &   £añcuch wysy³any przez klawisz funkcyjny f21\\
+         &   ...  ...\\
+{\tt FZ} &   £añcuch wysy³any przez klawisz funkcyjny f45\\
+{\tt Fa} &   £añcuch wysy³any przez klawisz funkcyjny f46\\
+{\tt Fb} &   £añcuch wysy³any przez klawisz funkcyjny f47\\
+         &   ...  ...\\
+{\tt Fr} &   £añcuch wysy³any przez klawisz funkcyjny f63\\
+{\tt hd} &   Przesuñ kursor pó³ linii w dó³\\
+{\tt ho} &   Start kursora\\
+{\tt hu} &   Przesuñ kursor pó³ linii w górê\\
+{\tt i1} &   1 ³añcuch inicjalizuj±cy w czasie logowanie\\
+{\tt i3} &   3 ³añcuch inicjalizuj±cy w czasie logowanie\\
+{\tt is} &   2 ³añcuch inicjalizuj±cy w czasie logowanie\\
+{\tt ic} &   Wstaw jeden znak\\
+{\tt IC} &   Wstaw \%1 znaków\\
+{\tt if} &   Plik inicjalizacji\\
+{\tt im} &   Rozpocznij tryb wstawiania\\
+{\tt ip} &   Wstaw wype³nienie po wstawionym znaku\\
+{\tt iP} &   Program inicjalizacji\\
+{\tt K1} &   Klawiatura numeryczna: góra-lewo\\
+{\tt K2} &   Klawiatura numeryczna: ¶rodek\\
+{\tt K3} &   Klawiatura numeryczna: góra-prawo\\
+{\tt K4} &   Klawiatura numeryczna: dó³-lewo\\
+{\tt K5} &   Klawiatura numeryczna: dó³-prawo\\
+{\tt k0} &   Klawisz funkcyjny 0\\
+{\tt k1} &   Klawisz funkcyjny 1\\
+{\tt k2} &   Klawisz funkcyjny 2\\
+{\tt k3} &   Klawisz funkcyjny 3\\
+{\tt k4} &   Klawisz funkcyjny 4\\
+{\tt k5} &   Klawisz funkcyjny 5\\
+{\tt k6} &   Klawisz funkcyjny 6\\
+{\tt k7} &   Klawisz funkcyjny 7\\
+{\tt k8} &   Klawisz funkcyjny 8\\
+{\tt k9} &   Klawisz funkcyjny 9\\
+{\tt k;} &   Klawisz funkcyjny 10\\
+{\tt ka} &   Usuñ wszystkie klawisze tabulatorów\\
+{\tt kA} &   Klawisz: wstaw liniê\\
+{\tt kb} &   Klawisz: backspace\\
+{\tt kB} &   Wsteczny tabulator\\
+{\tt kC} &   Klawisz: wyczy¶æ ekran\\
+{\tt kd} &   Klawisz: kursor w dó³\\
+{\tt kD} &   Klawisz: usuñ znak pod kursorem\\
+{\tt ke} &   Wy³±cz klawiaturê numeryczn±\\
+{\tt kE} &   Klawisz: wyczy¶æ do koñca linii\\
+{\tt kF} &   Klawisz: przesuwanie do przodu/ty³u\\
+{\tt kh} &   Klawisz: kursor do domu :)\\
+{\tt kH} &   Klawisz: kursor do dolnego domu\\
+{\tt kI} &   Wstaw znak/Wstaw klawisz trybu\\
+{\tt kl} &   Kursor w lewo\\
+{\tt kL} &   Klawisz: usuñ liniê\\
+{\tt kM} &   Klawisz: zakoñcz tryb wstawiania\\
+{\tt kN} &   Klawisz: nastêpna strona\\
+{\tt kP} &   Klawisz: poprzednia strona\\
+{\tt kr} &   Klawisz: kursor w prawo\\
+{\tt kR} &   Klawisz: przewijanie do przodu/ty³u\\
+{\tt ks} &   W³±cz klawiaturê numeryczn±\\
+{\tt kS} &   Klawisz: wyczy¶æ do koñca ekranu\\
+{\tt kt} &   Klawisz: wyczy¶æ ten tabulator\\
+{\tt kT} &   Klawisz: ustaw tutaj tabulator\\
+{\tt ku} &   Klawisz: kursor w górê\\
+{\tt l0} &   Etykieta zerowego klawisza funkcyjnego, inaczej f0\\
+{\tt l1} &   Etykieta pierwszego klawisza funkcyjnego, inaczej f1\\
+{\tt l2} &   Etykieta drugiego klawisza funkcyjnego, inaczej f2\\
+         &   ...  ...\\
+{\tt la} &   Etykieta drugiego klawisza funkcyjnego, inaczej f10\\
+{\tt le} &   Kursor w lewo jeden znak\\
+{\tt ll} &   Przesuñ kursor do dolnego, lewego rogu\\
+{\tt LE} &   Kursor w lewo \%1 znaków\\
+{\tt LF} &   Wy³±cz etykiety programowalne\\
+{\tt LO} &   W³±cz etykiety programowalne\\
+{\tt mb} &   Zacznij migaæ\\
+{\tt MC} &   Usuñ marginesy programowalne\\
+{\tt md} &   Rozpocznij tryb pogrubiania\\
+{\tt me} &   Wy³±cz wszystkie tryby jak: so, us, mb, md i mr\\
+{\tt mh} &   W³±cz tryb: po³owa jasno¶ci\\
+{\tt mk} &   Amba fatima ( znaki s± niewidoczne )\\
+{\tt ML} &   Ustaw lewe programowalne marginesy\\
+{\tt mm} &   Prze³±cz terminal w tryb meta\\
+{\tt mo} &   Wy³±cz tryb meta na terminalu\\
+{\tt mp} &   W³±cz chroniony atrybut\\
+{\tt mr} &   W³±cz tryb odwracania\\
+{\tt MR} &   Ustaw prawe marginesy programowalne\\
+{\tt nd} &   Kursor w prawo jeden znak\\
+{\tt nw} &   Polecenie powrotu karetki\\
+{\tt pc} &   Znak wy¶cielaj±cy\\
+{\tt pf} &   Wy³±cz drukarkê\\
+{\tt pk} &   Zaprogramuj klawisz \%1 tak aby wysy³a³ ³añcuch \%2 jakby wprowadzi³ go u¿ytkownik\\
+{\tt pl} &   Zaprogramuj klawisz \%1 aby wykonywa³ ³añcuch \%2 w trybie lokalnym\\
+{\tt pn} &   Zaprogramuj etykietê programow± \%1 aby wy¶wietla³a ³añcuch \%2\\
+{\tt po} &   W³±cz drukarkê\\
+{\tt pO} &   W³±cz drukarkê dla \%1 ($<$256) bajtów\\
+{\tt ps} &   Wydrukuj zawarto¶æ ekranu na drukarce\\
+{\tt px} &   Zaprogramuj klawisz \%1 aby wysy³a³ \%2 do komputera\\
+{\tt r1} &   Zresetuj ³añcuch 1, ustaw rozs±dne tryby\\
+{\tt r2} &   Zresetuj ³añcuch 2, ustaw rozs±dne tryby\\
+{\tt r3} &   Zresetuj ³añcuch 3, ustaw rozs±dne tryby\\
+{\tt RA} &   Wy³±cz automatyczne marginesy\\
+{\tt rc} &   Przywróæ zachowan± pozycjê kursora\\
+{\tt rf} &   Zresetuj ³añcuch nazwy pliku\\
+{\tt RF} &   ¯±danie odczytu z terminala\\
+{\tt RI} &   Kursor w prawo \%1 znaków\\
+{\tt rp} &   Powtórz znak \%1 \%2 razy\\
+{\tt rP} &   Wype³nianie za znakiem wysy³ane jest w trybie zamiany\\
+{\tt rs} &   £añcuch resetuj±cy\\
+{\tt RX} &   Wy³±cz XON/XOFF kontrolê przesy³ania\\
+{\tt sa} &   Ustaw atrybuty \%1 \%2 \%3 \%4 \%5 \%6 \%7 \%8 \%9 \\
+{\tt SA} &   W³±cz automatyczne marginesy\\
+{\tt sc} &   Zachowaj pozycjê kursora\\
+{\tt se} &   Wy³±cz tryb wyró¿niania\\
+{\tt sf} &   Normalne przesuwanie o jedn± liniê\\
+{\tt SF} &   Normalne przesuwanie o \%1 linii\\
+{\tt so} &   W³±cz tryb wyró¿niania\\
+{\tt sr} &   Odwrotne przesuwanie\\
+{\tt SR} &   Przesuñ do ty³u \%1 linii\\
+{\tt st} &   Ustaw stop tabulatora we wszystkich wiersza w bierz±cej kolumnie\\
+{\tt SX} &   W³±cz kontrolê przesy³ania XON/XOFF\\
+{\tt ta} &   Skocz do nastêpnego tabulatora sprzêtowego\\
+{\tt tc} &   Wczytaj opis terminala z innego wpisu\\
+{\tt te} &   Zakoñcz program u¿ywaj±cy poruszania kursorem\\
+{\tt ti} &   Rozpocznij program u¿ywaj±cy poruszania kursorem\\
+{\tt ts} &   Przesuñ kursor do kolumny \%1 linii statusu\\
+{\tt uc} &   Podkre¶l znak pod kursorem i przesuñ kursor w prawo\\
+{\tt ue} &   Zakoñcz podkre¶lanie\\
+{\tt up} &   Kursor w górê o jedn± liniê\\
+{\tt UP} &   Kursor w górê o \%1 linii\\
+{\tt us} &   Rozpocznij podkre¶lanie\\
+{\tt vb} &   Wizualny dzwonek\\
+{\tt ve} &   Kursor normalnie widoczny\\
+{\tt vi} &   Kursor niewidoczny\\
+{\tt vs} &   Wyró¿nij kursor\\
+{\tt wi} &   Ustaw okno od linii \%1 do \%2 i kolumny \%3 do \%4\\
+{\tt XF} &   Znak XOFF, inaczej \^{}S\\
+\end{supertabular}
+
+\end{small}
+\clearpage
+
+\section{Ncurses - Wstêp}
+
+Nastêpuj±ce terminy bêd± u¿ywane w tym rozdziale:
+
+\begin{itemize}
+  \item  okno - jest wewnêtrzn± reprezentacj± zawieraj±c± obraz czê¶ci
+                ekranu. WINDOW jest zdefiniowane w \vdmunix{ncurses.h}.
+  \item  ekran - jest oknem o rozmiarze ca³ego ekranu ( od górnego lewego
+                 rogu po prawy dolny ). \vdmscr{Stdscr} i \vdmscr{curscr} 
+		 s± ekranami.
+  \item  terminal - jest specjalnym oknem zawieraj±cym informacje o tym jak
+                    aktualnie wygl±da ekran.
+  \item  zmienne - nastêpuj±ce zmienne i sta³e zdefiniowano w \vdmunix{ncurses.h}
+    \begin{itemize}
+      \item  WINDOW *curscr - aktualny ekran
+      \item  WINDOW *stdscr - standardowy ekran
+      \item  int LINES - linie terminala
+      \item  int COLS - kolumny terminala
+      \item  bool TRUE - flaga prawdy, 1
+      \item  bool FALSE - flaga fa³szu, 0
+      \item  int ERR - flaga b³êdu, -1
+      \item  int OK - flaga ok, 0
+    \end{itemize}
+  \item  funkcje - w opisach funkcji argumenty s± nastêpuj±cych typów:
+   \begin{itemize}
+      \item win - WINDOW*
+      \item bf - bool
+      \item ch - chtype
+      \item str - char*
+      \item chstr - chtype*
+      \item fmt - char*
+      \item inne int
+    \end{itemize}
+\end{itemize}
+
+Zazwyczaj program u¿ywaj±cy bibliotekê ncurses wygl±da nastêpuj±co:
+
+\begin{tscreen}
+\begin{verbatim}
+    #include <ncurses.h>
+    ...
+    main()
+    {
+      ...
+      initscr();
+      /* wywo³ania funkcji ncurses */
+      endwin();
+      ...
+    }
+\end{verbatim}
+\end{tscreen}
+
+Do³±czenie \vdmunix{ncurses.h} zdefiniuje zmienne i typy dla ncurses, np.
+WINDOW i prototypy funkcji. Plik automatycznie do³±cza \vdmunix{stdio.h},
+\vdmunix{stdarg.h}, \vdmunix{termios.h} i \vdmunix{unctrl.h}.
+
+\vdmfunc{initscr()} u¿ywana jest do zainicjowania danych oraz odczytania
+odpowiedniego pliku terminfo. Pamiêæ dla \vdmscr{stdscr} i \vdmscr{curscr}
+zostanie zaallokowana. Je¿eli wyst±pi± jakie¶ b³êdy initscr zwróci ERR,
+w innym wypadku zwrócony zostanie wska¼nik do \vdmscr{stdscr}.
+Dodatkowo ekran zostanie wymazany, zmienne \vdmlines{LINES} i \vdmlines{COLS}
+zostan± zainicjowane. Musisz wywo³aæ tê funkcjê przed jak±kolwiek inn± funkcj±
+ncurses.
+
+\vdmfunc{endwin()} usunie wszystkie utworzone przez ncurses zasoby, przywróci
+tty tryb, w którym by³ przed \vdmfunc{initscr()}. Musisz wywo³aæ tê funkcjê
+po zakoñczeniu korzystania z ncurses. 
+
+Je¿eli chcesz korzystaæ z kilku terminali mo¿esz u¿yæ \vdmfunc{newterm(...)} 
+zamiast \vdmfunc{initscr()}.
+
+Skompiluj program nastêpuj±co:
+
+\begin{tscreen}
+\begin{verbatim}
+    gcc [flagi] pliki -lncurses
+\end{verbatim}
+\end{tscreen}
+
+Flagi mog± zawieraæ to co chcesz (\vdmunix{zobacz gcc(1)}).
+Poniewa¿ ¶cie¿ka do ncurses.h zmieni³a siê musisz podaæ równie¿:
+\begin{tscreen}
+\begin{verbatim}
+    -I/usr/include/ncurses
+\end{verbatim}
+\end{tscreen}
+
+W innym przypadku ncurses.h, nterm.h, termcap.h i unctrl.h nie zostan± znalezione. 
+Inne mo¿liwe opcje dla Linuxa to:
+
+\begin{tscreen}
+\begin{verbatim}
+    -O2 -ansi -Wall -m486
+\end{verbatim}
+\end{tscreen}
+
+\vdmunix{O2} mówi gcc aby dokona³ pewnej optymalizacji, \vdmunix{-ansi} u¿ywane
+jest dla kodu zgodnego z kodem ansi-c, \vdmunix{-Wall} wypisze wszyskie
+ostrze¿enia, \vdmunix{-m486} stworzy kod zoptymalizowany dla 486 ( bêdzie on
+równie¿ wykonywalny na 386 ).
+
+Biblioteka ncurses znajduje siê w /usr/lib/.  Istniej± trzy wersje tej biblioteki:
+\begin{itemize}
+  \item  {\bf libncurses.a} normalna biblioteka ncurses.
+  \item  {\bf libdcurses.a} biblioteka do odpluskwiania.
+  \item  {\bf libpcurses.a} biblioteka do profilowania ( pocz±wszy od \ncver
+         libpcurses.a nie istnieje ? ).
+  \item  {\bf libcurses.a} Brak czwartej wersji, oprócz oryginalnej wersji BSD curses
+         ( mój slackware 2.1.0 ma pakiet bsd ).
+\end{itemize}
+
+Stuktury danych dla ekranu nazywane s± {\it oknami}, s± one zdefiniowane w 
+\vdmunix{ncurses.h}. Okno jest jakby tablic± znaków w pamiêci, któr± programista
+mo¿e zmieniaæ bez wypisywania na ekran. Domy¶lnym oknem jest \vdmscr{stdscr},
+ma ono wymiary teminala. Mo¿esz tworzyæ nowe okna za pomoc± \vdmfunc{newwin(...)}.
+
+Aby optymalnie zaktualizowaæ fizyczny terminal ncurses posiadaj± dodatkowe
+okno - \vdmscr{curscr}. Jest to aktualny obraz terminala, podczas gdy
+\vdmscr{stdscr} zawiera informacje o tym jak terminal powinien wygl±daæ.
+Zapisanie informacji na terminalu zostanie dokonane gdy wywo³asz funkcjê \vdmfunc{refresh()}.
+Ncurses zaktualizuj± \vdmscr{curscr} informacj± zawart± w \vdmscr{stdscr}.
+Funkcje biblioteki u¿yj± wewnêtrznej optymalizacji procesu od¶wie¿ania, wiêc
+mo¿esz zmieniæ wiele okien, po czym zaktualizowaæ ekran w najbardziej
+optymalny sposób.
+
+Za pomoc± funkcji ncurses mo¿esz manipulowaæ ró¿nymi {\it oknami}.
+Funkcje rozpoczynaj±ce siê od {\it w} pozwalaj± wybraæ {\it okno},
+podczas gdy inne zazwyczaj dzia³aj± na \vdmscr{stdscr}. Funcje
+zaczynaj±ce siê na {\it mv} przesun± najpierw kursor do pozycji {\it y,x}.
+
+Ka¿dy znak jest typu {\it chtype}, który zdefiniowany jest jako {\it long unsigned int} 
+w celu przechowywania dodatkowych informacji ( atrybuty, itp. ).
+
+Ncurses u¿ywaj± bazy danych \vdmunix{terminfo}. Zazwyczaj znajduje siê ona w
+\vdmunix{usr/lib/terminfo/}, tam ncurses zajrz± w poszukiwaniu jej.
+Je¿eli chcesz przetestowaæ jaki¶ inny opis terminala bez zmiany terminfo
+ustaw zmienn± systemow± \vdmunix{TERMINFO}. Ncurses skorzysta z definicji
+zachowanych tam gdzie poda³e¶, zamiast /usr/lib/terminfo/.
+
+Aktualn± wersj± ncurses jest \ncver (\date). ( ja mam 5.0, ale ta te¿ ju¿ jest 
+pewnie stara ).
+
+Na koñcu tego rozdzia³u znajdziesz tabelê zawieraj±c± przegl±d
+BSD-Curses, ncurses i curses z Sun-OS 5.4. Zajrzyj do niej w poszukiwaniu
+odpowiedniej funkcji i informacji o systemie, w którym j± zaimplementowano.
+
+\section{Inicjalizacja}
+
+\begin{itemize}
+
+  \item {\tt WINDOW *initscr()} \label{fun_initscr}\\
+	Jest to zazwyczaj pierwsza funkcja wywo³ywana w programie
+	u¿ywaj±cym ncurses. Czasami dobrze jest wywo³aæ \vdmfunc{slk\_init(int)}, 
+        \vdmfunc{filter()}, \vdmfunc{ripoffline(...)} lub \vdmfunc{use\_env(bf)}
+        przed \vdmfunc{initscr()}. Kiedy u¿ywasz kilku terminali ( lub 
+	testujesz zdolno¶ci ) mo¿esz u¿yæ \vdmfunc{newterm(...)} zamiast
+        \vdmfunc{initscr()}.
+	
+        \vdmfunc{initscr()} odczyta odpowiedni wpis z terminfo i zainicjuje
+	dane ncurses, zallokuje pamiêæ dla \vdmscr{curscr} i
+        \vdmscr{stdscr}, oraz \vdmlines{LINES} i \vdmlines{COLS}.
+	Funkcja zwróci ERR je¿eli nast±pi³ b³±d lub wska¼nik do \vdmscr{stdscr}.
+	Nie musisz inicjalizowaæ wska¼nika:
+\begin{tscreen}
+\begin{verbatim}
+    stdscr=initscr();
+\end{verbatim}
+\end{tscreen}
+        \vdmfunc{initscr()} zrobi to za ciebie. Je¿eli funkcja zwróci³a ERR
+	twój program powinien zakoñczyæ siê, gdy¿ ¿adna funkcja ncurses
+	nie zadzia³a.
+\begin{tscreen}
+\begin{verbatim}
+    if(!(initscr())){
+      fprintf(stderr,"ncurses: b³±d podczas inicjalizacji\n\n");
+      exit (1);
+    }
+\end{verbatim}
+\end{tscreen}
+
+  \item {\tt SCREEN *newterm(char *type, FILE *outfd, FILE *infd)} \label{fun_newterm}\\
+	Je¿eli chcesz korzystaæ z kilku terminali u¿yj \vdmfunc{newterm(...)}
+	dla ka¿dego z nich, zamiast \vdmfunc{initscr()}. \vdmarg{type} jest
+	nazw± terminala zawart± w zmiennej \$TERM ( dla przyk³adu: ansi,
+        xterm, vt100 ), \vdmarg{outfd} jest wska¼nikiem u¿ywanym jako
+	wyj¶cie, natomiast \vdmarg{infd} jest wska¼nikiem wej¶cia.
+	Dla ka¿dego terminala utworzonego za pomoc± \vdmfunc{newterm(...)}
+	powiniene¶ wywo³aæ \vdmfunc{endwin()}.
+
+  \item {\tt SCREEN *set\_term(SCREEN *new)} \label{fun_set_term}\\
+        Za pomoc± funkcji \vdmfunc{set\_term(SCREEN)} mo¿esz zmieniæ aktualny
+	terminal. Wszystkie funkcje dzia³aj± na aktualnym terminalu, który
+	ustawiany jest przez \vdmfunc{set\_term(SCREEN)}.
+
+  \item {\tt int endwin()} \label{fun_endwin}\\
+        \vdmfunc{endwin()} zrobi porz±dki, przywróci wszelkim trybom
+	stan, w którym by³y przed wywo³aniem \vdmfunc{initscr()}, oraz
+	przesunie kursor do lewego, górnego rogu. Nie zapomnij zamkn±æ
+	wszystkich otwartych okien przed wywo³aniem tej funkcji.
+
+	Dodatkowe wywo³anie \vdmfunc{refresh()} po \vdmfunc{endwin()}
+	przywróci terminal do stanu z przed wywo³ania \vdmfunc{initscr()}
+	( tryb wizualny ), w innym wypadku zostanie wyczyszczony
+	( tryb niewizualny ).
+	
+
+  \item {\tt int isendwin()} \label{fun_isendwin}\\
+        Zwraca TRUE je¿eli \vdmfunc{endwin()} wywo³ana zosta³a z
+        \vdmfunc{refresh()}, w innym przypadku FALSE.
+
+
+  \item {\tt void delscreen(SCREEN* sp)} \label{fun_delscreen}\\
+        Je¿eli nie potrzebujesz ju¿ SCREEN to po \vdmfunc{endwin()} 
+	wywo³aj \vdmfunc{delscreen(SCREEN)} aby zwolniæ wszelkie zasoby.
+\end{itemize}
+
+\section{Okna}
+
+Okna mog± byæ tworzone, usuwane, przesuwane, kopiowane, duplikowane, itd.
+
+\begin{itemize}
+  \item {\tt WINDOW *newwin(nlines, ncols, begy, begx)} \label{fun_newwin}\\
+        \vdmarg{begy} i \vdmarg{begx} s± wspó³rzêdnymi górnego, lewego rogu.
+	\vdmarg{nlines} jest liczb± linii, a \vdmarg{ncols} to ilo¶æ kolumn.
+	\begin{figure}
+          \caption{Ncurses - schemat dla newwin} \label{fig_newwin}
+          \begin{center}
+            \input{newwin.tex}
+          \end{center}
+        \end{figure}
+
+\begin{tscreen}
+\begin{verbatim}
+    WINDOW *okienko;
+    okienko=newwin(10,60,10,10);
+\end{verbatim}
+\end{tscreen}
+
+	Lewy, górny róg naszego okna bêdzie w 10 linii i 10 kolumnie,
+	okno bêdzie mia³o 10 linii i 60 kolumn. Je¿eli \vdmarg{nlines}
+	jest zerem okno bêdzie mia³o $LINES-begy$ wierszy. Tak samo
+	okno bêdzie mia³o kolumn $COLS-begx$ je¿eli \vdmarg{ncols}
+	jest zerem.
+
+	Je¿eli wywo³asz \vdmfunc{newwin(...)} z wszystkimi argumentami
+	równymi zero:
+\begin{tscreen}
+\begin{verbatim}
+    WINDOW *okienko;
+    okienko=newwin(0,0,0,0);
+\end{verbatim}
+\end{tscreen}
+       otwarte okno bêdzie mia³o rozmiar ekranu.
+
+       Za pomoc± \vdmlines{LINES} i \vdmlines{COLS} mo¿emy otworzyæ okno
+       na ¶rodku ekranu, bez wzglêdu na jego rozmiar:
+\begin{tscreen}
+\begin{verbatim}
+    #define LINIE (int) ((LINES-22)/2)
+    #define KOLUMNY ((COLS-70)/2)
+    #define LINIE 22
+    #define KOLUMNY  70
+    ...
+    WINDOW *win;
+    ...
+    if(!(initscr())){
+      fprintf(stderr,"initscr(): B£¡D\n\n");
+      exit(1);
+    }
+    ...
+    if ((LINES<22)||(COLS<70)){
+      fprintf(stderr,"EKRAN ZA MA£Y\n\n");
+      endwin(); exit (1);
+    }
+    win=newwin(LINIE,KOLUMNY,LINIE,KOLUMNY);
+    ...
+\end{verbatim}
+\end{tscreen}
+
+	W ten sposób stworzymy okno z 22 liniami i 70 kolumnami
+	na ¶rodku ekranu. Przed otwarciem okna sprawd¼ rozmiar ekranu.
+	Nie zak³adaj, ¿e wszyscy maj± 25x80 ( ja lubiê 34x80 ), do
+	tego xterminale maj± zmienny rozmiar.
+	
+	Alternatywnie mo¿esz u¿yæ \vdmlines{LINES} i \vdmlines{COLS}
+	aby zaadaptowaæ dwa okienka do rozmiaru ekranu:
+
+\begin{tscreen}
+\begin{verbatim}
+    #define MYROWS   (int) (LINES/2+LINES/4)
+    #define MYCOLS   (int) (COLS/2+COLS/4)
+    #define LEFTROW  (int) ((LINES-MYROWS)/2)
+    #define LEFTCOL  (int) (((COLS-2)-MYCOLS)/2)
+    #define RIGHTROW (int) (LEFTROW)
+    #define RIGHTCOL (int) (LEFTROW+2+MYCOLS)
+    #define WCOLS    (int) (MYCOLS/2)
+    ...
+    WINDOW *leftwin, *rightwin;
+    ...
+    leftwin=newwin(MYROWS, WCOLS, LEFTROW, LEFTCOL);
+    rightwin=newwin(MYROWS, WCOLS, RIGHTROW, RIGHTCOL);
+    ...
+\end{verbatim}
+\end{tscreen}
+
+  \item {\tt int delwin(win)} \label{fun_delwin}\\
+	Usuwa okno \vdmarg{win}. Je¿eli istniej± podokna usuwa je.
+	Usuwa zasoby zajmowane przez \vdmarg{win}. Usuñ wszystkie okna
+	przed wywo³aniem \vdmfunc{endwin()}.
+	
+  \item {\tt int mvwin(win, by, bx)} \label{fun_mvwin}\\
+	Przeniesie okno do wspó³rzêdnych \vdmarg{by,bx}.
+	Je¿eli oznacza³oby to przesuniêcie okna poza ekran nic nie jest robione,
+	funkcja zwraca ERR.
+
+  \item {\tt WINDOW *subwin(origwin, nlines, ncols, begy, begx)} \label{fun_subwin}\\
+	Zwraca podokno na ¶rodku \vdmarg{origwin}. Kiedy zmienisz jedno
+	z okien ( \vdmarg{origwin} lub nowo utworzone ) zmieni± siê oba.
+	Wywo³aj \vdmfunc{touchwin(origwin)} przed nastêpnym wywo³aniem
+	\vdmfunc{refresh()}.
+	
+        \vdmarg{begx} i \vdmarg{begy} s± liczone wzglêdem ekrany, nie 
+        \vdmarg{origwin}.
+
+  \item {\tt WINDOW *derwin(origwin, nlines, ncols, begy, begx)} \label{fun_derwin}\\
+        To samo co \vdmfunc{subwin(...)}, za wyj±tkiem tego ¿e \vdmarg{begx} i
+        \vdmarg{begy} s± liczone wzglêdem \vdmarg{origwin}.
+
+  \item {\tt int mvderwin(win, y, x)} \label{fun_mvderwin}\\
+        Przesunie okno \vdmarg{win} wewn±trz nadrzêdnego okna.
+        
+  \item {\tt WINDOW *dupwin(win)} \label{fun_dupwin}\\
+        Duplikuje okno \vdmarg{win}.
+
+  \item {\tt int syncok(win, bf)} \label{fun_syncok}\\
+        {\tt void wsyncup(win)} \label{fun_wsyncup}\\
+        {\tt void wcursyncup(win)} \label{fun_wcursyncup}\\
+        {\tt void wsyncdown(win)} \label{fun_wsyncdown}\\
+        
+  \item {\tt int overlay(win1, win2)} \label{fun_overlay}\\
+        {\tt int overwrite(win1, win2)} \label{fun_overwrite}\\
+        \vdmfunc{overlay(...)} skopiuje ca³y tekst z \vdmarg{win1} do 
+        \vdmarg{win2} bez kopiowania znaków pustych. \vdmfunc{overwrite(...)}
+        robi to samo, ale kopiuje tak¿e pustkê.
+
+  \item {\tt int copywin(win1, win2, sminrow, smincol, dminrow, dmincol,}\\
+        {\tt dmaxrow, dmaxcol, overlay)} \label{fun_copywin}\\
+        Podobne do \vdmfunc{overlay(...)} i \vdmfunc{overwrite(...)}, przy czym 
+        pozwala okre¶liæ obszar do skopiowania.
+\end{itemize}
+
+\section{Wyj¶cie}
+
+\begin{itemize}
+  \item {\tt int addch(ch)} \label{fun_addch}\\
+        {\tt int waddch(win, ch)} \label{fun_waddch}\\
+        {\tt int mvaddch(y, x, ch)} \label{fun_mvaddch}\\
+        {\tt int mvwaddch(win, y, x, ch)} \label{fun_mvwaddch}\\
+	Funkcje zapisuj±ce znak w okienku. Zmieniaj± okno, po czym
+	musisz wywo³aæ \vdmfunc{refresh()} aby aktualizowaæ ekran.
+	\vdmfunc{addch(...)} i \vdmfunc{waddch(...)} zapisuj± znak
+	\vdmarg{ch} w oknie \vdmscr{stdscr} lub \vdmarg{win}. \vdmfunc{mvaddch(...)}
+	i \vdmfunc{mvwaddch(...)} robi± to samo, ale najpierw przenosz± kursor
+	do pozycji x, y.
+
+  \item {\tt int addstr(str)} \label{fun_addstr}\\
+        {\tt int addnstr(str, n)} \label{fun_addnstr}\\
+        {\tt int waddstr(win, str)} \label{fun_waddstr}\\
+        {\tt int waddnstr(win, str, n)} \label{fun_waddnstr}\\
+        {\tt int mvaddstr(y, x, str)} \label{fun_mvaddstr}\\
+        {\tt int mvaddnstr(y, x, str, n)} \label{fun_mvaddnstr}\\
+        {\tt int mvwaddstr(win, y, x, str)} \label{fun_mvwaddstr}\\
+        {\tt int mvwaddnstr(win, y, x, str, n)} \label{fun_mvwaddnstr}\\
+        Funkcje zapisuj±ce ³añcuch w oknie; s± one odpowiednikami
+	\vdmfunc{addch(...)}. \vdmarg{str} musi byæ zakoñczony nullem
+	( {\it "blafoo\verb+\+0"} ). Funkcje z {\it w} zapisuj± ³añcuch
+	w okienku, natomiast inne zapisuj± \vdmscr{stdscr}.
+	Funkcje z \vdmarg{n} zapisuj± n znaków z \vdmarg{str}. Je¿eli
+	\vdmarg{n} równa siê -1 zapisywany jest ca³y \vdmarg{str}.
+	
+  \item {\tt int addchstr(chstr)} \label{fun_addchstr}\\
+        {\tt int addchnstr(chstr, n)} \label{fun_addchnstr}\\
+        {\tt int waddchstr(win, chstr)} \label{fun_waddchstr}\\
+        {\tt int waddchnstr(win, chstr, n)} \label{fun_waddchnstr}\\
+        {\tt int mvaddchstr(y, x, chstr)} \label{fun_mvaddchstr}\\
+        {\tt int mvaddchnstr(y, x, chstr, n)} \label{fun_mvaddchnstr}\\
+        {\tt int mvwaddchstr(win, y, x, chstr)} \label{fun_mvwaddchstr}\\
+        {\tt int mvwaddchnstr(win, y, x, chstr, n)} \label{fun_mvwaddchnstr}\\
+	Funckje kopiuj±ce \vdmarg{chstr} do obrazu okna (\vdmscr{stdscr} lub \vdmarg{win}).
+	Pozycj± pocz±tkow± jest aktualne po³o¿enie kursora.
+	Funkcje z \vdmarg{n} zapisuj± n znaków. Je¿eli \vdmarg{n} = -1 zapisywany
+	jest ca³y \vdmarg{chstr}. Kursor nie jest przemieszczany, nie zachodzi
+	kontrola znaków. Te fukncje s± szybsze od \vdmfunc{addstr(...)}.
+	\vdmarg{chstr} jest wska¼nikiem do tablicy chtype.
+	
+  \item {\tt int echochar(ch)} \label{fun_echochar}\\
+        {\tt int wechochar(win, ch)} \label{fun_wechochar}\\
+        To samo co \vdmfunc{addch(...)} ( \vdmfunc{waddch(...)} ) zakoñczone
+        przez \vdmfunc{refresh()} ( \vdmfunc{wrefresh(win)} ).
+         
+\end{itemize}
+
+\subsection{Sformatowane wyj¶cie}
+
+\begin{itemize}
+  \item {\tt int printw(fmt, ...)} \label{fun_printw}\\
+        {\tt int wprintw(win, fmt, ...)} \label{fun_wprintw}\\
+        {\tt int mvprintw(y, x, fmt, ...)} \label{fun_mvprintw}\\
+        {\tt int mvwprintw(win, y, x, fmt, ...)} \label{fun_mvwprintw}\\
+        {\tt int vwprintw(win, fmt, va\_list)} \label{fun_vwprintw}\\
+        Funckje odpowiadaj± \vdmfunc{printf(...)} z \vdmunix{libc}.
+
+        W pakiecie \vdmunix{libc} funkcja \vdmfunc{printf(...)} 
+	u¿ywana jest do sformatowanego wyj¶cia. Mo¿esz zdefiniowaæ
+	³añcuch wyj¶ciowy, oraz w³±czyæ w niego zmienne ró¿nych typów.
+	Zobacz \secref{sec_formout} po szczegó³y.
+
+        Aby korzystaæ z \vdmfunc{vwprintw(...)} musisz do³±czyæ
+        \vdmunix{varargs.h}.
+\end{itemize}
+
+\subsection{Wstawianie znaków/linii}
+
+\begin{itemize}
+  \item {\tt int insch(c)} \label{fun_insch}\\
+        {\tt int winsch(win, c)} \label{fun_winsch}\\
+        {\tt int mvinsch(y,x,c)} \label{fun_mvinsch}\\
+        {\tt int mvwinsch(win,y,x,c)} \label{fun_mvwinsch}\\
+        Znak \vdmarg{ch} wstawiany jest po lewej stronie kursora, wszystkie
+	znaki s± przesuwane jedn± pozycjê w prawo. Znak na prawy koñcu mo¿e
+	byæ utracony.
+	
+  \item {\tt int insertln()} \label{fun_insertln}\\
+        {\tt int winsertln(win)} \label{fun_winsertln}\\
+        Wstaw pust± liniê powy¿ej aktualnej. Ostatnia linia zostanie
+	stracona.
+
+  \item {\tt int insdelln(n)} \label{fun_insdelln}\\
+        {\tt int winsdelln(win, n)} \label{fun_winsdelln}\\
+        Dla dodatniego \vdmarg{n} zostanie wstawionych n linii powy¿ej kursora
+	w odpowiednim okienku, n dolnych linii zostanie straconych.
+	Dla ujemnego \vdmarg{n} zostanie usuniêtych n linii, reszta zostanie
+	przesuniêta do góry.
+
+  \item {\tt int insstr(str)} \label{fun_insstr}\\
+        {\tt int insnstr(str, n)} \label{fun_insnstr}\\
+        {\tt int winsstr(win, str)} \label{fun_winsstr}\\
+        {\tt int winsnstr(win, str, n)} \label{fun_winsnstr}\\
+        {\tt int mvinsstr(y, x, str)} \label{fun_mvinsstr}\\
+        {\tt int mvinsnstr(y, x, str, n)} \label{fun_mvinsnstr}\\
+        {\tt int mvwinsstr(win, y, x, str)} \label{fun_mvwinsstr}\\
+        {\tt int mvwinsnstr(win, y, x, str, n)} \label{fun_mvwinsnstr}\\
+        Funkcje wstawiaj± \vdmarg{str} po lewej stronie kursora
+	( znaków mo¿e byæ a¿ do wype³nienia linii ). Znaki po prawej stronie
+	s± przesuwane, je¿eli przesuniesz je za ekran zostan± stracone.
+	Pozycja kursora pozostaje niezmieniona.
+
+        \vdmarg{y} i \vdmarg{x} s± wspó³rzêdnymi, pod które kursor zostanie
+	przesuniêty. \vdmarg{n} jest ilo¶ci± znaków ( \vdmarg{n} = 0 - ca³y ³añcuch ).
+\end{itemize}
+
+
+
+\subsection{Usuwanie znaków/linii}
+
+\begin{itemize}
+  \item {\tt int delch()} \label{fun_delch}\\
+        {\tt int wdelch(win)} \label{fun_wdelch}\\
+        {\tt int mvdelch(y, x)} \label{fun_mvdelch}\\
+        {\tt int mvwdelch(win, y, x)} \label{fun_mvwdelch}\\
+        Usuwa znak pod kursorem i przesuwa pozosta³e znaki
+	po prawej kursora w lewo.
+
+        \vdmarg{y} i \vdmarg{x} s± wspó³rzêdnymi, pod które kursor zostanie
+	przesuniêty przed kasowaniem.
+  \item {\tt int deleteln()} \label{fun_deleteln}\\
+        {\tt int wdeleteln(win)} \label{fun_wdeleteln}\\
+        Kasuj liniê pod kursorem i przesuñ poni¿sze linie do góry.
+	Dodatkowo, dolna linia okna zostanie usuniêta.
+\end{itemize}
+
+\subsection{Ramki i linie}
+
+\begin{itemize}
+  \item {\tt int border(ls, rs, ts, bs, tl, tr, bl, br)} \label{fun_border}\\
+        {\tt int wborder(win, ls, rs, ts, bs, tl, tr, bl, br)} \label{fun_wborder}\\
+        {\tt int box(win, vert, hor)} \label{fun_box}\\
+        Rysuj± ramkê wokó³ krawêdzi okna ( \vdmscr{stdscr} lub \vdmarg{win} ).
+	W ramce poni¿ej znajduj± siê znaki i ich domy¶lne warto¶ci dla
+	funkcji \vdmfunc{box(...)}. Pozycja okre¶la po³o¿enie wzglêdem znaków
+	w ramce.
+
+\begin{table}
+  \caption{Ncurses - oznaczenia znaków}\label{tab_borderch}
+  \begin{center}
+    \begin{tabular}{c|l|l}
+    {\bf Znak} &  {\bf Pozycja} &  {\bf Domy¶lne} \\ \hline
+    tl &  góra, lewo   &  ACS\_ULCORNER \\
+    ts &  góra         &  ACS\_HLINE    \\
+    tr &  góra, prawo  &  ACS\_URCORNER \\
+    ls &  lewa strona  &  ACS\_VLINE    \\
+    rs &  prawa strona &  ACS\_VLINE    \\
+    bl &  dó³, lewo    &  ACS\_LLCORNER \\
+    bs &  dó³          &  ACS\_HLINE    \\
+    br &  dó³, prawo   &  ACS\_LRCORNER \\
+    rt &  rozga³êzienie w prawo  &  ACS\_RTEE     \\
+    lt &  rozga³êzienie w lewo   &  ACS\_LTEE     \\
+    tt &  rozga³êzienie w górê   &  ACS\_TTEE     \\
+    bt &  rozga³êzienie w dó³    &  ACS\_BTEE     \\
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\begin{figure}
+  \caption{Ncurses - znaki ramek} \label{fig_boxbic}
+  \begin{center}
+    \input{boxpic.tex}
+  \end{center}
+\end{figure}
+
+  \item {\tt int vline(ch, n)} \label{fun_vline}\\
+        {\tt int wvline(win, ch, n)} \label{fun_wvline}\\
+        {\tt int hline(ch, n)} \label{fun_hline}\\
+        {\tt int whline(win, ch, n)} \label{fun_whline}\\
+        Funkcje rysuj±ce pionow± ( v* ) lub poziom± ( h* ) liniê 
+	rozpoczynaj±c± siê w aktualnej pozycji kursora.
+	\vdmarg{ch} jest znakiem, który bêdzie tworzy³ liniê,
+	\vdmarg{n} jest ilo¶ci± powtórzeñ. Pozycja kursora nie jest zmieniana.
+\end{itemize}
+
+
+\subsection{T³o}
+
+\begin{itemize}
+  \item {\tt void bkgdset(ch)} \label{fun_bkgdset}\\
+        {\tt void wbkgdset(win, ch)} \label{fun_wbkgdset}\\
+        Ustawiaj± znak t³a, oraz jego atrybut dla ekranu, okna.
+	Atrybut zostanie zORowany z ka¿dy nie pustym znakiem znajduj±cym siê
+	w oknie. T³o jest czê¶ci± okna - nie jest przesuwane, zmieniane
+	w czasie wej¶cia/wyj¶cia.
+
+  \item {\tt int bkgd(ch)} \label{fun_bkgd}\\
+        {\tt int wbkgd(win, ch)} \label{fun_wbkgd}\\
+        Zmieniaj± znak i atrybut t³a na podany w \vdmarg{ch}.
+\end{itemize}
+\section{Wej¶cie}
+
+\begin{itemize}
+  \item {\tt int getch()} \label{fun_getch}\\
+        {\tt int wgetch(win)} \label{fun_wgetch}\\
+        {\tt int mvgetch(y, x)} \label{fun_mvgetch}\\
+        {\tt int mvwgetch(win, y, x)} \label{fun_mvwgetch}\\
+	\vdmfunc{getch()} odczytuje wej¶cie z terminala w sposób zale¿ny od
+	trybu opó¼nienia. Je¿eli opó¼nienie jest w³±czone \vdmfunc{getch()}
+	poczeka, a¿ zostanie naci¶niêty klawisz, je¿eli tryb jest wy³±czony
+	funkcja powróci natychmiast zwracaj±c klawisz lub ERR je¿eli bufor jest
+	pusty. \vdmfunc{mvgetch(...)} i \vdmfunc{mvwgetch(...)} przesuwaj±
+	kursor przed czytaniem. Funckje z \vdmarg{w} w nazwie
+	odczytuj± wej¶cie z terminala zwi±zanego z \vdmarg{win}.
+
+	Po wywo³aniu \vdmfunc{keypad(...)} \vdmfunc{getch()} zwraca
+	kod zdefiniowany w \vdmunix{ncurses.h} jako makro KEY\_* je¿eli 
+	znakiem by³ klawisz funkcyjny. Kiedy naci¶niêto ESCAPE ( który mo¿e
+	byæ pocz±tkiem kodu klawisza funkcyjnego ) ncurses w³±czy jednosekundowy
+	timer. Je¿eli pozosta³y kod nie nadejdzie w ci±gu sekundy klawisz jest
+	zwracany, w innym przypadku zwracana jest warto¶æ klawisza funkcyjnego.
+	( mo¿esz wywo³aæ \vdmfunc{notimeout()} je¿eli nie chcesz sekundowego
+	timera ).
+
+  \item {\tt int ungetch(ch)} \label{fun_ungetch}\\
+	Od³o¿y znak \vdmarg{ch} do bufora wej¶ciowego.
+
+  \item {\tt int getstr(str)} \label{fun_getstr}\\
+        {\tt int wgetstr(win, str)} \label{fun_wgetstr}\\
+        {\tt int mvgetstr(y, x, str)} \label{fun_mvgetstr}\\
+        {\tt int mvwgetstr(win, y, x, str)} \label{fun_mvwgetstr}\\
+        {\tt int wgetnstr(win, str, n)} \label{fun_wgetnstr}\\
+	Funkcje wywo³uj± \vdmfunc{getch()} a¿ do znaku nowej linii.
+	Znaki odk³adane s± do \vdmarg{str}, wiêc nie zapomnij 
+	zallokowaæ pamiêci przed wywo³aniem funkcji. Je¿eli w³±czone jest
+	echo ³añcuch jest wy¶wietlany ( u¿yj \vdmfunc{noecho()} aby je
+	wy³±czyæ ), znaki kill i delete s± interpretowane.
+	
+  \item {\tt chtype inch()} \label{fun_inch}\\
+        {\tt chtype winch(win)} \label{fun_winch}\\
+        {\tt chtype mvinch(y, x)} \label{fun_mvinch}\\
+        {\tt chtype mvwinch(win, y, x)} \label{fun_mvwinch}\\
+	Funkcje zwracaj± znak z ekranu lub okna. Warto¶ci± zwracan± jest
+	\vdmarg{chtype}, wiêc informacje o atrybutach s± przekazywane.
+	Mo¿esz je wyci±gn±æ ze znaku u¿ywaj±c sta³ych A\_* ( zobacz
+	\tabref{tab_attr} ).
+	
+  \item {\tt int instr(str)} \label{fun_instr}\\
+        {\tt int innstr(str, n)} \label{fun_innstr}\\
+        {\tt int winstr(win, str)} \label{fun_winstr}\\
+        {\tt int winnstr(win, str, n)} \label{fun_winnstr}\\
+        {\tt int mvinstr(y, x, str)} \label{fun_mvinstr}\\
+        {\tt int mvinnstr(y, x, str, n)} \label{fun_mvinnstr}\\
+        {\tt int mvwinstr(win, y, x, str)} \label{fun_mvwinstr}\\
+        {\tt int mvwinnstr(win, y, x, str, n)} \label{fun_mvwinnstr}\\
+        Zwracaj± ³añcuch znaków z ekranu lub okna.
+        
+  \item {\tt int inchstr(chstr)} \label{fun_inchstr}\\
+        {\tt int inchnstr(chstr, n)} \label{fun_inchnstr}\\
+        {\tt int winchstr(win, chstr)} \label{fun_winchstr}\\
+        {\tt int winchnstr(win, chstr, n)} \label{fun_winchnstr}\\
+        {\tt int mvinchstr(y, x, chstr)} \label{fun_mvinchstr}\\
+        {\tt int mvinchnstr(y, x, chstr, n)} \label{fun_mvinchnstr}\\
+        {\tt int mvwinchstr(win, y, x, chstr)} \label{fun_mvwinchstr}\\
+        {\tt int mvwinchnstr(win, y, x, chstr, n)} \label{fun_mvwinchnstr}\\
+        Zwracaj± ³añcuch chtype z ekranu lub okna. £añcuch zawiera informacje
+	o atrybucie ka¿dego znaku.
+	
+\end{itemize}
+
+
+\subsection{Sformatowane wej¶cie}
+
+\begin{itemize}
+  \item {\tt int scanw(fmt, ...)} \label{fun_scanw}\\
+        {\tt int wscanw(win, fmt, ...)} \label{fun_wscanw}\\
+        {\tt int mvscanw(y, x, fmt, ...)} \label{fun_mvscanw}\\
+        {\tt int mvwscanw(win, y, x, fmt, ...)} \label{fun_mvwscanw}\\
+        {\tt int vwscanw(win, fmt, va\_list)} \label{fun_vwscanw}\\
+        Funkcje s± podobne do \vdmfunc{scanf(...)} z \vdmunix{libc}
+	( zobacz \secref{sec_formin} ). \vdmfunc{wgetstr(...)} jest wywo³ywana,
+	to co zwróci u¿ywane jest jako wej¶cie dla scan.
+\end{itemize}
+
+\section{Opcje}
+
+
+\subsubsection{Opcje wyj¶cia}
+
+\begin{itemize}
+  \item {\tt int idlok(win, bf)} \label{fun_idlok}\\
+        {\tt void idcok(win, bf)} \label{fun_idcok}\\
+        W³±cz/wy³±cz wstawianie/usuwanie przez terminal dla danego okna
+	( \vdmfunc{idlok(...)} dla linii, \vdmfunc{idcok(...)} dla znaków )
+
+  \item {\tt void immedok(win, bf)} \label{fun_immedok}\\
+        Je¿eli ustawiona na TRUE, ka¿da zmiana \vdmarg{win} spowoduje
+	od¶wie¿enie fizycznego ekranu. Mo¿e to spowodowaæ spadek wydajno¶ci,
+	wiêc domy¶lnie FALSE.
+
+  \item {\tt int clearok(win, bf)} \label{fun_clearok}\\
+        Je¿eli \vdmarg{bf} = TRUE nastêpne wywo³anie \vdmfunc{wrefresh(win)}
+	wyczy¶ci ekran i odrysuje go ( np.: ctrl+l w vi ).
+
+  \item {\tt int leaveok(win, bf)} \label{fun_leaveok}\\
+	Domy¶lnie ncurses zostawia kursor tam gdzie siê znajdowa³ w czasie
+	ostatniego od¶wie¿ania. Programy nie u¿ywaj±ce kursora mog±
+	wywo³aæ	\vdmfunc{leaveok(...)} z TRUE aby zaoszczêdziæ czas, który
+	zu¿yty zosta³by na przesuniêcie kursora. Dodatkowo ncurses spróbuj±
+	uczyniæ kursor niewidocznym.
+
+  \item {\tt int nl()} \label{fun_nl}\\
+        {\tt int nonl()} \label{fun_nonl}\\
+        Je¿eli wywo³asz \vdmfunc{nl()} ncurses bêd± wysy³a³y na wyj¶cie znak
+	nowej linii jako powrót karetki i wysuniêcie linii.
+	\vdmfunc{nonl()} wy³±czy takie zachowanie co spowoduje, ¿e
+	ncurses bêd± szybciej przesuwa³y kursor.
+\end{itemize}
+
+\subsection{Opcje wej¶cia}
+
+\begin{itemize}
+  \item {\tt int keypad(win, bf)} \label{fun_keypad}\\
+	Je¿eli TRUE w³±czona zostaje klawiatura numeryczna terminala u¿ytkownika
+	podczas oczekiwania na wej¶cie. Ncurses zwróc± kod klawisza zdefiniowany
+	w \vdmunix{ncurses.h} jako KEY\_* dla klawiszy funkcyjnych i strza³ek
+	na klawiaturze numerycznej. Jest to bardzo u¿yteczne przy
+	klawiaturze PC, gdy¿ mo¿esz uaktywniæ blok numeryczny i strza³ki.
+        \begin{figure}
+%          \caption{} \label{}
+          \begin{center}
+            \input{keypad.tex}
+          \end{center}
+        \end{figure}
+
+  \item {\tt int meta(win, bf)} \label{fun_meta}\\
+        Je¿eli TRUE kody zwracane przez \vdmfunc{getch()} s± 8-bitowe
+	( najwy¿szy bit nie zostanie zmieniony ).
+
+  \item {\tt int cbreak()} \label{fun_cbreak}\\
+        {\tt int nocbreak()} \label{fun_nocbreak}\\
+        {\tt int crmode()} \label{fun_crmode}\\
+        {\tt int nocrmode()} \label{fun_nocrmode}\\
+        \vdmfunc{cbreak()} i \vdmfunc{nocbreak()} w³±cz±/wy³±cz± tryb CBREAK.
+	Kiedy CBREAK jest w³±czone wej¶cie jest natychmiast
+	dostêpne dla programu, gdy wy³±czone wej¶cie bêdzie buforowane a¿ do
+	pojawienia siê nowej linii.
+	
+        \notenm{\vdmfunc{crmode()} i \vdmfunc{nocrmode()} istniej± dla
+	kompatybilno¶ci ze starszymi programami - nie u¿ywaj ich}
+
+  \item {\tt int raw()} \label{fun_raw}\\
+        {\tt int noraw()} \label{fun_noraw}\\
+        W³±czenie/wy³±czenie trybu RAW. RAW jest tym samym co CBREAK, z wyj±tkiem
+	tego, i¿ w tym trybie nie dochodzi do przetwarzania znaków specjalnych.
+	
+  \item {\tt int echo()} \label{fun_echo}\\
+        {\tt int noecho()} \label{fun_noecho}\\
+        Ustaw \vdmfunc{echo()} aby wypisywaæ wej¶cie wprowadzane przez u¿ytkownika,
+	\vdmfunc{noecho()} milczy na ten temat ;)
+
+  \item {\tt int halfdelay(t)} \label{fun_halfdelay}\\
+        To samo co \vdmfunc{cbreak()} z opó¼nieniem \vdmarg{t} sekund.
+
+  \item {\tt int nodelay(win, bf)} \label{fun_nodelay}\\
+	Terminal zostanie ustawiony w tryb nie-blokowania.
+	\vdmfunc{getch()} zwróci ERR je¿eli nie ma ¿adnego gotowego wej¶cia.
+	Ustawione na FALSE powoduje, i¿ \vdmfunc{getch()} poczeka na naci¶niêcie
+	klawisza.
+
+  \item {\tt int timeout(t)} \label{fun_timeout}\\
+        {\tt int wtimeout(win, t)} \label{fun_wtimeout}\\
+        Zalecane jest u¿ywanie tych funkcji zamiast
+        \vdmfunc{halfdelay(t)} i \vdmfunc{nodelay(win,bf)}. 
+	Rezultat \vdmfunc{getch()} zale¿y od warto¶ci \vdmarg{t}.
+	Je¿eli jest ona dodatnia wej¶cie blokowane jest na \vdmarg{t} milisekund,
+	je¿eli \vdmarg{t} = 0 nie zachodzi blokowanie, a dla warto¶ci ujemnej
+	program czeka na wej¶cie.
+
+  \item {\tt int notimeout(win, bf)} \label{fun_notimeout}\\
+        Je¿eli \vdmarg{bf} = TRUE, \vdmfunc{getch()} u¿yje specjalnego
+	timera ( trwaj±cego jedn± sekundê ) aby zinterpretowaæ i odczytaæ
+	sekwencjê zaczynaj±c± siê od ESCAPE, itp.
+
+  \item {\tt int typeahead(fd)} \label{fun_typeahead}\\
+        Je¿eli \vdmarg{fd} = -1 nie zachodzi sprawdzanie z wyprzedzeniem
+	( typeahead ), w innym przypadku ncurses skorzystaj± z \vdmarg{fd}
+	( zamiast z \vdmunix{stdin} ) dla tych sprawdzeñ.
+	
+  \item {\tt int intrflush(win, bf)} \label{fun_intrflush}\\
+        Je¿eli \vdmarg{bf} = TRUE klawisz przerwania ( quit, break, ... )
+	naci¶niêty w terminalu opró¿ni kolejkê wej¶ciow± sterownika tty.
+		
+  \item {\tt void noqiflush()} \label{fun_noqiflush}\\
+        {\tt void qiflush()} \label{fun_qiflush}\\
+\end{itemize}
+
+
+\subsection{Atrybuty terminala}
+
+\begin{itemize}
+  \item {\tt int baudrate()} \label{fun_baudrate}\\
+	Zwraca prêdko¶æ terminala w bps.
+
+  \item {\tt char erasechar()} \label{fun_erasechar}\\
+	Zwraca aktualny znak erase ( usuwania ).
+
+  \item {\tt char killchar()} \label{fun_killchar}\\
+	Zwraca aktualny znak kill ( zabijania ).        
+
+  \item {\tt int has\_ic()} \label{fun_has_ic}\\
+        {\tt int has\_il()} \label{fun_has_il}\\
+        \vdmfunc{has\_ic()} zwraca TRUE je¿eli terminal posiada znak
+	wstaw/usuñ, \vdmfunc{has\_il()} zwraca TRUE je¿eli terminal
+	mo¿e wstawiaæ/kasowaæ linie. W innym przypadku funkcje zwracaj± ERR.
+	        
+  \item {\tt char *longname()} \label{fun_longname}\\
+	Zwrócony wska¼nik daje ci dostêp do opisu terminala.
+
+  \item {\tt chtype termattrs()} \label{fun_termattrs}\\
+        
+  \item {\tt char *termname()} \label{fun_termname}\\
+	Zwraca zawarto¶æ zmiennej ¶rodowiskowej TERM.        
+\end{itemize}
+
+
+\subsection{U¿ywanie opcji}
+
+Widzieli¶my opcje okien, tryby terminala czas aby opisaæ ich sposób u¿ycia.
+
+Po pierwsze, w Linuksie powiniene¶ w³±czyæ klawiaturê numeryczn±. Dziêki temu
+u¿ytkownik bêdzie móg³ skorzystaæ ze strza³ek i czê¶ci numerycznej klawiatury.
+
+\begin{tscreen}
+\begin{verbatim}
+    keypad(stdscr,TRUE);
+\end{verbatim}
+\end{tscreen}
+
+Teraz, mamy dwa g³ówne typu wej¶cia.
+
+\begin{enumerate}
+  \item Program chce aby u¿ytkownik nacisn±³ klawisz, po czym
+        wywo³a funkcjê zale¿n± od klawisza ( dla przyk³ad co¶
+	takiego: "Naci¶nij 'q' aby zakoñczyæ", przy czym czekamy
+	na klawisz ).
+  \item Program chce sformatowany ³añcuch znaków ( np.: katalog, lub
+        adres w bazie danych ).
+\end{enumerate}
+
+Dla pierwszego u¿ywamy nastêpuj±cych opcji i pêtli while.
+
+\begin{tscreen}
+\begin{verbatim}
+    char c;
+
+    noecho();
+    timeout(-1);
+    nonl();
+    cbreak();
+    keypad(stdscr,TRUE);
+    while(c=getch()){
+      switch(c){
+        case 'q': funkcja_konczaca();
+        default:  break;
+      }
+   }
+\end{verbatim}
+\end{tscreen}
+
+Program bêdzie czeka³ na naci¶niêcie jakiego¶ klawisza, je¿eli naci¶niêto
+{\it q} program wywo³a funkcja\_konczaca, w innym wypadku program zaczeka na inne
+wej¶cie.
+
+Wyra¿enie switch mo¿e zostaæ rozszerzone dla dowolnego wej¶cia.
+U¿yj makr KEY\_* aby sprawdziæ czy naci¶niêto specjalne klawisze, np.:
+
+\begin{tscreen}
+\begin{verbatim}
+    KEY_UP      KEY_RIGHT    KEY_A1    KEY_B2    KEY_C1
+    KEY_DOWN    KEY_LEFT     KEY_A3              KEY_C3
+\end{verbatim}
+\end{tscreen}
+
+dla klawiszy kursora.
+Dla przegl±darki plików pêtla mog³aby wygl±daæ nastêpuj±co:
+
+\begin{tscreen}
+\begin{verbatim}
+    int loop=TRUE;
+    char c;
+    enum{UP,DOWN,RIGHT,LEFT};
+
+    noecho();
+    timeout(-1);
+    nonl();
+    cbreak();
+    keypad(stdscr,TRUE);
+    while(loop==TRUE){
+      c=getch();
+      switch(c){
+        case KEY_UP:
+        case 'u':
+        case 'U': scroll_s(UP);
+                  break;
+        case KEY_DOWN:
+        case 'd':
+        case 'D': scroll_s(DOWN);
+                  break;
+        case KEY_LEFT:
+        case 'l':
+        case 'L': scroll_s(LEFT);
+                  break;
+        case KEY_RIGHT
+        case 'r':
+        case 'R': scroll_s(RIGHT);
+                  break;
+        case 'q':
+        case 'Q': loop=FALSE;
+        default:  break;
+      }
+   }
+\end{verbatim}
+\end{tscreen}
+
+Dla drugiego typu musimy tylko ustawiæ \vdmfunc{echo()} aby znaki
+wpisywane przez u¿ytkownika by³y wypisywane na ekranie. Aby wypisywaæ
+znaki na wybranej przez ciebie pozycji skorzystaj z \vdmfunc{move(...)}
+lub \vdmfunc{wmove(...)}.
+
+Lub, mo¿emy otworzyæ okno z mask± ( inne kolory od tych okna zrobi± to )
+i poprosiæ u¿ytkownika o ³añcuch:
+
+\begin{tscreen}
+\begin{verbatim}
+    WINDOW *maskwin;
+    WINDOW *mainwin;
+    char *ptr=(char *)malloc(255);
+    ...
+      mainwin=newwin(3,37,9,21);
+      maskwin=newwin(1,21,10,35);
+      ...
+      werase(mainwin);
+      werase(maskwin);
+      ...
+      box(mainwin,0,0);
+      mvwaddstr(mainwin,1,2,"£añcuch: ");
+      ...
+      wnoutrefresh(mainwin);
+      wnoutrefresh(maskwin);
+      doupdate();
+      ...
+      mvwgetstr(maskwin,0,0,ptr);
+      ...
+      delwin(maskwin);
+      delwin(mainwin);
+      endwin();
+      free(ptr);
+\end{verbatim}
+\end{tscreen}
+    
+Zobacz \vdmunix{input.c} w katalogu z przyk³adami.
+
+\section{Usuwanie okien i linii}
+
+\begin{itemize}
+  \item {\tt int erase()} \label{fun_erase}\\
+        {\tt int werase(win)} \label{fun_werase}\\
+        \vdmfunc{werase(...)} i \vdmfunc{erase()} skopiuj± pustkê w ka¿d±
+	pozycjê okna \vdmarg{win} lub \vdmscr{stdscr}.
+	Je¿eli ustawi³e¶ oknu kolory wywo³anie \vdmfunc{werase()} pozostawi
+	je bez zmian. Mia³em kiedy¶ problemy z COLOR\_PAIRS nie zdefiniowanymi
+	jako czarny i bia³y, wiêc napisa³em w³asn± funkcjê ( jest to
+	niskopoziomowy dostêp do struktury WINDOW ):
+\begin{tscreen}
+\begin{verbatim}
+    void NewClear(WINDOW *win)
+    {
+    int  y,x;
+
+     for ( y = 0 ; y <= win -> _maxy ; y++ )
+       for ( x = 0 ; x <= win -> _maxx ; x++ )
+         (chtype *) win-> _line[y][x] = ' '|win-> _attrs;
+     win -> _curx = win -> _cury = 0;
+     touchwin(win);
+    }
+\end{verbatim}
+\end{tscreen}
+	Problemem jest to, i¿ ncurses czasami nie u¿ywaj± atrybutów okna
+	podczas zape³niania go pustk±. W \vdmunix{lib\_clrtoeol.c}, BLANK 
+	zdefiniowana jest nastêpuj±co:
+\begin{tscreen}
+\begin{verbatim}
+    #define BLANK ' '|A_NORMAL
+\end{verbatim}
+\end{tscreen}
+	co powoduje, i¿ inne atrybuty okna zostaj± stracone.       
+
+  \item {\tt int clear()} \label{fun_clear}\\
+        {\tt int wclear(win)} \label{fun_wclear}\\
+        To samo co \vdmfunc{erase()}, z wyj±tkiem tego, ¿e ustawi tak¿e
+	\vdmfunc{clearok()} ( ekran zostanie wyczyszczony przy nastêpnym
+	od¶wie¿aniu ).
+
+  \item {\tt int clrtobot()} \label{fun_clrtobot}\\
+        {\tt int wclrtobot(win)} \label{fun_wclrtobot}\\
+        Czyszcz± aktualn± liniê kursora ( start jest jeden znak na prawo od
+	kursora ) i liniê poni¿ej kursora.
+
+  \item {\tt int clrtoeol()} \label{fun_clrtoeol}\\
+        {\tt int wclrtoeol(win)} \label{fun_wclrtoeol}\\
+        Czyszcz± aktualn± liniê pocz±wszy od prawej strony kursora a¿ do
+	jej koñca.
+\end{itemize}
+
+
+\section{Aktualizacja terminala}
+
+Jak napisano we wstêpie ncurses traktuje okna jako abraz w pamiêci.
+Oznacza to, i¿ zmiany nie s± pokazywane na ekranie a¿ do czasu
+od¶wie¿ania. Dziêki temu programy staj± siê szybsze - przeprowadzasz wiele
+zmian a dopiero po tym wy¶wietlasz je w jednym przebiegu.
+
+\begin{itemize}
+  \item {\tt int refresh()} \label{fun_refresh}\\
+        {\tt int wrefresh(win)} \label{fun_wrefresh}\\
+        \vdmfunc{refresh()} kopiuje \vdmscr{stdscr} na terminal, a 
+        \vdmfunc{wrefresh(win)} kopiuje obraz okna na \vdmscr{stdscr} po czym 
+        aktualizuje \vdmscr{curscr} aby wygl±da³ jak \vdmscr{stdscr}.
+
+  \item {\tt int wnoutrefresh(win)} \label{fun_wnoutrefresh}\\
+        {\tt int doupdate()} \label{fun_doupdate}\\
+        \vdmfunc{wnoutrefresh(win)} tylko kopiuje okno \vdmarg{win} na 
+	\vdmscr{stdscr}. Zapisywany jest \vdmscr{stdscr}, natomiast
+	terminal pozostaje niezmieniony. \vdmfunc{doupdate()} aktualizuje
+	terminal. Program mo¿e zmieniæ kilka okien, wywo³aæ 
+	\vdmfunc{wnoutrefresh(win)} dla ka¿dego z nich, a potem wywo³aæ
+	\vdmfunc{doupdate()} aby od¶wie¿yæ fizyczny ekran.
+	
+	Np. mamy dwa okienka, zmieniamy je dan± funkcj±, po czym od¶wie¿amy
+	ekran: 
+\begin{tscreen}
+\begin{verbatim}
+    main()                    changewin(WINDOW *win)
+    {                         {
+    WINDOW *win1,*win2;           ... /* zmieniamy */
+        ...                       ... /* okienko */
+        changewin(win1);          wrefresh(win);
+        changewin(win2);      return;
+        ...                   }
+    }
+\end{verbatim}
+\end{tscreen}
+
+        Taka funkcja spowoduje, i¿ terminal zostanie zaktualizowany dwa razy.
+	Gdyby¶my u¿yli \vdmfunc{wnoutrefresh(win)} i \vdmfunc{doupdate()}
+	uzyskaliby¶my szybsze dzia³anie ( tylko raz od¶wie¿amy terminal ):
+\begin{tscreen}
+\begin{verbatim}
+    main()                    changewin(WINDOW *win)
+    {                         {
+    WINDOW *win1,*win2;           ... /* zmieniamy */
+        ...                       ... /* okienko */
+        changewin(win1);          wnoutrefresh(win);
+        changewin(win2);      return;
+        doupdate();           }
+        ...
+    }
+\end{verbatim}
+\end{tscreen}
+
+  \item {\tt int redrawwin(win)} \label{fun_redrawwin}\\
+        {\tt int wredrawln(win, bline, nlines)} \label{fun_wredrawln}\\
+        U¿yj tych funkcji je¿eli chcesz przerysowaæ ca³y ekran lub dan± liniê
+	( np. gdy s± one za¶miecone, itp. )
+
+  \item {\tt int touchwin(win)} \label{fun_touchwin}\\
+        {\tt int touchline(win, start, count)} \label{fun_touchline}\\
+        {\tt int wtouchln(win, y, n, changed)} \label{fun_wtouchln}\\
+        {\tt int untouchwin(win)} \label{fun_untouchwin}\\
+        Mówi± ncurses, ¿e ca³e okienko \vdmarg{win} lub linie
+	od \vdmarg{start} do \vdmarg{start+count} powinny 
+	byæ zmieniane. Np. gdy masz dwa zachodz±ce na siebie okienka
+	( tak jak w przyk³adzie \vdmunix{type.c} ) zmiana jednego z nich
+	nie zmieni drugiego.
+	
+	\vdmfunc{wtouchln(...)} dotknie \vdmarg{n} linii zaczynaj±c od 
+	\vdmarg{y}. Je¿eil \vdmarg{change} = TRUE linie s± dotykane, w innym
+	przypadku nie ( zmieniane lub nie ).
+	
+	\vdmfunc{untouchwin(win)} zaznaczy okno \vdmarg{win} jako niezmienione
+	od ostatniego wywo³ania \vdmfunc{refresh()}.
+
+  \item {\tt int is\_linetouched(win, line)} \label{fun_is_linetouched}\\
+        {\tt int is\_wintouched(win)} \label{fun_is_wintouched}\\
+        Za pomoc± tych funkcji mo¿esz sprawdziæ czy \vdmarg{line} lub okno
+	\vdmarg{win} zosta³o zmienione od czasu ostatniego wywo³ania
+	\vdmfunc{refresh()}.
+\end{itemize}
+
+\section{Atrybuty video i kolory}
+
+Atrybuty s± specjalnymi zdolno¶ciami terminala u¿ywanymi podczas wypisywania
+znaków na ekran. Znaki mog± byæ wypisywane jako: pogrubione, podkre¶lone,
+migaj±ce, itp. W ncurses masz mo¿liwo¶æ w³±czania/wy³±czania atrybutów aby
+twój program wygl±da³ ³adniej. Atrybuty które mo¿esz wykorzystaæ:
+
+\begin{table}
+  \caption{Ncurses - atrybuty}\label{tab_attr}
+  \begin{center}
+    \begin{tabular}{l|l}
+    {\bf Definicja} &  {\bf Atrybut} \\ \hline
+    A\_ATTRIBUTES    &  maska dla atrybutów (chtype) \\
+    A\_NORMAL        &  normalny, resetuje wszystkie inne\\
+    A\_STANDOUT      &  najlepsze pod¶wietlenie\\
+    A\_UNDERLINE     &  podkre¶lenie \\
+    A\_REVERSE       &  odwrócenie video \\
+    A\_BLINK         &  miganie \\
+    A\_DIM           &  dim lub po³owa jasno¶ci \\
+    A\_BOLD          &  pogrubienie lub extra jasno \\
+    A\_ALTCHARSET    &  u¿yj alternatywnego zestawu znaków \\
+    A\_INVIS         &  niewidzialny \\
+    A\_PROTECT       &  ??? \\
+    A\_CHARTEXT      &  maska dla aktualnych znaków (chtype) \\
+    A\_COLOR         &  maska dla koloru \\
+    COLOR\_PAIR(n)   &  ustaw parê kolorów na t± przechowywan± w n \\
+    PAIR\_NUMBER(a)  &  pobierz parê kolorów przechowywan± w atrybucie a \\
+    \end{tabular}
+  \end{center}
+ \end{table}
+
+Ncurses definiuj± osiem kolorów, które mo¿esz u¿yæ na terminalu obs³uguj±cym
+kolory. Najpierw musisz zainicjowaæ struktury danych kolorów za pomoc±
+\vdmfunc{start\_color()}, pó¿niej sprawdziaæ zdolno¶æ terminala
+\vdmfunc{has\_colors()}. \vdmfunc{start\_color()} zainicjuje {\it COLORS} 
+maxymaln± liczb± wspieran± przez terminal, oraz {\it COLOR\_PAIR} - maxymalna
+ilo¶æ par, które mo¿esz zdefiniowaæ.
+
+\begin{table} 
+  \caption{Ncurses - kolory} \label{tab_color}
+  \begin{center}
+    \begin{tabular}{l|l}
+    {\bf Definition} &  {\bf Color} \\ \hline
+    COLOR\_BLACK   &  czarny \\
+    COLOR\_RED     &  czerwony \\
+    COLOR\_GREEN   &  zielony \\
+    COLOR\_YELLOW  &  ¿ó³ty \\
+    COLOR\_BLUE    &  niebieski \\
+    COLOR\_MAGENTA &  karmazynowy \\
+    COLOR\_CYAN    &  cyan \\
+    COLOR\_WHITE   &  bia³y \\
+    \end{tabular}
+  \end{center}
+\end{table}
+
+Atrybuty mog± byæ ³±czony za pomoc± operatora OR
+'${\verbar}$', tak wiêc mo¿esz stworzyæ pogrubione, migaj±ce wyj¶cie:
+
+\begin{tscreen}
+\begin{verbatim}
+    A_BOLD|A_BLINK
+\end{verbatim}
+\end{tscreen}
+
+Kiedy ustawisz oknu atrybut \vdmarg{attr} wszystkie znaki zawarte
+w nim zostan± wypisane z tym atrybutem. Atrybut nie zniknie podczas
+przewijania, przesuwania, itp.
+
+Pisz±c programy dla ncurses i BSD curses musisz pamiêtaæ, ¿e te drugie nie
+obs³uguj± kolorów ( tak¿e starsze wersje curses z SYSV nie maj± obs³ugi kolorów ).
+Je¿eli chcesz aby twój program pracowa³ pod obiema bibliotekami musisz
+pos³u¿yæ siê \vdmunix{\#ifdef}.
+
+\begin{itemize}
+  \item {\tt int attroff(attr)} \label{fun_attroff}\\
+        {\tt int wattroff(win, attr)} \label{fun_wattroff}\\
+        {\tt int attron(attr)} \label{fun_attron}\\
+        {\tt int wattron(win, attr)} \label{fun_wattron}\\
+        Wy³±czaj±/w³±czaj± okre¶lony atrybut \vdmarg{attr}, bez
+	zmiany innych, w oknie ( \vdmscr{stdscr} lub \vdmarg{win} ).
+	
+  \item {\tt int attrset(attr)} \label{fun_attrset}\\
+        {\tt int wattrset(win, attr)} \label{fun_wattrset}\\
+        Ustawiaj± atrybut \vdmscr{stdscr} lub \vdmarg{win} na \vdmarg{attr}.
+
+  \item {\tt int standout()} \label{fun_standout}\\
+        {\tt int standend()} \label{fun_standend}\\
+        {\tt int wstandout(win)} \label{fun_wstandout}\\
+        {\tt int wstandend(win)} \label{fun_wstandend}\\
+        W³±czaj± pod¶wietlanie w oknie ( \vdmscr{stdscr} lub \vdmarg{win} ).
+
+  \item {\tt chtype getattrs(win)} \label{fun_getattrs}\\
+        Zwraca aktualne atrubytu okna \vdmarg{win}.
+
+  \item {\tt bool has\_colors()} \label{fun_has_colors}\\
+        Zwraca TRUE je¿eli terminal jest kolorowy. Przed u¿yciem kolorów
+	powiniene¶ sprawdziæ terminal za pomoc± tej funkcji, rób to zawsze
+	przed inicjalizacj± ( \vdmfunc{start\_color()} ).
+
+  \item {\tt bool can\_change\_color()} \label{fun_can_change_color}\\
+        TRUE je¿eli terminal mo¿e zmieniaæ kolory.
+
+  \item {\tt int start\_color()} \label{fun_start_color}\\
+	Inicjalizacja koloru. Musisz j± wywo³aæ przed u¿yciem kolorów!!!        
+
+  \item {\tt int init\_pair(pair, fg, bg)} \label{fun_init_pair}\\
+        Gdy u¿ywasz kolorów jako atrybut okna musisz zdefiniowaæ 
+	parê kolorów za pomoc± \vdmfunc{init\_pair(...)}. \vdmarg{fg} jest
+	kolorem textu, natomiast \vdmarg{bg} jest t³em.
+	Warto¶ci mog± zawieraæ siê od 1 do $COLOR\hspace{.167em}PAIRS-1$
+	( 0 jest zarezerwowane dla czarnego i bia³ego ). Po zdefiniowaniu
+	mo¿esz tak± parê u¿ywaæ jako zwyk³y atrybut.
+	Gdy chcesz czerwone znaki na niebieskim tle:
+
+\begin{tscreen}
+\begin{verbatim}
+    init_pair(1,COLOR_RED,COLOR_BLUE);
+\end{verbatim}
+\end{tscreen}
+
+        U¿yj \vdmfunc{wattron(...)} aby ustawiæ \vdmarg{win} now± parê kolorów:
+
+\begin{tscreen}
+\begin{verbatim}
+    wattron(win,COLOR_PAIR(1));
+\end{verbatim}
+\end{tscreen}
+
+       Lub po³±cz kolory z innymi atrybutami:
+
+\begin{tscreen}
+\begin{verbatim}
+    wattron(win ,A_BOLD|COLOR_PAIR(1));
+    wattron(win1,A_STANDOUT|COLOR_PAIR(1));
+\end{verbatim}
+\end{tscreen}
+
+	Pierwsze wywo³anie ustawi kolor i pogrubienie. Drugie wyró¿nienie i
+	kolory, bêdziesz mia³ pod¶wietlony czerwony na niebieskim tle.
+	        
+  \item {\tt int pair\_content(pair, f, b)} \label{fun_pair_content}\\
+	Zwraca kolor textu i t³a zawarty w podanej \vdmarg{pair}.
+
+  \item {\tt int init\_color(color, r, g, b)} \label{fun_init_color}\\
+	Zmieñ sk³adowe koloru \vdmarg{r}, \vdmarg{g} i \vdmarg{b}
+	dla \vdmarg{color}. \vdmarg{r}, \vdmarg{g} i \vdmarg{b} mog±
+	przyjmowaæ warto¶ci od 1 do $COLORS-1$.
+
+  \item {\tt int color\_content(color, r, g, b)} \label{fun_color_content}\\
+	Pobierz sk³adowe \vdmarg{r}, \vdmarg{g} i \vdmarg{b} danego 
+	\vdmarg{color}.
+\end{itemize}
+
+Jak mieszaæ atrybuty i kolory? Niektóre terminale, tak jak Linuksowa
+konsola, posiadaj± kolory, a niektóre ich nie maj± ( xterm, vs100, itp. ).
+Nastêpuj±cy kod powinien rozwi±zaæ problem:
+
+\begin{tscreen}
+\begin{verbatim}
+void CheckColor(WINDOW *win1, WINDOW *win2)
+{
+ start_color();
+ if (has_colors()){
+   /* OK, mamy kolorki, definujemy color_pairs dla kolorów
+    * textu i t³a
+    */
+   init_pair(1,COLOR_BLUE,COLOR_WHITE);
+   init_pair(2,COLOR_WHITE,COLOR_RED);
+   /* u¿ywamy zdefiniowanej pary w okienkach */
+   wattrset(win1,COLOR_PAIR(2));
+   wattrset(win2,COLOR_PAIR(1));
+ }
+ else{
+   /* nie mamy kolorów ( prawdopodobnie vt100 lub xterm).
+    * OK, u¿yjemy atrybutów czarny/bia³y w zamian.
+    */
+   wattrset(win1,A_REVERSE);
+   wattrset(win2,A_BOLD);
+ }
+ return;
+}
+\end{verbatim}
+\end{tscreen}
+
+Najpierw {\it CheckColor} inicjalizuje kolory za pomoc± \vdmfunc{start\_color()},
+pó¿niej sprawdza ( \vdmfunc{has\_colors()} ) czy terminal ma kolory.
+Je¿eli TRUE to inicjalizujemy parê kolorów, oraz ustawiamy j± dla okien
+( \vdmfunc{wattrset(...)} ). Je¿eli nie mamy kolorów ustawiamy jakie¶ 
+zastêpcze atrybuty ( odwróceni, pogrubienie ).
+
+Aby uzyskaæ kolory w xtermie najlepszym sposobem jaki znalaz³em jest
+skorzystanie z ansi\_xterm wraz z po³atanym wpisem w terminfo, zawartym
+w pakiecie Midnight Commander. Znajd¼ ¼ród³a ansi\_xterm i Midnight
+Commandera ( mc-x.x.tar.gz ). Skompiluj ansi\_xterm, u¿yj tic z xterm.ti i vt100.ti
+z archiwum MC. W³±cz ansi\_xterm i przetestuj go.
+
+
+\section{Wspó³rzêdne kursora i okna}
+
+\begin{itemize}
+  \item {\tt int move(y, x)} \label{fun_move}\\
+        {\tt int wmove(win, y, x)} \label{fun_wmove}\\
+        \vdmfunc{move()} przesuwa kursor w \vdmscr{stdscr} ( \vdmfunc{wmove(win)} )
+	Dla funkcji wejscia/wyj¶cia zdefiniowane s± odpowiednie makra 
+	przesuwaj±ce kursor na podan± pozycjê.
+
+  \item {\tt int curs\_set(bf)} \label{fun_curs_set}\\
+	Je¿eli terminal na to pozwala w³±czy lub wy³±czy ( niewidzialny ) kursor.        
+
+  \item {\tt void getyx(win, y, x)} \label{fun_getyx}\\
+        \vdmfunc{getyx(...)} zwróci pozycjê kursora.
+        \notenm{jest to makro}
+
+  \item {\tt void getparyx(win, y, x)} \label{fun_getparyx}\\
+        Gdy \vdmarg{win} jest podoknem \vdmfunc{getparyx(...)} wypisze
+	wspó³rzêdne okna wzglêdem jego rodzica. W innym przypadku
+	\vdmarg{y} i \vdmarg{x} równaj± siê -1.
+	
+  \item {\tt void getbegyx(win, y, x)} \label{fun_getbegyx}\\
+        {\tt void getmaxyx(win, y, x)} \label{fun_getmaxyx}\\
+        {\tt int getmaxx(win)} \label{fun_getmaxx}\\
+        {\tt int getmaxy(win)} \label{fun_getmaxy}\\
+        Pobieraj± wspó³rzêdne pocz±tku ( \vdmfunc{getbegyx(...)} )
+	i rozmiar ( \vdmfunc{getmaxyx(...)} ) \vdmarg{win}.
+
+  \item {\tt int getsyx(int y, int x)} \label{fun_getsyx}\\
+        {\tt int setsyx(int y, int x)} \label{fun_setsyx}\\
+	Zachowuje kursor wirtualnego ekranu w \vdmarg{y} i \vdmarg{x}.
+	Ustawia kursor. Je¿eli wywo³asz \vdmfunc{getsyx(...)} z 
+	\vdmarg{y} i \vdmarg{x} = -1 {\it leaveok} zostanie w³±czone.
+	
+\end{itemize}
+
+\section{Przewijanie}
+
+\begin{itemize}
+  \item {\tt int scrollok(win, bf)} \label{fun_scrollok}\\
+        Je¿eli TRUE, text w okienku zostanie przewiniêty jedn± liniê do góry
+	gdy kursor bêdzie w dolnym, prawym rogu i zostanie wprowadzony
+	znak lub nowa linia. Je¿eli FALSE, kursor zostanie na tej samej pozycji.
+
+
+	Gdy w³±czone zawarto¶æ okna mo¿e byæ przesuwana za pomoc± nastêpuj±cych
+	funkcji.
+	 
+        \notenm{Bêdzie równie¿ przewijane gdy wpiszesz znak nowej linii w ostatniej linii 
+	okna. B±d¼ ostro¿ny z \vdmfunc{scrollok(...)}, inaczej uzyskasz niechciane
+	efekty}
+
+  \item {\tt int scroll(win)} \label{fun_scroll}\\
+	Przewinie do góry okno ( i linie w strukturze danych ) o jedn± liniê.
+
+  \item {\tt int scrl(n)} \label{fun_scrl}\\
+        {\tt int wscrl(win, n)} \label{fun_wscrl}\\
+        Funckje przewijaj± okno \vdmscr{stdscr} lub \vdmarg{win} do góry lub
+	w dó³ zale¿nie od warto¶ci \vdmarg{n}. Je¿eli \vdmarg{n} jest dodatnie
+	okna bêdzie przesuniête do góry, w innym przypadku w dó³.
+	
+  \item {\tt int setscrreg(t, b)} \label{fun_setscrreg}\\
+        {\tt int wsetscrreg(win, t, b)} \label{fun_wsetscrreg}\\
+        Ustawia obszar przewijania programowego.
+\end{itemize}
+
+Nastêpuj±cy kod powinien wyt³umaczyæ sposób przewijania textu.
+Zobacz równie¿ przyk³ad \vdmunix{type.c}.
+
+Mamy okienko z 18 liniami i 66 kolumnami i chcemi przewijaæ text zawarty w nim.
+{\it S$[]$} jest tablic± znaków zawieraj±c± text. {\it Max\_s} jest
+numerem ostatniej linii w {\it s$[]$}. {\it Clear\_line} zapisuje
+pustkê od pozycji kursora do koñca linii u¿ywaj±c aktualnych atrybutów
+okna ( nie A\_NORMAL jak robi to clrtoeol ). {\it Beg} jest ostatni± lini±
+z {\it s$[]$} aktualnie pokazywan± w oknie. {\it Scroll} mówi funkcji
+co robiæ.
+
+\begin{tscreen}
+\begin{verbatim}
+
+enum {POPRZEDNIA,NASTEPNA};
+
+void scroll_s(WINDOW *win, int scroll)
+{
+ /* sprawdzamy czy powinni¶my przewijaæ do ty³u i czy mamy co przewijaæ
+  */
+ if((scroll==NASTEPNA)&&(beg<=(max_s-18))){
+ /* linia w dó³ */
+     beg++;
+ /* zezwalamy na przewijanie */
+     scrollok(win, TRUE);
+ /* przewijamy */
+     wscrl(win, +1);
+ /* wy³±czamy przewijalno¶æ */
+     scrollok(win, FALSE);
+ /* wypisujem nowy ³añcuch w ostniej linii */
+     mvwaddnstr(win,17,0,s[beg+17],66);
+ /* czy¶cimy ostatni± liniê od ostatniego znaku do koñca
+  * w innym przypadky atrybuty by³yby za¶miecone
+  */
+     clear_line(66,win);
+ }
+ else if((scroll==POPRZEDNIA)&&(beg>0)){
+     beg--;
+     scrollok(win, TRUE);
+     wscrl(win, -1);
+     scrollok(win, FALSE);
+     mvwaddnstr(win,0,0,s[beg],66);
+     clear_line(66,win);
+ }
+ wrefresh(win);
+ return;
+}
+
+\end{verbatim}
+\end{tscreen}
+
+
+\section{Dope³nienie}
+
+\begin{itemize}
+  \item {\tt WINDOW *newpad(nlines, ncols)} \label{fun_newpad}\\
+  \item {\tt WINDOW *subpad(orig, nlines, ncols,  begy, begx)} \label{fun_subpad}\\
+  \item {\tt int prefresh(pad, pminrow, pmincol, sminrow, smincol, smaxrow, smaxcol)} \label{fun_prefresh}\\
+  \item {\tt int pnoutrefresh(pad, pminrow, pmincol, sminrow, smincol, smaxrow, smaxcol)} \label{fun_pnoutrefresh}\\
+  \item {\tt int pechochar(pad, ch)} \label{fun_pechochar}\\
+\end{itemize}
+
+\section{Etykiety programowe}
+
+\begin{itemize}
+  \item {\tt int slk\_init(int fmt)} \label{fun_slk_init}\\
+  \item {\tt int slk\_set(int labnum, char *label, int fmt)} \label{fun_slk_set}\\
+  \item {\tt int slk\_refresh()} \label{fun_slk_refresh}\\
+  \item {\tt int slk\_noutrefresh()} \label{fun_slk_noutrefresh}\\
+  \item {\tt char *slk\_label(int labnum)} \label{fun_slk_label}\\
+  \item {\tt int slk\_clear()} \label{fun_slk_clear}\\
+  \item {\tt int slk\_restore()} \label{fun_slk_restore}\\
+  \item {\tt int slk\_touch()} \label{fun_slk_touch}\\
+
+  \item {\tt int slk\_attron(chtype attr)} \label{fun_slk_attron}\\
+        {\tt int slk\_attrset(chtype attr)} \label{fun_slk_attrset}\\
+        {\tt int slk\_attroff(chtype attr)} \label{fun_slk_attroff}\\
+        Funkcje odpowiadaj± \vdmfunc{attron(attr)}, \vdmfunc{attrset(attr)} i
+	\vdmfunc{attroff(attr)}.
+\end{itemize}
+
+% moje
+\input{menu}
+
+\section{Inne}
+
+\begin{itemize}
+  \item {\tt int beep()} \label{fun_beep}\\
+  \item {\tt int flash()} \label{fun_flash}\\
+  \item {\tt char *unctrl(chtype c)} \label{fun_unctrl}\\
+  \item {\tt char *keyname(int c)} \label{fun_keyname}\\
+  \item {\tt int filter()} \label{fun_filter}\\
+  \item {\tt void use\_env(bf)} \label{fun_use_env}\\
+  \item {\tt int putwin(WINDOW *win, FILE *filep)} \label{fun_putwin}\\
+  \item {\tt WINDOW *getwin(FILE *filep)} \label{fun_getwin}\\
+  \item {\tt int delay\_output(int ms)} \label{fun_delay_output}\\
+  \item {\tt int flushinp()} \label{fun_flushinp}\\
+\end{itemize}
+
+\section{Dostêp niskopoziomowy}
+
+\begin{itemize}
+  \item {\tt int def\_prog\_mode()} \label{fun_def_prog_mode}\\    % == saveterm()
+  \item {\tt int def\_shell\_mode()} \label{fun_def_shell_mode}\\
+  \item {\tt int reset\_prog\_mode()} \label{fun_reset_prog_mode}\\  % == fixterm()
+  \item {\tt int reset\_shell\_mode()} \label{fun_reset_shell_mode}\\ % == resetterm()
+  \item {\tt int resetty()} \label{fun_resetty}\\
+  \item {\tt int savetty()} \label{fun_savetty}\\
+  \item {\tt int ripoffline(int line, int (*init)(WINDOW *, int))} \label{fun_ripoffline}\\
+  \item {\tt int napms(int ms)} \label{fun_napms}\\
+\end{itemize}
+
+
+\section{Zrzut ekranu}
+
+\begin{itemize}
+  \item {\tt int scr\_dump(char *filename)} \label{fun_scr_dump}\\
+  \item {\tt int scr\_restore(char *filename)} \label{fun_scr_restore}\\
+  \item {\tt int scr\_init(char *filename)} \label{fun_scr_init}\\
+  \item {\tt int scr\_set(char *filename)} \label{fun_scr_set}\\
+\end{itemize}
+
+
+\section{Emulacja termcap}
+
+\begin{itemize}
+  \item {\tt int tgetent(char *bp, char *name)} \label{fun_nc_tgetent}\\
+  \item {\tt int tgetflag(char id[2])} \label{fun_nc_tgetflag}\\
+  \item {\tt int tgetnum(char id[2])} \label{fun_nc_tgetnum}\\
+  \item {\tt char *tgetstr(char id[2], char **area)} \label{fun_nc_tgetstr}\\
+  \item {\tt char *tgoto(char *cap, int col, int row)} \label{fun_tgoto}\\
+  \item {\tt int tputs(char *str, int affcnt, int (*putc)())} \label{fun_nc_tputs}\\
+\end{itemize}
+
+
+\section{Funkcje terminfo}
+
+\begin{itemize}
+  \item {\tt int setupterm(char *term, int fildes, int *errret)} \label{fun_setupterm}\\
+  \item {\tt int setterm(char *term)} \label{fun_setterm}\\
+  \item {\tt int set\_curterm(TERMINAL *nterm)} \label{fun_set_curterm}\\
+  \item {\tt int del\_curterm(TERMINAL *oterm)} \label{fun_del_curterm}\\
+  \item {\tt int restartterm(char *term, int fildes, int *errret)} \label{fun_restartterm}\\
+  \item {\tt char *tparm(char *str, p1, p2, p3, p4, p5, p6, p7, p8, p9)} \label{fun_tparm}\\
+        p1 - p9 long int.
+  \item {\tt int tputs(char *str, int affcnt, int (*putc)(char))} \label{fun_tputs}\\
+  \item {\tt int putp(char *str)} \label{fun_putp}\\
+  \item {\tt int vidputs(chtype attr, int (*putc)(char))} \label{fun_vidputs}\\
+  \item {\tt int vidattr(chtype attr)} \label{fun_vidattr}\\
+  \item {\tt int mvcur(int oldrow, int oldcol, int newrow, int newcol)} \label{fun_mvcur}\\
+  \item {\tt int tigetflag(char *capname)} \label{fun_tigetflag}\\
+  \item {\tt int tigetnum(char *capname)} \label{fun_tigetnum}\\
+  \item {\tt int tigetstr(char *capname)} \label{fun_tigetstr}\\
+\end{itemize}
+
+
+\section{Funkcje odpluskwiaj±ce}
+
+\begin{itemize}
+  \item {\tt void \_init\_trace()} \label{fun__init_trace}\\
+  \item {\tt void \_tracef(char *, ...)} \label{fun__tracef}\\
+  \item {\tt char *\_traceattr(mode)} \label{fun__traceattr}\\
+  \item {\tt void traceon()} \label{fun_traceon}\\
+  \item {\tt void traceoff()} \label{fun_traceoff}\\
+\end{itemize}
+
+
+\section{Zdolno¶ci terminfo}
+
+\subsection{Zdolno¶ci logiczne}
+\begin{small}
+
+\tablehead{%
+\multicolumn{1}{l|}{\bf Zmienna} & 
+\multicolumn{1}{c|}{\bf Nazwa} & 
+\multicolumn{1}{c|}{\bf Kod} &
+\multicolumn{1}{l}{\bf Opis} \\
+\hline }
+\begin{supertabular}{l|c|c|l}
+auto\_left\_margin         & {\tt bw}      & {\tt bw} &     cub1 zawija od kolumny 0 do ostatniej column \\
+auto\_right\_margin        & {\tt am}      & {\tt am} &     terminal ma automatyczne marginesy\\
+back\_color\_erase         & {\tt bce}     & {\tt ut} &     ekran wymazany kolorem t³a\\
+can\_change                & {\tt ccc}     & {\tt cc} &     terminal potrafi przedefiniowaæ istniej±ce kolory\\
+ceol\_standout\_glitch     & {\tt xhp}     & {\tt xs} &     wyró¿nienie nie jest usuwane przez nadpisanie (hp)\\
+col\_addr\_glitch          & {\tt xhpa}    & {\tt YA} &     tylko dodatnie poruszanie dla wersalik hpa/mhpa\\
+cpi\_changes\_res          & {\tt cpix}    & {\tt YF} &     zmiana rozmiaru (pitch?) znaku zmienia rozdzielczo¶æ\\
+cr\_cancels\_micro\_mode   & {\tt crxm}    & {\tt YB} &     u¿ywanie cr wy³±cza tryb mikro\\
+eat\_newline\_glitch       & {\tt xenl}    & {\tt xn} &     nowa linia ignorowana za 80 kolumn± ( pomys³ )\\
+erase\_overstrike          & {\tt eo}      & {\tt eo} &     potrafi zamazywaæ przekre¶lenie pustk±\\
+generic\_type              & {\tt gn}      & {\tt gn} &     ogólny typ linii (np.: dialup, switch).\\
+hard\_copy                 & {\tt hc}      & {\tt hc} &     terminal hardcopy\\
+hard\_cursor               & {\tt chts}    & {\tt HC} &     ciê¿ko zobaczyæ kursor\\
+has\_meta\_key             & {\tt km}      & {\tt km} &     posiada klawisz meta ( shift, ustawia bit parzysto¶ci )\\
+has\_print\_wheel          & {\tt daisy}   & {\tt YC} &     drukarka wymaga operatora do zmiany zestawu znaków\\
+has\_status\_line          & {\tt hs}      & {\tt hs} &     posiada dodatkow± "liniê statusu"\\
+hue\_lightness\_saturation & {\tt hls}     & {\tt hl} &     terminal u¿ywa tylko koloru w notacji HLS\\
+                           &               &          &     ( Tektronix )\\
+insert\_null\_glitch       & {\tt in}      & {\tt in} &     tryb wstawiania odró¿nia nulle\\
+lpi\_changes\_res          & {\tt lpix}    & {\tt YG} &     zmiana rozmiaru (pitch?) linii zmienia rozdzielczo¶æ\\
+memory\_above              & {\tt da}      & {\tt da} &     ekran mo¿e byæ zachowywany powy¿ej fizycznego ekranu\\
+memory\_below              & {\tt db}      & {\tt db} &     ekran mo¿e byæ zachowywany poni¿ej fizycznego ekranu\\
+move\_insert\_mode         & {\tt mir}     & {\tt mi} &     mo¿na siê bezpiecznie przemieszczaæ podczas trybu wstawiania\\
+move\_standout\_mode       & {\tt msgr}    & {\tt ms} &     mo¿na siê bezpiecznie przemieszczaæ podczas trybu wyró¿niania\\
+needs\_xon\_xoff           & {\tt nxon}    & {\tt nx} &     dope³nianie nie dzia³a, wymagane xon/xoff\\
+no\_esc\_ctl\_c            & {\tt xsb}     & {\tt xb} &     F1 = escape, F2 = ctrl+C\\
+non\_rev\_rmcup            & {\tt nrrmc}   & {\tt NR} &     smcup nie odwraca rmcup\\
+no\_pad\_char              & {\tt npc}     & {\tt NP} &     znak dope³niaj±cy nie istnieje\\
+non\_dest\_scroll\_region  & {\tt ndscr}   & {\tt ND} &     przesuwanie obszaru nie jest destrukcyjne\\
+over\_strike               & {\tt os}      & {\tt os} &     terminal przekre¶la\\
+prtr\_silent               & {\tt mc5i}    & {\tt 5i} &     drukarka nie wybija (echo) na ekran\\
+row\_addr\_glitch          & {\tt xvpa}    & {\tt YD} &     tylko dodatnie poruszanie dla wersalik vhp/mvpa\\
+semi\_auto\_right\_margin  & {\tt sam}     & {\tt YE} &     drukowanie w ostatniej kolumnie powoduje cr\\
+status\_line\_esc\_ok      & {\tt eslok}   & {\tt es} &     escape mo¿e byæ u¿ywany w linii statusu\\
+dest\_tabs\_magic\_smso    & {\tt xt}      & {\tt xt} &     tabulatory w ruinie, magic so char ( Teleray 1061 )\\
+tilde\_glitch              & {\tt hz}      & {\tt hz} &     pluskwa Hazla; nie drukuje tyldy\\
+transparent\_underline     & {\tt ul}      & {\tt ul} &     podkre¶lenie przekre¶la\\
+xon\_xoff                  & {\tt xon}     & {\tt xo} &     terminal u¿ywa xon/xoff\\
+\end{supertabular}
+\end{small}
+
+\subsection{Zdolno¶ci liczbowe}
+\begin{small}
+
+\tablehead{%
+\multicolumn{1}{l|}{\bf Zmienna} &
+\multicolumn{1}{c|}{\bf Nazwa} &
+\multicolumn{1}{c|}{\bf Kod} &
+\multicolumn{1}{l}{\bf Opis} \\
+\hline }
+\begin{supertabular}{l|c|c|l}
+bit\_image\_entwining      & {\tt bitwin}  & {\tt Yo} &    nieudokumentowane w SYSV\\
+buffer\_capacity           & {\tt bufsz}   & {\tt Ya} &    liczba bajtów buforowanych przed drukowaniem\\
+columns                    & {\tt cols}    & {\tt co} &    liczba kolumn w linii\\
+dot\_vert\_spacing         & {\tt spinv}   & {\tt Yb} &    odstêp poziomy w punktach na cal\\
+dot\_horz\_spacing         & {\tt spinh}   & {\tt Yc} &    odstêp pionowy w ig³ach (pins?) na cal\\
+init\_tabs                 & {\tt it}      & {\tt it} &    tabulatory domy¶lnie co \# spacji\\
+label\_height              & {\tt lh}      & {\tt lh} &    wiersze w ka¿dej etykiecie\\
+label\_width               & {\tt lw}      & {\tt lw} &    kolumny w ka¿dej etykiecie\\
+lines                      & {\tt lines}   & {\tt li} &    liczba linii na ekranie lub stronie\\
+lines\_of\_memory          & {\tt lm}      & {\tt lm} &    linie w pamiêci je¿eli > of linii.  0 - ró¿nie\\
+magic\_cookie\_glitch      & {\tt xmc}     & {\tt sg} &    liczba pustych znaków zostawianych przez smso lub rmso\\
+max\_colors                & {\tt colors}  & {\tt Co} &    maxymalna liczba kolorów na ekranie\\
+max\_micro\_address        & {\tt maddr}   & {\tt Yd} &    maxymalna liczba w micro\_...\_address\\
+max\_micro\_jump           & {\tt mjump}   & {\tt Ye} &    maxymalna liczba w parm\_...\_micro\\
+max\_pairs                 & {\tt pairs}   & {\tt pa} &    maxymalna liczba color-pairs na ekranie\\
+micro\_col\_size           & {\tt mcs}     & {\tt Yf} &    rozmiar kroku znaku gdy w trybie mikro\\
+micro\_line\_size          & {\tt mls}     & {\tt Yg} &    rozmiar kroku linii gdy w trybie mikro\\
+no\_color\_video           & {\tt ncv}     & {\tt NC} &    atrybuty video, które nie mog± byæ u¿ywane z kolorami \\
+number\_of\_pins           & {\tt npins}   & {\tt Yh} &    liczba igie³ w g³owicy drukarki\\
+num\_labels                & {\tt nlab}    & {\tt Nl} &    liczba etykiet na ekranie\\
+output\_res\_char          & {\tt orc}     & {\tt Yi} &    rozdzielczo¶æ pozioma w jednostkach na liniê\\
+output\_res\_line          & {\tt orl}     & {\tt Yj} &    rozdzielczo¶æ pionowa w jednostkach na liniê\\
+output\_res\_horz\_inch    & {\tt orhi}    & {\tt Yk} &    rozdzielczo¶æ pozioma w jednostkach na cal\\
+output\_res\_vert\_inch    & {\tt orvi}    & {\tt Yl} &    rozdzielczo¶æ pionowa w jednostkach na cal\\
+padding\_baud\_rate        & {\tt pb}      & {\tt pb} &    najni¿sza prêdko¶æ w bodach gdzie wymaganane jest dope³nianie cr/nl\\
+virtual\_terminal          & {\tt vt}      & {\tt vt} &    numer wirtualnego terminala ( systemy UNIX )\\
+width\_status\_line        & {\tt wsl}     & {\tt ws} &    liczba kolumn w linii statusu
+\end{supertabular}
+\begin{center}
+( Nastêpuj±ce zdolno¶ci numeryczne istniej± w strukturzye term SYSV, 
+jednak¿e nie s± udokumentowane w podrêczniku. Komentarze s± wyci±gniête z
+nag³ówka struktury. )
+\end{center}
+\begin{supertabular}{l|c|c|l}
+bit\_image\_type           & {\tt bitype}  & {\tt Yp} &  typ urz±dzenia bitowo-obrazowego\\
+buttons                    & {\tt btns}    & {\tt BT} &  liczba przycisków myszki\\
+max\_attributes            & {\tt ma}      & {\tt ma} &  maxymalna liczba po³±czonych atrybutów, które terminal obs³u¿y \\
+maximum\_windows           & {\tt wnum}    & {\tt MW} &  maxymalna liczba okien do zdefiniowania\\
+print\_rate                & {\tt cps}     & {\tt Ym} &  prêdko¶æ druku w znakach na sekundê\\
+wide\_char\_size           & {\tt widcs}   & {\tt Yn} &  rozmiar kroku znaku w trybie podwójnej szeroko¶ci\\
+\end{supertabular}
+
+\end{small}
+
+
+\subsection{Zdolno¶ci ³añcuchowe}
+\begin{small}
+
+\tablehead{%
+\multicolumn{1}{l|}{\bf Zmienna} &
+\multicolumn{1}{c|}{\bf Nazwa} &
+\multicolumn{1}{c|}{\bf Kod} &
+\multicolumn{1}{l}{\bf Opis} \\
+\hline }
+\begin{supertabular}{l|c|c|l}
+acs\_chars                  & {\tt acsc}      & {\tt ac} &   pary graficznego zestawu znaków - def = vt100\\
+alt\_scancode\_esc          & {\tt scesa}     & {\tt S8} &   alternatywny esc dla emulacji scancode\\
+                            &                 &          &   ( domy¶lnie vt100 )\\
+back\_tab                   & {\tt cbt}       & {\tt bt} &   wsteczny tabulator (P)\\
+bell                        & {\tt bel}       & {\tt bl} &   sygna³ d¼wiêkowy (  dzwonek ) (P)\\
+bit\_image\_repeat          & {\tt birep}     & {\tt Xy} &   powtórz komórkê obrazu bitowego \#1 \#2 razy\\
+                            &                 &          &   ( u¿yj tparm )\\
+bit\_image\_newline         & {\tt binel}     & {\tt Zz} &   skocz do nastêpnego wiersza obrazu bitowego\\
+                            &                 &          &   ( u¿yj tparm )\\
+bit\_image\_carriage\_return& {\tt bicr}      & {\tt Yv} &   skocz do pocz±tku wiersza \\
+                            &                 &          &   ( u¿yj tparm )\\
+carriage\_return            & {\tt cr}        & {\tt cr} &   powrót karetki (P*)\\
+change\_char\_pitch         & {\tt cpi}       & {\tt ZA} &   zmienia \# znaków na cal\\
+change\_line\_pitch         & {\tt lpi}       & {\tt ZB} &   zmienia \# linii na cal\\
+change\_res\_horz           & {\tt chr}       & {\tt ZC} &   zmienia rozdzielczo¶æ poziom±\\
+change\_res\_vert           & {\tt cvr}       & {\tt ZD} &   zmienia rozdzielczo¶æ pionow±\\
+change\_scroll\_region      & {\tt csr}       & {\tt cs} &   skacze do linii \#1 przez \#2\\
+                            &                 &          &   ( vt100 ) (PG)\\
+char\_padding               & {\tt rmp}       & {\tt rP} &   to samo co ip ale w trybie wstawiania\\
+char\_set\_names            & {\tt csnm}      & {\tt Zy} &   lista nazw zestawów znaków\\
+clear\_all\_tabs            & {\tt tbc}       & {\tt ct} &   usuñ wszystkie tabulatory (P)\\
+clear\_margins              & {\tt mgc}       & {\tt MC} &   usuñ wszystkie marginesy ( góra, dó³ i boki)\\
+clear\_screen               & {\tt clear}     & {\tt cl} &   wyczy¶æ ekran i przesuñ kursor na domy¶ln± pozycjê (P*)\\
+clr\_bol                    & {\tt el1}       & {\tt cb} &   wyczy¶æ do pocz±tku linii\\
+clr\_eol                    & {\tt el}        & {\tt ce} &   wyczy¶æ do koñca linii (P)\\
+clr\_eos                    & {\tt ed}        & {\tt cd} &   wyczy¶æ do koñca ekranu (P*)\\
+code\_set\_init             & {\tt csin}      & {\tt ci} &   sekwencja inicjuj±ca dla kilku zestawów kodów\\
+color\_names                & {\tt colornm}   & {\tt Yw} &   podaj nazwê koloru \#1\\
+column\_address             & {\tt hpa}       & {\tt ch} &   ustaw kolumnê kursora (PG)\\
+command\_character          & {\tt cmdch}     & {\tt CC} &   znak komendy settable w prototypie !?\\
+cursor\_address             & {\tt cup}       & {\tt cm} &   przesuniêcie kursora do wiersza \#1, kolumny \#2 (PG)\\
+cursor\_down                & {\tt cud1}      & {\tt do} &   jedna linia w dó³\\
+cursor\_home                & {\tt home}      & {\tt ho} &   start kursora ( inaczej cup )\\
+cursor\_invisible           & {\tt civis}     & {\tt vi} &   kursor niewidoczny\\
+cursor\_left                & {\tt cub1}      & {\tt le} &   kursor w lewo jedn± spacjê\\
+cursor\_mem\_address        & {\tt mrcup}     & {\tt CM} &   adresowanie kursore wzglêdem pamiêci\\
+cursor\_normal              & {\tt cnorm}     & {\tt ve} &   poka¿ kursor ( odwo³aj vs/vi )\\
+cursor\_right               & {\tt cuf1}      & {\tt nd} &   niedestrukcyjna spacja ( kursor w prawo )\\
+cursor\_to\_ll              & {\tt ll}        & {\tt ll} &   ostatnia linia, pierwsza kolumna ( inaczej cup )\\
+cursor\_up                  & {\tt cuu1}      & {\tt up} &   kursor w górê\\
+cursor\_visible             & {\tt cvvis}     & {\tt vs} &   uczyñ kursor bardzo widocznym\\
+define\_bit\_image\_region  & {\tt defbi}     & {\tt Yx} &   zdefiniuj prostok±tny obszar obrazu bitowego\\
+                            &                 &          &   ( u¿yj tparm )\\
+define\_char                & {\tt defc}      & {\tt ZE} &   usuñ znak z zestawu znaków\\
+delete\_character           & {\tt dch1}      & {\tt dc} &   usuñ znak (P*)\\
+delete\_line                & {\tt dl1}       & {\tt dl} &   usuñ liniê (P*)\\
+device\_type                & {\tt devt}      & {\tt dv} &   oceñ wsparcie dla jêzyka/zestawu kodów\\
+dis\_status\_line           & {\tt dsl}       & {\tt ds} &   wy³±cz liniê statusu\\
+display\_pc\_char           & {\tt dispc}     & {\tt S1} &   wy¶wietl znak PC\\
+down\_half\_line            & {\tt hd}        & {\tt hd} &   pó³ linii w dó³ ( wysuniêcie 1/2 linii )\\
+ena\_acs                    & {\tt enacs}     & {\tt eA} &   w³±cz alternatywny zestaw znaków\\
+end\_bit\_image\_region     & {\tt endbi}     & {\tt Yy} &   zakoñcz obszar obrazu bitowego ( u¿yj tparm )\\
+enter\_alt\_charset\_mode   & {\tt smacs}     & {\tt as} &   rozpocznij alternatywny zestaw znaków (P)\\
+enter\_am\_mode             & {\tt smam}      & {\tt SA} &   w³±cz automatyczne marginesy\\
+enter\_blink\_mode          & {\tt blink}     & {\tt mb} &   w³±cz miganie\\
+enter\_bold\_mode           & {\tt bold}      & {\tt md} &   w³±cz tryb pogrubienie ( extra jasno )\\
+enter\_ca\_mode             & {\tt smcup}     & {\tt ti} &   ³añcuch rozpoczynaj±cy program u¿ywaj±ce cup\\
+enter\_delete\_mode         & {\tt smdc}      & {\tt dm} &   w³±cz tryb usuwania\\
+enter\_dim\_mode            & {\tt dim}       & {\tt mh} &   w³±cz tryb pó³ jasno¶ci\\
+enter\_doublewide\_mode     & {\tt swidm}     & {\tt ZF} &   w³±cz tryb podwójnej szeroko¶ci\\
+enter\_draft\_quality       & {\tt sdrfq}     & {\tt ZG} &   ustaw jako¶æ druku na rysowanie\\
+enter\_insert\_mode         & {\tt smir}      & {\tt im} &   w³±cz tryb wstawiania\\
+enter\_italics\_mode        & {\tt sitm}      & {\tt ZH} &   w³±cz tryb pochylenia\\
+enter\_leftward\_mode       & {\tt slm}       & {\tt ZI} &   w³±cz przesuwanie karetki w lewo\\
+enter\_micro\_mode          & {\tt smicm}     & {\tt ZJ} &   w³±cz mo¿liwo¶ci poruszania mikro\\
+enter\_near\_letter\_quality& {\tt snlq}      & {\tt ZK} &   ustaw drukowanie NLQ\\
+enter\_normal\_quality      & {\tt snrmq}     & {\tt ZL} &   ustaw drukowanie normalnej jako¶ci\\
+enter\_pc\_charset\_mode    & {\tt smpch}     & {\tt S2} &   w³±cz tryb wy¶wietlania znaków PC\\
+enter\_protected\_mode      & {\tt prot}      & {\tt mp} &   w³±cz tryb chroniony\\
+enter\_reverse\_mode        & {\tt rev}       & {\tt mr} &   w³±cz tryb odwrócenia video\\
+enter\_scancode\_mode       & {\tt smsc}      & {\tt S4} &   w³±cz tryb PC scancode\\
+enter\_secure\_mode         & {\tt invis}     & {\tt mk} &   w³±cz tryb pustki ( niewidoczne znaki )\\
+enter\_shadow\_mode         & {\tt sshm}      & {\tt ZM} &   w³±cz tryb cieniowania ( shadow-printing )\\
+enter\_standout\_mode       & {\tt smso}      & {\tt so} &   w³±cz tryb wyró¿niania\\
+enter\_subscript\_mode      & {\tt ssubm}     & {\tt ZN} &   w³±cz drukowanie subscript\\
+enter\_superscript\_mode    & {\tt ssupm}     & {\tt ZO} &   w³±cz drukowanie superscript\\
+enter\_underline\_mode      & {\tt smul}      & {\tt us} &   w³±cz tryb podkre¶lania\\
+enter\_upward\_mode         & {\tt sum}       & {\tt ZP} &   w³±cz poruszanie karetk± w górê\\
+enter\_xon\_mode            & {\tt smxon}     & {\tt SX} &   w³±cz xon/xoff\\
+erase\_chars                & {\tt ech}       & {\tt ec} &   usuñ \#1 znaków (PG)\\
+exit\_alt\_charset\_mode    & {\tt rmacs}     & {\tt ae} &   zakoñcz alternatywny zestaw znaków (P)\\
+exit\_am\_mode              & {\tt rmam}      & {\tt RA} &   wy³±cz automatyczne marginesy\\
+exit\_attribute\_mode       & {\tt sgr0}      & {\tt me} &   wy³±cz wszyskie atrybuty\\
+exit\_ca\_mode              & {\tt rmcup}     & {\tt te} &   ³añcuch koñcz±cy programy u¿ywaj±ce cup\\
+exit\_delete\_mode          & {\tt rmdc}      & {\tt ed} &   wy³±cz tryb usuwania\\
+exit\_doublewide\_mode      & {\tt rwidm}     & {\tt ZQ} &   wy³±cz tryb podwójnej szeroko¶ci\\
+exit\_insert\_mode          & {\tt rmir}      & {\tt ei} &   wy³±cz tryb wstawiania\\
+exit\_italics\_mode         & {\tt ritm}      & {\tt ZR} &   wy³±cz pochylenie\\
+exit\_leftward\_mode        & {\tt rlm}       & {\tt ZS} &   w³±cz poruszanie karetk± w prawo ( normalne )\\
+exit\_micro\_mode           & {\tt rmicm}     & {\tt ZT} &   wy³±cz poruszanie w trybie mikro\\
+exit\_pc\_charset\_mode     & {\tt rmpch}     & {\tt S3} &   wy³±cz wy¶wietlanie znaków PC\\
+exit\_scancode\_mode        & {\tt rmsc}      & {\tt S5} &   wy³±cz tryb scancode PC\\
+exit\_shadow\_mode          & {\tt rshm}      & {\tt ZU} &   wy³±cz cieniowanie \\
+exit\_standout\_mode        & {\tt rmso}      & {\tt se} &   wy³±cz tryb wyró¿niania\\
+exit\_subscript\_mode       & {\tt rsubm}     & {\tt ZV} &   wy³±cz drukowanie subscript\\
+exit\_superscript\_mode     & {\tt rsupm}     & {\tt ZW} &   wy³±cz drukowanie superscript\\
+exit\_underline\_mode       & {\tt rmul}      & {\tt ue} &   wy³±cz tryb podkre¶lania\\
+exit\_upward\_mode          & {\tt rum}       & {\tt ZX} &   w³±cz poruszanie karetk± w dó³ ( normalne )\\
+exit\_xon\_mode             & {\tt rmxon}     & {\tt RX} &   wy³±cz xon/xoff\\
+flash\_screen               & {\tt flash}     & {\tt vb} &   wizualny dzwonek ( mo¿e nie zmieniaæ po³o¿enia kursora )\\
+form\_feed                  & {\tt ff}        & {\tt ff} &   wysuniêcie strony na terminalu hardcopy (P*)\\
+from\_status\_line          & {\tt fsl}       & {\tt fs} &   powrót z linii statusu\\
+init\_1string               & {\tt is1}       & {\tt i1} &   ³añcuch inicjalizuj±cy terminal\\
+init\_2string               & {\tt is2}       & {\tt i2} &   ³añcuch inicjalizuj±cy terminal\\
+init\_3string               & {\tt is3}       & {\tt i3} &   ³añcuch inicjalizuj±cy terminal\\
+init\_file                  & {\tt if}        & {\tt if} &   nazwa pliku zawieraj±cego\\
+init\_prog                  & {\tt iprog}     & {\tt iP} &   ¶cie¿ka do programu inicjuj±cego\\
+initialize\_color           & {\tt initc}     & {\tt Ic} &   zainicjuj definicjê koloru\\
+initialize\_pair            & {\tt initp}     & {\tt Ip} &   zainicjuj color-pair\\
+insert\_character           & {\tt ich1}      & {\tt ic} &   wstaw znak (P)\\
+insert\_line                & {\tt il1}       & {\tt al} &   dodaj pust± liniê (P*)\\
+insert\_padding             & {\tt ip}        & {\tt ip} &   dope³niaj po wypisaniu znaku (p*)\\
+key\_a1         & {\tt ka1}    & {\tt K1} &   klawiatura numeryczna: góra, lewo\\
+key\_a3         & {\tt ka3}    & {\tt K3} &   klawiatura numeryczna: góra, prawo\\
+key\_b2         & {\tt kb2}    & {\tt K2} &   klawiatura numeryczna: ¶rodek\\
+key\_backspace  & {\tt kbs}    & {\tt kb} &   wysy³ane przez backspace\\
+key\_beg        & {\tt kbeg}   & {\tt \@1}&   klawisz: pocz±tek\\
+key\_btab       & {\tt kcbt}   & {\tt kB} &   klawisz: wsteczny tabulator\\
+key\_c1         & {\tt kc1}    & {\tt K4} &   klawiatura numeryczna: dó³, lewo\\
+key\_c3         & {\tt kc3}    & {\tt K5} &   klawiatura numeryczna: dó³, prawo\\
+key\_cancel     & {\tt kcan}   & {\tt \@2}&   klawisz: anuluj\\
+key\_catab      & {\tt ktbc}   & {\tt ka} &   wysy³ane przez wyczy¶æ wszystkie tabulatory\\
+key\_clear      & {\tt kclr}   & {\tt kC} &   wysy³ane przez wyczy¶æ ekran lub klawisz usuñ\\
+key\_close      & {\tt kclo}   & {\tt \@3}&   klawisz: zamknij\\
+key\_command    & {\tt kcmd}   & {\tt \@4}&   klawisz polecenia\\
+key\_copy       & {\tt kcpy}   & {\tt \@5}&   klawisz: kopiuj\\
+key\_create     & {\tt kcrt}   & {\tt \@6}&   klawisz: stwórz\\
+key\_ctab       & {\tt kctab}  & {\tt kt} &   wysy³ane przez usuñ tabulator\\
+key\_dc         & {\tt kdch1}  & {\tt kD} &   wysy³ane przez klawisz usuñ znak\\
+key\_dl         & {\tt kdl1}   & {\tt kL} &   wysy³ane przez klawisz usuñ liniê\\
+key\_down       & {\tt kcud1}  & {\tt kd} &   wysy³ane przez strza³kê w dó³ terminala\\
+key\_eic        & {\tt krmir}  & {\tt kM} &   wysy³ane przez rmir lub smir w trybie wstawiania\\
+key\_end        & {\tt kend}   & {\tt \@7}&   klawisz: koniec\\
+key\_enter      & {\tt kent}   & {\tt \@8}&   klawisz: wstaw/wy¶lij\\
+key\_eol        & {\tt kel}    & {\tt kE} &   wysy³ane przez wyczy¶æ do koñca linii\\
+key\_eos        & {\tt ked}    & {\tt kS} &   wysy³ane przez wyczy¶æ do koñca ekranu\\
+key\_exit       & {\tt kext}   & {\tt \@9}&   klawisz: wyjd¼\\
+key\_f0         & {\tt kf0}    & {\tt k0} &   F00 - klawisz funkcyjny\\
+key\_f1         & {\tt kf1}    & {\tt k1} &   F01 - klawisz funkcyjny\\
+key\_f2         & {\tt kf2}    & {\tt k2} &   F02 - klawisz funkcyjny\\
+key\_f3         & {\tt kf3}    & {\tt k3} &   F03 - klawisz funkcyjny\\
+key\_f4         & {\tt kf4}    & {\tt k4} &   F04 - klawisz funkcyjny\\
+key\_f5         & {\tt kf5}    & {\tt k5} &   F05 - klawisz funkcyjny\\
+key\_f6         & {\tt kf6}    & {\tt k6} &   F06 - klawisz funkcyjny\\
+key\_f7         & {\tt kf7}    & {\tt k7} &   F07 - klawisz funkcyjny\\
+key\_f8         & {\tt kf8}    & {\tt k8} &   F08 - klawisz funkcyjny\\
+key\_f9         & {\tt kf9}    & {\tt k9} &   F09 - klawisz funkcyjny\\
+key\_f10        & {\tt kf10}   & {\tt k;} &   F10 - klawisz funkcyjny\\
+key\_f11        & {\tt kf11}   & {\tt F1} &   F11 - klawisz funkcyjny\\
+key\_f12        & {\tt kf12}   & {\tt F2} &   F12 - klawisz funkcyjny\\
+key\_f13        & {\tt kf13}   & {\tt F3} &   F13 - klawisz funkcyjny\\
+key\_f14        & {\tt kf14}   & {\tt F4} &   F14 - klawisz funkcyjny\\
+key\_f15        & {\tt kf15}   & {\tt F5} &   F15 - klawisz funkcyjny\\
+key\_f16        & {\tt kf16}   & {\tt F6} &   F16 - klawisz funkcyjny\\
+key\_f17        & {\tt kf17}   & {\tt F7} &   F17 - klawisz funkcyjny\\
+key\_f18        & {\tt kf18}   & {\tt F8} &   F18 - klawisz funkcyjny\\
+key\_f19        & {\tt kf19}   & {\tt F9} &   F19 - klawisz funkcyjny\\
+key\_f20        & {\tt kf20}   & {\tt FA} &   F20 - klawisz funkcyjny\\
+key\_f21        & {\tt kf21}   & {\tt FB} &   F21 - klawisz funkcyjny\\
+key\_f22        & {\tt kf22}   & {\tt FC} &   F22 - klawisz funkcyjny\\
+key\_f23        & {\tt kf23}   & {\tt FD} &   F23 - klawisz funkcyjny\\
+key\_f24        & {\tt kf24}   & {\tt FE} &   F24 - klawisz funkcyjny\\
+key\_f25        & {\tt kf25}   & {\tt FF} &   F25 - klawisz funkcyjny\\
+key\_f26        & {\tt kf26}   & {\tt FG} &   F26 - klawisz funkcyjny\\
+key\_f27        & {\tt kf27}   & {\tt FH} &   F27 - klawisz funkcyjny\\
+key\_f28        & {\tt kf28}   & {\tt FI} &   F28 - klawisz funkcyjny\\
+key\_f29        & {\tt kf29}   & {\tt FJ} &   F29 - klawisz funkcyjny\\
+key\_f30        & {\tt kf30}   & {\tt FK} &   F30 - klawisz funkcyjny\\
+key\_f31        & {\tt kf31}   & {\tt FL} &   F31 - klawisz funkcyjny\\
+key\_f32        & {\tt kf32}   & {\tt FM} &   F32 - klawisz funkcyjny\\
+key\_f33        & {\tt kf33}   & {\tt FN} &   F33 - klawisz funkcyjny\\
+key\_f34        & {\tt kf34}   & {\tt FO} &   F34 - klawisz funkcyjny\\
+key\_f35        & {\tt kf35}   & {\tt FP} &   F35 - klawisz funkcyjny\\
+key\_f36        & {\tt kf36}   & {\tt FQ} &   F36 - klawisz funkcyjny\\
+key\_f37        & {\tt kf37}   & {\tt FR} &   F37 - klawisz funkcyjny\\
+key\_f38        & {\tt kf38}   & {\tt FS} &   F38 - klawisz funkcyjny\\
+key\_f39        & {\tt kf39}   & {\tt FT} &   F39 - klawisz funkcyjny\\
+key\_f40        & {\tt kf40}   & {\tt FU} &   F40 - klawisz funkcyjny\\
+key\_f41        & {\tt kf41}   & {\tt FV} &   F41 - klawisz funkcyjny\\
+key\_f42        & {\tt kf42}   & {\tt FW} &   F42 - klawisz funkcyjny\\
+key\_f43        & {\tt kf43}   & {\tt FX} &   F43 - klawisz funkcyjny\\
+key\_f44        & {\tt kf44}   & {\tt FY} &   F44 - klawisz funkcyjny\\
+key\_f45        & {\tt kf45}   & {\tt FZ} &   F45 - klawisz funkcyjny\\
+key\_f46        & {\tt kf46}   & {\tt Fa} &   F46 - klawisz funkcyjny\\
+key\_f47        & {\tt kf47}   & {\tt Fb} &   F47 - klawisz funkcyjny\\
+key\_f48        & {\tt kf48}   & {\tt Fc} &   F48 - klawisz funkcyjny\\
+key\_f49        & {\tt kf49}   & {\tt Fd} &   F49 - klawisz funkcyjny\\
+key\_f50        & {\tt kf50}   & {\tt Fe} &   F50 - klawisz funkcyjny\\
+key\_f51        & {\tt kf51}   & {\tt Ff} &   F51 - klawisz funkcyjny\\
+key\_f52        & {\tt kf52}   & {\tt Fg} &   F52 - klawisz funkcyjny\\
+key\_f53        & {\tt kf53}   & {\tt Fh} &   F53 - klawisz funkcyjny\\
+key\_f54        & {\tt kf54}   & {\tt Fi} &   F54 - klawisz funkcyjny\\
+key\_f55        & {\tt kf55}   & {\tt Fj} &   F55 - klawisz funkcyjny\\
+key\_f56        & {\tt kf56}   & {\tt Fk} &   F56 - klawisz funkcyjny\\
+key\_f57        & {\tt kf57}   & {\tt Fl} &   F57 - klawisz funkcyjny\\
+key\_f58        & {\tt kf58}   & {\tt Fm} &   F58 - klawisz funkcyjny\\
+key\_f59        & {\tt kf59}   & {\tt Fn} &   F59 - klawisz funkcyjny\\
+key\_f60        & {\tt kf60}   & {\tt Fo} &   F60 - klawisz funkcyjny\\
+key\_f61        & {\tt kf61}   & {\tt Fp} &   F61 - klawisz funkcyjny\\
+key\_f62        & {\tt kf62}   & {\tt Fq} &   F62 - klawisz funkcyjny\\
+key\_f63        & {\tt kf63}   & {\tt Fr} &   F63 - klawisz funkcyjny\\
+key\_find       & {\tt kfnd}   & {\tt \@0}&   klawisz: znajd¼\\
+key\_help       & {\tt khlp}   & {\tt \%1}&   klawisz: pomoc\\
+key\_home       & {\tt khome}  & {\tt kh} &   wysy³ane przez klawisz home\\
+key\_ic         & {\tt kich1}  & {\tt kI} &   wysy³ane przez klawisz wstaw znak/w³±cz tryb wstawiania\\
+key\_il         & {\tt kil1}   & {\tt kA} &   wysy³ane przez klawisz wstaw liniê\\
+key\_left       & {\tt kcub1}  & {\tt kl} &   wysy³ane przez klawisz strza³kê w lewo terminala\\
+key\_ll         & {\tt kll}    & {\tt kH} &   wysy³ane przez klawisz home-down\\
+key\_mark       & {\tt kmrk}   & {\tt \%2}&   klawisz: zaznacz\\
+key\_message    & {\tt kmsg}   & {\tt \%3}&   klawisz: wiadomo¶æ\\
+key\_move       & {\tt kmov}   & {\tt \%4}&   klawisz: przesuñ\\
+key\_next       & {\tt knxt}   & {\tt \%5}&   klawisz: nastêpne\\
+key\_npage      & {\tt knp}    & {\tt kN} &   wysy³ane przez klawisz nastêpna strona\\
+key\_open       & {\tt kopn}   & {\tt \%6}&   klawisz: otwórz\\
+key\_options    & {\tt kopt}   & {\tt \%7}&   klawisz: opcje\\
+key\_ppage      & {\tt kpp}    & {\tt kP} &   wysy³ane przez klawisz poprzednia strona\\
+key\_previous   & {\tt kprv}   & {\tt \%8}&   klawisz: poprzednie\\
+key\_print      & {\tt kprt}   & {\tt \%9}&   klawisz: drukuj\\
+key\_redo       & {\tt krdo}   & {\tt \%0}&   klawisz: powtórz\\
+key\_reference  & {\tt kref}   & {\tt \&1}&   klawisz: referencja\\
+key\_refresh    & {\tt krfr}   & {\tt \&2}&   klawisz: od¶wie¿\\
+key\_replace    & {\tt krpl}   & {\tt \&3}&   klawisz: zamieñ\\
+key\_restart    & {\tt krst}   & {\tt \&4}&   klawisz: restartuj\\
+key\_resume     & {\tt kres}   & {\tt \&5}&   klawisz: wznów\\
+key\_right      & {\tt kcuf1}  & {\tt kr} &   wysy³ane przez klawisz strza³ka w prawo terminala\\
+key\_save       & {\tt ksav}   & {\tt \&6}&   klawisz: zachowaj\\
+key\_sbeg       & {\tt kBEG}   & {\tt \&9}&   klawisz z shift: pocz±tek\\
+key\_scancel    & {\tt kCAN}   & {\tt \&0}&   klawisz z shift: anuluj\\
+key\_scommand   & {\tt kCMD}   & {\tt *1} &   klawisz z shift: polecenie\\
+key\_scopy      & {\tt kCPY}   & {\tt *2} &   klawisz z shift: kopiuj\\
+key\_screate    & {\tt kCRT}   & {\tt *3} &   klawisz z shift: stwórz\\
+key\_sdc        & {\tt kDC}    & {\tt *4} &   klawisz z shift: usuñ znak\\
+key\_sdl        & {\tt kDL}    & {\tt *5} &   klawisz z shift: usuñ liniê\\
+key\_select     & {\tt kslt}   & {\tt *6} &   klawisz: wybierz\\
+key\_send       & {\tt kEND}   & {\tt *7} &   klawisz z shift: koniec\\
+key\_seol       & {\tt kEOL}   & {\tt *8} &   klawisz z shift: koniec linii\\
+key\_sexit      & {\tt kEXT}   & {\tt *9} &   klawisz z shift: wyjd¼\\
+key\_sf         & {\tt kind}   & {\tt kF} &   wysy³ane przez przewijaj do przodu\\
+key\_sfind      & {\tt kFND}   & {\tt *0} &   klawisz z shift: znajd¼\\
+key\_shelp      & {\tt kHLP}   & {\tt \#1}&   klawisz z shift: pomoc\\
+key\_shome      & {\tt kHOM}   & {\tt \#2}&   klawisz z shift: dom\\
+key\_sic        & {\tt kIC}    & {\tt \#3}&   klawisz z shift: wstaw znak\\
+key\_sleft      & {\tt kLFT}   & {\tt \#4}&   klawisz z shift: lewo\\
+key\_smessage   & {\tt kMSG}   & {\tt \%a}&   klawisz z shift: wiadomo¶æ\\
+key\_smove      & {\tt kMOV}   & {\tt \%b}&   klawisz z shift: przesuñ\\
+key\_snext      & {\tt kNXT}   & {\tt \%c}&   klawisz z shift: nastêpny\\
+key\_soptions   & {\tt kOPT}   & {\tt \%d}&   klawisz z shift: opcje\\
+key\_sprevious  & {\tt kPRV}   & {\tt \%e}&   klawisz z shift: poprzedni\\
+key\_sprint     & {\tt kPRT}   & {\tt \%f}&   klawisz z shift: drukuj\\
+key\_sr         & {\tt kri}    & {\tt kR} &   wysy³ane przez  przewijaj wstesz/do góry\\
+key\_sredo      & {\tt kRDO}   & {\tt \%g}&   klawisz z shift: powtórz\\
+key\_sreplace   & {\tt kRPL}   & {\tt \%h}&   klawisz z shift: zamieñ\\
+key\_sright     & {\tt kRIT}   & {\tt \%i}&   klawisz z shift: prawo\\
+key\_srsume     & {\tt kRES}   & {\tt \%j}&   klawisz z shift: wznów\\
+key\_ssave      & {\tt kSAV}   & {\tt !1} &   klawisz z shift: zachowaj\\
+key\_ssuspend   & {\tt kSPD}   & {\tt !2} &   klawisz z shift: zawie¶\\
+key\_stab       & {\tt khts}   & {\tt kT} &   wysy³ane przez ustaw tabulator\\
+key\_sundo      & {\tt kUND}   & {\tt !3} &   klawisz z shift: odwo³aj\\
+key\_suspend    & {\tt kspd}   & {\tt \&7}&   klawisz: zawie¶\\
+key\_undo       & {\tt kund}   & {\tt \&8}&   klawisz: odwo³aj\\
+key\_up         & {\tt kcuu1}  & {\tt ku} &   wysy³ane przez strza³kê w górê terminala\\
+keypad\_local   & {\tt rmkx}   & {\tt ke} &   koniec trybu "keypad transmit"\\
+keypad\_xmit    & {\tt smkx}   & {\tt ks} &   w³±cz tryb "keypad transmit"\\
+lab\_f0         & {\tt lf0}    & {\tt l0} &   etykieta klawisza funkcyjnego f0, inaczej f0\\
+lab\_f1         & {\tt lf1}    & {\tt l1} &   etykieta klawisza funkcyjnego f1, inaczej f1\\
+lab\_f2         & {\tt lf2}    & {\tt l2} &   etykieta klawisza funkcyjnego f2, inaczej f2\\
+lab\_f3         & {\tt lf3}    & {\tt l3} &   etykieta klawisza funkcyjnego f3, inaczej f3\\
+lab\_f4         & {\tt lf4}    & {\tt l4} &   etykieta klawisza funkcyjnego f4, inaczej f4\\
+lab\_f5         & {\tt lf5}    & {\tt l5} &   etykieta klawisza funkcyjnego f5, inaczej f5\\
+lab\_f6         & {\tt lf6}    & {\tt l6} &   etykieta klawisza funkcyjnego f6, inaczej f6\\
+lab\_f7         & {\tt lf7}    & {\tt l7} &   etykieta klawisza funkcyjnego f7, inaczej f7\\
+lab\_f8         & {\tt lf8}    & {\tt l8} &   etykieta klawisza funkcyjnego f8, inaczej f8\\
+lab\_f9         & {\tt lf9}    & {\tt l9} &   etykieta klawisza funkcyjnego f9, inaczej f9\\
+lab\_f10        & {\tt lf10}   & {\tt la} &   etykieta klawisza funkcyjnego f10, inaczej f10\\
+label\_on       & {\tt smln}   & {\tt LO} &   w³±cz programowe etykiety\\
+label\_off      & {\tt rmln}   & {\tt LF} &   wy³±cz programowe etykiety\\
+meta\_off       & {\tt rmm}    & {\tt mo} &   wy³±cz tryb meta\\
+meta\_on        & {\tt smm}    & {\tt mm} &   w³±cz tryb meta ( ósmy bit )\\
+micro\_column\_address      & {\tt mhpa}      & {\tt ZY} &   to samo co column\_address dla wyrównywania mikro\\
+micro\_down                 & {\tt mcud1}     & {\tt ZZ} &   to samo co cursor\_down dla wyrównywania mikro\\
+micro\_left                 & {\tt mcub1}     & {\tt Za} &   to samo co cursor\_left dla wyrównywania mikro\\
+micro\_right                & {\tt mcuf1}     & {\tt Zb} &   to samo co cursor\_right dla wyrównywania mikro\\
+micro\_row\_address         & {\tt mvpa}      & {\tt Zc} &   to samo co row\_address dla wyrównywania mikro\\
+micro\_up                   & {\tt mcuu1}     & {\tt Zd} &   to samo co cursor\_up dla wyrównywania mikro\\
+newline                     & {\tt nel}       & {\tt nw} &   nowa linia ( zachowuje siê jak cr i lf)\\
+order\_of\_pins             & {\tt porder}    & {\tt Ze} &   Matches software buts to print-head pins\\
+orig\_colors                & {\tt oc}        & {\tt oc} &   zresetuj wszystkie pary kolorów\\
+orig\_pair                  & {\tt op}        & {\tt op} &   ustawia color-pair do oryginalnej\\
+pad\_char                   & {\tt pad}       & {\tt pc} &   znak dope³niaj±cy ( zamiast nulla )\\
+parm\_dch                   & {\tt dch}       & {\tt DC} &   Usuñ \#1 znaków (PG*)\\
+parm\_delete\_line          & {\tt dl}        & {\tt DL} &   Usuñ \#1 linii (PG*)\\
+parm\_down\_cursor          & {\tt cud}       & {\tt DO} &   przesuñ kursor w dó³ \#1 linii (PG*)\\
+parm\_down\_micro           & {\tt mcud}      & {\tt Zf} &   to samo co cud dla wyrównywania mikro\\
+parm\_ich                   & {\tt ich}       & {\tt IC} &   wstaw \#1 pustych znaków (PG*)\\
+parm\_index                 & {\tt indn}      & {\tt SF} &   przewiñ do przodu \#1 linii (PG)\\
+parm\_insert\_line          & {\tt il}        & {\tt AL} &   dodaj \#1 nowych pustych linii (PG*)\\
+parm\_left\_cursor          & {\tt cub}       & {\tt LE} &   przesuñ kursor w lewo \#1 spacji (PG)\\
+parm\_left\_micro           & {\tt mcub}      & {\tt Zg} &   to samo co cul dla wyrównywania mikro\\
+parm\_right\_cursor         & {\tt cuf}       & {\tt RI} &   przesuñ kursor w prawo \#1 spacji (PG*)\\
+parm\_right\_micro          & {\tt mcuf}      & {\tt Zh} &   to samo co cuf dla wyrównywania mikro\\
+parm\_rindex                & {\tt rin}       & {\tt SR} &   przewiñ do ty³u \#1 linii (PG)\\
+parm\_up\_cursor            & {\tt cuu}       & {\tt UP} &   przesuñ kursor do \#1 linii (PG*)\\
+parm\_up\_micro             & {\tt mcuu}      & {\tt Zi} &   to samo co cuu dla wyrównywania mikro\\
+pkey\_key                   & {\tt pfkey}     & {\tt pk} &   zaprogramuj klawisz funkcyjny 1 aby wysy³a³ ³añcuch \#2\\
+pkey\_local                 & {\tt pfloc}     & {\tt pl} &   zaprogramuj klawisz funkcyjny 1 aby wykona³ ³añcuch \#2\\
+pkey\_xmit                  & {\tt pfx}       & {\tt px} &   zaprogramuj klawisz funkcyjny 1 aby przes³a³ ³añcuch \#2\\
+pkey\_plab                  & {\tt pfxl}      & {\tt xl} &   zaprogramuj klawisz \#1 aby przes³a³ ³añcuch \#2, a pokaza³ \#3\\
+plab\_norm                  & {\tt pln}       & {\tt pn} &   zaprogramuj etykietê \#1 aby pokazywa³a ³añcuch \#2\\
+print\_screen               & {\tt mc0}       & {\tt ps} &   wydrukuj zawarto¶æ ekranu\\
+prtr\_non                   & {\tt mc5p}      & {\tt pO} &   w³±cz drukarkê dla \#1 bajtów\\
+prtr\_off                   & {\tt mc4}       & {\tt pf} &   wy³±cz drukarkê\\
+prtr\_on                    & {\tt mc5}       & {\tt po} &   w³±cz drukarkê\\
+repeat\_char                & {\tt rep}       & {\tt rp} &   powtórz znak \#1 \#2 razy.  (PG*)\\
+req\_for\_input             & {\tt rfi}       & {\tt RF} &   za¿±daj wej¶cia\\
+reset\_1string              & {\tt rs1}       & {\tt r1} &   zresetuj ca³kowicie terminal do domy¶lnych trybów.\\
+reset\_2string              & {\tt rs2}       & {\tt r2} &   zresetuj ca³kowicie terminal do domy¶lnych trybów.\\
+reset\_3string              & {\tt rs3}       & {\tt r3} &   zresetuj ca³kowicie terminal do domy¶lnych trybów.\\
+reset\_file                 & {\tt rf}        & {\tt rf} &   nazwa pliku zawieraj±cego ³añcuch resetuj±cy\\
+restore\_cursor             & {\tt rc}        & {\tt rc} &   przywróæ kursorowi pozycjê ostatniego sc\\
+row\_address                & {\tt vpa}       & {\tt cv} &   pionowa pozycja ( ustaw wiersz ) (PG)\\
+save\_cursor                & {\tt sc}        & {\tt sc} &   zachowaj pozycjê kursora (P)\\
+scancode\_escape            & {\tt scesc}     & {\tt S7} &   escape dla emulacji scancode\\
+scroll\_forward             & {\tt ind}       & {\tt sf} &   przewiñ text do góry (P)\\
+scroll\_reverse             & {\tt ri}        & {\tt sr} &   przewiñ text w dó³(P)\\
+select\_char\_set           & {\tt scs}       & {\tt Zj} &   wybierz zestaw znaków\\
+set0\_des\_seq              & {\tt s0ds}      & {\tt s0} &   prze³±cz siê na zestaw 0 ( EUC zestaw 0, ASCII )\\
+set1\_des\_seq              & {\tt s1ds}      & {\tt s1} &   prze³±cz siê na zestaw 1\\
+set2\_des\_seq              & {\tt s2ds}      & {\tt s2} &   prze³±cz siê na zestaw 2\\
+set3\_des\_seq              & {\tt s3ds}      & {\tt s3} &   prze³±cz siê na zestaw 3\\
+set\_a\_background          & {\tt setab}     & {\tt AB} &   ustaw kolor t³a u¿ywaj±c sekwencji escape ANSI\\
+set\_a\_foreground          & {\tt setaf}     & {\tt AF} &   ustaw kolor textu u¿ywaj±c sekwencji escape ANSI\\
+set\_attributes             & {\tt sgr}       & {\tt sa} &   zdefiniuj atrybuty video (PG9)\\
+set\_background             & {\tt setb}      & {\tt Sb} &   ustaw kolor t³a\\
+set\_bottom\_margin         & {\tt smgb}      & {\tt Zk} &   ustaw górny margines w aktualnej linii\\
+set\_bottom\_margin\_parm   & {\tt smgbp}     & {\tt Zl} &   ustaw liniê doln± na linii \#1 lub \#2\\
+                            &                 &          &   liniach od do³u\\
+set\_color\_band            & {\tt setcolor}  & {\tt Yz} &   zmieñ kolor wymazuj±cy \#1\\
+set\_color\_pair            & {\tt scp}       & {\tt sp} &   ustaw aktualn± parê kolorów\\
+set\_foreground             & {\tt setf}      & {\tt Sf} &   ustaw kolor textu\\
+set\_left\_margin           & {\tt smgl}      & {\tt ML} &   ustaw lewy marines w tej linii\\
+set\_left\_margin\_parm     & {\tt smglp}     & {\tt Zm} &   ustaw lewy ( prawy ) margines w \#1 (\#2)\\
+set\_lr\_margin             & {\tt smglr}     & {\tt ML} &   ustaw oba marginesy: lewy i prawy\\
+set\_page\_length           & {\tt slines}    & {\tt YZ} &   ustaw d³ugo¶æ strony na \#1 linii ( u¿yj tparm )\\
+set\_right\_margin          & {\tt smgr}      & {\tt MR} &   ustaw prawy margines w aktualnej kolumnie\\
+set\_right\_margin\_parm    & {\tt smgrp}     & {\tt Zn} &   ustaw prawy margines w kolumnie \#1\\
+set\_tab                    & {\tt hts}       & {\tt st} &   ustaw tabulator we wszystkich liniach w aktualnej kolumnie\\
+set\_tb\_margin             & {\tt smgtb}     & {\tt MT} &   ustaw dolny i górny margines\\
+set\_top\_margin            & {\tt smgt}      & {\tt Zo} &   ustaw górny margines w aktualnej linii\\
+set\_top\_margin\_parm      & {\tt smgtp}     & {\tt Zp} &   ustaw górny margines w linii \#1\\
+set\_window                 & {\tt wind}      & {\tt wi} &   aktualne okno ma \#1-\#2 linii i \#3-\#4 kolumn\\
+start\_bit\_image           & {\tt sbim}      & {\tt Zq} &   zacznij drukowaæ grafikê bitow±\\
+start\_char\_set\_def       & {\tt scsd}      & {\tt Zr} &   rozpocznij definiowaæ zestaw znaków\\
+stop\_bit\_image            & {\tt rbim}      & {\tt Zs} &   zakoñcz drukowaæ grafikê bitow±\\
+stop\_char\_set\_def        & {\tt rcsd}      & {\tt Zt} &   zakoñcz definiowaæ zestaw znaków\\
+subscript\_characters       & {\tt subcs}     & {\tt Zu} &   lista znaków subscriptable\\
+superscript\_characters     & {\tt supcs}     & {\tt Zv} &   lista znaków superscriptable\\
+tab                         & {\tt ht}        & {\tt ta} &   tabulator do nastêpnych 8 spacji to stop sprzêtowego tabulatora\\
+these\_cause\_cr            & {\tt docr}      & {\tt Zw} &   te znaki powoduj± CR\\
+to\_status\_line            & {\tt tsl}       & {\tt ts} &   id¼ do linii statusu, do kolumny \#1\\
+underline\_char             & {\tt uc}        & {\tt uc} &   podkre¶lij znak i przejd¼ za niego\\
+up\_half\_line              & {\tt hu}        & {\tt hu} &   pó³ linii w górê ( cofa 1/2 wysuniêcia )\\
+xoff\_character             & {\tt xoffc}     & {\tt XF} &   znak XON \\
+xon\_character              & {\tt xonc}      & {\tt XN} &   znak XOFF
+\end{supertabular}
+\begin{center}
+( Nastêpuj±ce zdolno¶ci ³añcuchowe wystêpuj± w 
+  strukturze term SYSV, jednak¿e nie s± udokumentowane
+  w podrêczniku. Komentarze zaczerpniête s± z nag³ówka struktury. )
+\end{center}
+\begin{supertabular}{l|c|c|l}
+label\_format               & {\tt fln}     & {\tt Lf} &   format etykiety\\
+set\_clock                  & {\tt sclk}    & {\tt SC} &   ustaw zegar\\
+display\_clock              & {\tt dclk}    & {\tt DK} &   wy¶wietl zegar\\
+remove\_clock               & {\tt rmclk}   & {\tt RC} &   usuñ zegar\\
+create\_window              & {\tt cwin}    & {\tt CW} &   zdefinuj okno \#1 od \#2,\#3 do \#4,\#5\\
+goto\_window                & {\tt wingo}   & {\tt WG} &   id¼ do okna \#1\\
+hangup                      & {\tt hup}     & {\tt HU} &   odwie¶ telefon\\
+dial\_phone                 & {\tt dial}    & {\tt DI} &   wybierz numer telefonu \#1\\
+quick\_dial                 & {\tt qdial}   & {\tt QD} &   wybierz numer telefonu \#1, bez\\
+                            &               &          &   detekcji postêpu\\
+tone                        & {\tt tone}    & {\tt TO} &   wybierz dzwonienie tonowe\\
+pulse                       & {\tt pulse}   & {\tt PU} &   wybierz dzwonienie impulsowe\\
+flash\_hook                 & {\tt hook}    & {\tt fh} &   flash\\
+fixed\_pause                & {\tt pause}   & {\tt PA} &   pauza 2-3 sekundowa\\
+wait\_tone                  & {\tt wait}    & {\tt WA} &   czekaj na dialtone\\
+user0                       & {\tt u0}      & {\tt u0} &   ³añcuch u¿ytkownika \# 0\\
+user1                       & {\tt u1}      & {\tt u1} &   ³añcuch u¿ytkownika \# 1\\
+user2                       & {\tt u2}      & {\tt u2} &   ³añcuch u¿ytkownika \# 2\\
+user3                       & {\tt u3}      & {\tt u3} &   ³añcuch u¿ytkownika \# 3\\
+user4                       & {\tt u4}      & {\tt u4} &   ³añcuch u¿ytkownika \# 4\\
+user5                       & {\tt u5}      & {\tt u5} &   ³añcuch u¿ytkownika \# 5\\
+user6                       & {\tt u6}      & {\tt u6} &   ³añcuch u¿ytkownika \# 6\\
+user7                       & {\tt u7}      & {\tt u7} &   ³añcuch u¿ytkownika \# 7\\
+user8                       & {\tt u8}      & {\tt u8} &   ³añcuch u¿ytkownika \# 8\\
+user9                       & {\tt u9}      & {\tt u9} &   ³añcuch u¿ytkownika \# 9\\
+get\_mouse                  & {\tt getm}    & {\tt Gm} &   curses powinny dostawaæ zdarzenia z przycisków\\
+key\_mouse                  & {\tt kmous}   & {\tt Km} &   nadesz³o zdarzenie z myszki\\
+mouse\_info                 & {\tt minfo}   & {\tt Mi} &   informacje o myszce\\
+pc\_term\_options           & {\tt pctrm}   & {\tt S6} &   opcje terminala PC\\
+req\_mouse\_pos             & {\tt reqmp}   & {\tt RQ} &   za¿±daj raportu o pozycji myszki\\
+zero\_motion                & {\tt zerom}   & {\tt Zx} &   brak ruchu dla znaku
+\end{supertabular}
+
+\end{small}
+
+\section{Przegl±d funkcji $[$N$]$Curses}
+
+W nastêpuj±cej czê¶ci znajdziesz przegl±d ró¿nic pomiêdzy ró¿nymi
+pakietami (n)curses. Pierwsza kolumna zawiera bsd-curses ( tak± jak w
+Slackware 2.1.0 i Sun-OS 4.x ), druga sysv-curses ( Sun-OS 5.4 / Solaris 2 ),
+trzecia ncurses ( wersja \ncver ). Jako t³umacz dodam, ¿e uaktualni³em stan
+implementacji przegl±daj±c ¼ród³a ( u mnie ncurses 5 ).
+
+Czwarta kolumna zawiera odwo³anie do strony, na której funkcja zosta³a opisana
+( je¿eli by³a ).
+
+\begin{itemize}
+\item [x] pakiet posiada tê funkcjê
+\item [n] funkcja niezaimplementowana
+\end{itemize}
+
+\begin{small}
+
+\tablehead{%
+\multicolumn{1}{l|}{\bf Funkcja} & 
+\multicolumn{1}{c|}{\bf BSD} & 
+\multicolumn{1}{c|}{\bf SYSV} &
+\multicolumn{1}{c|}{\bf Nc.} &
+\multicolumn{1}{l||}{\bf Strona} & 
+\multicolumn{1}{l|}{\bf Funkcja} & 
+\multicolumn{1}{c|}{\bf BSD} & 
+\multicolumn{1}{c|}{\bf SYSV} &
+\multicolumn{1}{c|}{\bf Nc.} &
+\multicolumn{1}{l}{\bf Strona}\\
+\hline }
+
+\begin{scriptsize}
+\begin{supertabular}{l|c|c|c|l||l|c|c|c|l}
+{\tt \_init\_trace()}            &   &   & x   &  \funref{fun__init_trace}       &
+{\tt \_traceattr(mode)}          &   &   & x   &  \funref{fun__traceattr}       \\
+{\tt \_tracef(char *, ...)}      &   &   & x   &  \funref{fun__tracef}       &
+{\tt addbytes(...)}              & x &   &     &         \\
+{\tt addch(ch)}                  & x & x & x   &  \funref{fun_addch}       &
+{\tt addchnstr(...)}             &   & x & x   &  \funref{fun_addchnstr}       \\
+{\tt addchstr(chstr)}            &   & x & x   &  \funref{fun_addchstr}       &
+{\tt addnstr(...)}               &   & x & x   &  \funref{fun_addnstr}       \\  
+{\tt addnwstr(...)}              &   & x & x   &         &
+{\tt addstr(str)}                & x & x & x   &  \funref{fun_addstr}       \\
+{\tt addwch(...)}                &   & x &     &         &          
+{\tt addwchnstr(...)}            &   & x &     &         \\          
+{\tt addwchstr(...)}             &   & x &     &         &          
+{\tt addwstr(...)}               &   & x & x   &         \\          
+{\tt adjcurspos()}               &   & x &     &         &       
+{\tt attroff(attr)}              &   & x & x   &  \funref{fun_attroff}       \\
+{\tt attron(attr)}               &   & x & x   &  \funref{fun_attron}       &
+{\tt attrset(attr)}              &   & x & x   &  \funref{fun_attrset}       \\
+{\tt baudrate()}                 & x & x & x   &  \funref{fun_baudrate}       &
+{\tt beep()}                     &   & x & x   &  \funref{fun_beep}       \\
+{\tt bkgd(ch)}                   &   & x & x   &  \funref{fun_bkgd}       &
+{\tt bkgdset(ch)}                &   & x & x   &  \funref{fun_bkgdset}       \\
+{\tt border(...)}                &   & x & x   &  \funref{fun_border}       &
+{\tt box(...)}                   & x & x & x   &  \funref{fun_box}       \\
+{\tt can\_change\_color()}       &   & x & x   &  \funref{fun_can_change_color}       &
+{\tt cbreak()}                   & x & x & x   &  \funref{fun_cbreak}       \\
+{\tt clear()}                    & x & x & x   &  \funref{fun_clear}       &
+{\tt clearok(...)}               & x & x & x   &  \funref{fun_clearok}       \\
+{\tt clrtobot()}                 & x & x & x   &  \funref{fun_clrtobot}       &
+{\tt clrtoeol()}                 & x & x & x   &  \funref{fun_clrtoeol}       \\
+{\tt color\_content(...)}        &   & x & x   &  \funref{fun_color_content}       &
+{\tt copywin(...)}               &   & x & x   &  \funref{fun_copywin}       \\ 
+{\tt crmode()}                   & x & x & x   &  \funref{fun_crmode}       &
+{\tt curs\_set(bf)}              &   & x & x   &  \funref{fun_curs_set}       \\
+{\tt curserr()}                  &   & x &     &         &
+{\tt def\_prog\_mode()}          &   & x & x   &  \funref{fun_def_prog_mode}       \\
+{\tt def\_shell\_mode()}         &   & x & x   &  \funref{fun_def_shell_mode}       &
+{\tt del\_curterm(...)}          &   & x & x   &  \funref{fun_del_curterm}       \\
+{\tt delay\_output(ms)}          &   & x & x   &  \funref{fun_delay_output}       &
+{\tt delch()}                    & x & x & x   &  \funref{fun_delch}       \\
+{\tt deleteln()}                 & x & x & x   &  \funref{fun_deleteln}       &
+{\tt delscreen(...)}             &   & x & x   &  \funref{fun_delscreen}       \\
+{\tt delwin(win)}                & x & x & x   &  \funref{fun_delwin}       &
+{\tt derwin(...)}                &   & x & x   &  \funref{fun_derwin}       \\
+{\tt doupdate()}                 &   & x & x   &  \funref{fun_doupdate}       &
+{\tt drainio(int)}               &   & x &     &         \\
+{\tt dupwin(win)}                &   & x & x   &  \funref{fun_dupwin}       &
+{\tt echo()}                     & x & x & x   &  \funref{fun_echo}       \\
+{\tt echochar(ch)}               &   & x & x   &  \funref{fun_echochar}       &
+{\tt echowchar(ch)}              &   & x &     &         \\         
+{\tt endwin()}                   & x & x & x   &  \funref{fun_endwin}       &
+{\tt erase()}                    & x & x & x   &  \funref{fun_erase}       \\
+{\tt erasechar()}                & x & x & x   &  \funref{fun_erasechar}       &
+{\tt filter()}                   &   & x & x   &  \funref{fun_filter}       \\
+{\tt flash()}                    &   & x & x   &  \funref{fun_flash}       &
+{\tt flushinp()}                 &   & x & x   &  \funref{fun_flushinp}       \\
+{\tt flushok(...)}               & x &   & x   &         &
+{\tt garbagedlines(...)}         &   & x &     &         \\
+{\tt garbagedwin(win)}           &   & x &     &         &
+{\tt getattrs(win)}              &   & x & x   &  \funref{fun_getattrs}       \\
+{\tt getbegyx(...)}              &   & x & x   &  \funref{fun_getbegyx}       &
+{\tt getbkgd(win)}               &   & x & x   &         \\
+{\tt getbmap()}                  &   & x &     &         &
+{\tt getcap(str)}                & x &   &     &         \\
+{\tt getch()}                    & x & x & x   &  \funref{fun_getch}       &
+{\tt getmaxx(win)}               &   & x & x   &  \funref{fun_getmaxx}       \\
+{\tt getmaxy(win)}               &   & x & x   &  \funref{fun_getmaxy}       &
+{\tt getmaxyx(...)}              &   & x & x   &  \funref{fun_getmaxyx}       \\
+{\tt getmouse()}                 &   & x & x   &         &
+{\tt getnwstr(...)}              &   & x &     &         \\          
+{\tt getparyx(...)}              &   & x & x   &  \funref{fun_getparyx}       &
+{\tt getstr(str)}                & x & x & x   &  \funref{fun_getstr}       \\
+{\tt getsyx(...)}                &   & x & x   &  \funref{fun_getsyx}       &
+{\tt gettmode()}                 & x & x &     &         \\
+{\tt getwch(...)}                &   & x &     &         &          
+{\tt getwin(...)}                &   & x & x   &         \\          
+{\tt getwin(FILE *)}             &   & x & x   &  \funref{fun_getwin}       &
+{\tt getwstr(...)}               &   & x &     &         \\          
+{\tt getyx(...)}                 & x & x & x   &  \funref{fun_getyx}       &
+{\tt halfdelay(t)}               &   & x & x   &  \funref{fun_halfdelay}       \\
+{\tt has\_colors()}              &   & x & x   &  \funref{fun_has_colors}       &
+{\tt has\_ic()}                  &   & x & x   &  \funref{fun_has_ic}       \\
+{\tt has\_il()}                  &   & x & x   &  \funref{fun_has_il}       &
+{\tt hline(...)}                 &   & x & x   &  \funref{fun_hline}       \\
+{\tt idcok(...)}                 &   & x & x   &  \funref{fun_idcok}       &
+{\tt idlok(...)}                 & x & x & x   &  \funref{fun_idlok}       \\
+{\tt immedok(...)}               &   & x & x   &  \funref{fun_immedok}       &
+{\tt inch()}                     & x & x & x   &  \funref{fun_inch}      \\
+{\tt inchnstr(...)}              &   & x & x   &  \funref{fun_inchnstr}       &
+{\tt inchstr(...)}               &   & x & x   &  \funref{fun_inchstr}       \\
+{\tt init\_color(...)}           &   & x & x   &  \funref{fun_init_color}       &
+{\tt init\_pair(...)}            &   & x & x   &  \funref{fun_init_pair}       \\
+{\tt initscr()}                  & x & x & x   &  \funref{fun_initscr}       &
+{\tt innstr(...)}                &   & x & x   &  \funref{fun_innstr}       \\
+{\tt innwstr(...)}               &   & x & x   &         &          
+{\tt insch(c)}                   & x & x & x   &  \funref{fun_insch}       \\
+{\tt insdelln(n)}                &   & x & x   &  \funref{fun_insdelln}       &
+{\tt insertln()}                 & x & x & x   &  \funref{fun_insertln}      \\
+{\tt insnstr(...)}               &   & x & x   &  \funref{fun_insnstr}       &
+{\tt insstr(str)}                &   & x & x   &  \funref{fun_insstr}       \\
+{\tt instr(str)}                 &   & x & x   &  \funref{fun_instr}       &
+{\tt inswch(...)}                &   & x &     &         \\         
+{\tt inswstr(...)}               &   & x &     &         &          
+{\tt intrflush(...)}             &   & x & x   &  \funref{fun_intrflush}       \\
+{\tt inwch(...)}                 &   & x &     &         &          
+{\tt inwchnstr(...)}             &   & x &     &         \\         
+{\tt inwchstr(...)}              &   & x &     &         &
+{\tt inwchstr(...)}              &   & x &     &         \\         
+{\tt inwstr(...)}                &   & x & x   &         &          
+{\tt is\_linetouched(...)}       &   & x & x   &  \funref{fun_is_linetouched}      \\
+{\tt is\_wintouched(win)}        &   & x & x   &  \funref{fun_is_wintouched}       &
+{\tt isendwin()}                 &   & x & x   &  \funref{fun_isendwin}       \\
+{\tt keyname(c)}                 &   & x & x   &  \funref{fun_keyname}       &
+{\tt keypad(...)}                &   & x & x   &  \funref{fun_keypad}       \\
+{\tt killchar()}                 & x & x & x   &  \funref{fun_killchar}       &
+{\tt leaveok(...)}               & x & x & x   &  \funref{fun_leaveok}       \\
+{\tt longname()}                 & x & x & x   &  \funref{fun_longname}       &
+{\tt map\_button(long)}          &   & x &     &         \\
+{\tt meta(...)}                  &   & x & x   &  \funref{fun_meta}       &
+{\tt mouse\_off(long)}           &   & x &     &         \\
+{\tt mouse\_on(long)}            &   & x &     &         &
+{\tt mouse\_set(long)}           &   & x &     &         \\
+{\tt move(...)}                  & x & x & x   &  \funref{fun_move}       &
+{\tt movenextch()}               &   & x &     &         \\      
+{\tt moveprevch()}               &   & x &     &         &       
+{\tt mvaddbytes(...)}            & x &   &     &         \\
+{\tt mvaddch(...)}               & x & x & x   &  \funref{fun_mvaddch}       &
+{\tt mvaddchnstr(...)}           &   & x & x   &  \funref{fun_mvaddchnstr}       \\
+{\tt mvaddchstr(...)}            &   & x & x   &  \funref{fun_mvaddchstr}       &
+{\tt mvaddnstr(...)}             &   & x & x   &  \funref{fun_mvaddnstr}       \\
+{\tt mvaddnwstr(...)}            &   & x & x   &         &          
+{\tt mvaddstr(...)}              & x & x & x   &  \funref{fun_mvaddstr}       \\
+{\tt mvaddwch(...)}              &   & x &     &         &          
+{\tt mvaddwchnstr(...)}          &   & x &     &         \\         
+{\tt mvaddwchstr(...)}           &   & x &     &         &          
+{\tt mvaddwstr(...)}             &   & x & x   &         \\         
+{\tt mvcur(...)}                 & x & x & x   &  \funref{fun_mvcur}       &
+{\tt mvdelch(...)}               & x & x & x   &  \funref{fun_mvdelch}      \\
+{\tt mvderwin(...)}              &   & x & x   &  \funref{fun_mvderwin}       &
+{\tt mvgetch(...)}               & x & x & x   &  \funref{fun_mvgetch}       \\
+{\tt mvgetnwstr(...)}            &   & x &     &         &         
+{\tt mvgetstr(...)}              & x & x & x   &  \funref{fun_mvgetstr}       \\
+{\tt mvgetwch(...)}              &   & x &     &         &          
+{\tt mvgetwstr(...)}             &   & x &     &         \\         
+{\tt mvhline(...)}               &   & x & x   &         &
+{\tt mvinch(...)}                & x & x & x   &  \funref{fun_mvinch}      \\
+{\tt mvinchnstr(...)}            &   & x & x   &  \funref{fun_mvinchnstr}       &
+{\tt mvinchstr(...)}             &   & x & x   &  \funref{fun_mvinchstr}      \\
+{\tt mvinnstr(...)}              &   & x & x   &  \funref{fun_mvinnstr}       &
+{\tt mvinnwstr(...)}             &   & x & x   &         \\         
+{\tt mvinsch(...)}               & x & x & x   &  \funref{fun_mvinsch}       &
+{\tt mvinsnstr(...)}             &   & x & x   &  \funref{fun_mvinsnstr}      \\
+{\tt mvinsnwstr(...)}            &   & x &     &         &          
+{\tt mvinsstr(...)}              &   & x & x   &  \funref{fun_mvinsstr}       \\
+{\tt mvinstr(...)}               &   & x & x   &  \funref{fun_mvinstr}       &
+{\tt mvinswch(...)}              &   & x &     &        \\          
+{\tt mvinswstr(...)}             &   & x &     &         &          
+{\tt mvinwch(...)}               &   & x & x   &  \vdmfunc{mvwin\_wch}\\
+{\tt mvinwchnstr(...)}           &   & x & x   &  \vdmfunc{mvwin\_wchnstr}&         
+{\tt mvinwchstr(...)}            &   & x & x   &  \vdmfunc{mvwin\_wchstr}       \\          
+{\tt mvinwstr(...)}              &   & x & x   &         &          
+{\tt mvprintw(...)}              & x & x & x   &  \funref{fun_mvprintw}      \\
+{\tt mvscanw(...)}               & x & x & x   &  \funref{fun_mvscanw}       &
+{\tt mvvline(...)}               &   & x & x   &         \\
+{\tt mvwaddbytes(...)}           & x &   &     &         &
+{\tt mvwaddch(...)}              & x & x & x   &  \funref{fun_mvwaddch}     \\
+{\tt mvwaddchnstr(...)}          &   & x & x   &  \funref{fun_mvwaddchnstr}       &
+{\tt mvwaddchstr(...)}           &   & x & x   &  \funref{fun_mvwaddchstr}      \\
+{\tt mvwaddnstr(...)}            &   & x & x   &  \funref{fun_mvwaddnstr}       &
+{\tt mvwaddnwstr(...)}           &   & x & x   &         \\         
+{\tt mvwaddstr(...)}             & x & x & x   &  \funref{fun_mvwaddstr}       &
+{\tt mvwaddwch(...)}             &   & x &     &         \\         
+{\tt mvwaddwchnstr(...)}         &   & x &     &         &          
+{\tt mvwaddwchstr(...)}          &   & x &     &         \\         
+{\tt mvwaddwstr(...)}            &   & x & x   &         &          
+{\tt mvwdelch(...)}              & x & x & x   &  \funref{fun_mvwdelch}      \\
+{\tt mvwgetch(...)}              & x & x & x   &  \funref{fun_mvwgetch}       &
+{\tt mvwgetnwstr(...)}           &   & x &     &         \\         
+{\tt mvwgetstr(...)}             & x & x & x   &  \funref{fun_mvwgetstr}       &
+{\tt mvwgetwch(...)}             &   & x &     &         \\         
+{\tt mvwgetwstr(...)}            &   & x &     &         &          
+{\tt mvwhline(...)}              &   & x & x   &         \\
+{\tt mvwin(...)}                 & x & x & x   &  \funref{fun_mvwin}       &
+{\tt mvwinch(...)}               & x & x & x   &  \funref{fun_mvwinch}      \\
+{\tt mvwinchnstr(...)}           &   & x & x   &  \funref{fun_mvwinchnstr}       &
+{\tt mvwinchstr(...)}            &   & x & x   &  \funref{fun_mvwinchstr}      \\
+{\tt mvwinnstr(...)}             &   & x & x   &  \funref{fun_mvwinnstr}       &
+{\tt mvwinnwstr(...)}            &   & x &     &         \\         
+{\tt mvwinsch(...)}              & x & x & x   &  \funref{fun_mvwinsch}       &
+{\tt mvwinsnstr(...)}            &   & x & x   &  \funref{fun_mvwinsnstr}       \\
+{\tt mvwinsstr(...)}             &   & x & x   &  \funref{fun_mvwinsstr}       &
+{\tt mvwinstr(...)}              &   & x & x   &  \funref{fun_mvwinstr}       \\
+{\tt mvwinswch(...)}             &   & x &     &         &         
+{\tt mvwinswstr(...)}            &   & x &     &         \\         
+{\tt mvwinwch(...)}              &   & x &     &         &          
+{\tt mvwinwchnstr(...)}          &   & x &     &         \\         
+{\tt mvwinwchstr(...)}           &   & x &     &         &          
+{\tt mvwinwstr(...)}             &   & x &     &         \\         
+{\tt mvwprintw(...)}             & x & x & x   &  \funref{fun_mvwprintw}       &
+{\tt mvwscanw(...)}              & x & x & x   &  \funref{fun_mvwscanw}       \\
+{\tt mvwvline(...)}              &   & x & x   &         &
+{\tt napms(ms)}                  &   & x & x   &  \funref{fun_napms}       \\
+{\tt newkey(...)}                &   & x &     &         &
+{\tt newpad(...)}                &   & x & x   &  \funref{fun_newpad}       \\ 
+{\tt newscreen(...)}             &   & x &     &         &
+{\tt newterm(...)}               &   & x & x   &  \funref{fun_newterm}       \\
+{\tt newwin(...)}                & x & x & x   &  \funref{fun_newwin}       &
+{\tt nl()}                       & x & x & x   &  \funref{fun_nl}       \\
+{\tt nocbreak()}                 & x & x & x   &  \funref{fun_nocbreak}       &
+{\tt nocrmode()}                 & x & x & x   &  \funref{fun_nocrmode}      \\
+{\tt nodelay(...)}               &   & x & x   &  \funref{fun_nodelay}       &
+{\tt noecho()}                   & x & x & x   &  \funref{fun_noecho}       \\
+{\tt nonl()}                     & x & x & x   &  \funref{fun_nonl}       &
+{\tt noqiflush()}                &   & x & x   &  \funref{fun_noqiflush}      \\
+{\tt noraw()}                    & x & x & x   &  \funref{fun_noraw}       &
+{\tt notimeout(...)}             &   & x & x   &  \funref{fun_notimeout}       \\
+{\tt overlay(...)}               & x & x & x   &  \funref{fun_overlay}       &
+{\tt overwrite(...)}             & x & x & x   &  \funref{fun_overwrite}       \\
+{\tt pair\_content(...)}         &   & x & x   &  \funref{fun_pair_content}       &
+{\tt pechochar(...)}             &   & x & x   &  \funref{fun_pechochar}       \\
+{\tt pechowchar(...)}            &   & x &     &         &          
+{\tt pnoutrefresh(...)}          &   & x & x   &  \funref{fun_pnoutrefresh}      \\
+{\tt prefresh(...)}              &   & x & x   &  \funref{fun_prefresh}       &
+{\tt printw(...)}                & x & x & x   &  \funref{fun_printw}       \\
+{\tt putp(char *)}               &   & x & x   &  \funref{fun_putp}       &
+{\tt putwin(...)}                &   & x & x   &  \funref{fun_putwin}       \\
+{\tt qiflush()}                  &   & x & x   &  \funref{fun_qiflush}       &
+{\tt raw()}                      & x & x & x   &  \funref{fun_raw}       \\
+{\tt redrawwin(win)}             &   & x & x   &  \funref{fun_redrawwin}       &
+{\tt refresh()}                  & x & x & x   &  \funref{fun_refresh}      \\
+{\tt request\_mouse\_pos()}      &   & x &     &         &
+{\tt reset\_prog\_mode()}        &   & x & x   &  \funref{fun_reset_prog_mode}      \\
+{\tt reset\_shell\_mode()}       &   & x & x   &  \funref{fun_reset_shell_mode}       &
+{\tt resetty()}                  & x & x & x   &  \funref{fun_resetty}       \\
+{\tt restartterm(...)}           &   & x & x   &  \funref{fun_restartterm}       &
+{\tt ripoffline(...)}            &   & x & x   &  \funref{fun_ripoffline}       \\
+{\tt savetty()}                  & x & x & x   &  \funref{fun_savetty}       &
+{\tt scanw(...)}                 & x & x & x   &  \funref{fun_scanw}       \\
+{\tt scr\_dump(char *)}          &   & x & x   &  \funref{fun_scr_dump}       &
+{\tt scr\_init(char *)}          &   & x & x   &  \funref{fun_scr_init}      \\
+{\tt scr\_restore(char *)}       &   & x & x   &  \funref{fun_scr_restore}       &
+{\tt scr\_set(char *)}           &   & x & x   &  \funref{fun_scr_set}       \\
+{\tt scrl(n)}                    &   & x & x   &  \funref{fun_scrl}       &
+{\tt scroll(win)}                & x & x & x   &  \funref{fun_scroll}       \\
+{\tt scrollok(...)}              & x & x & x   &  \funref{fun_scrollok}       &
+{\tt set\_curterm(...)}          &   & x & x   &  \funref{fun_set_curterm}     \\
+{\tt set\_term(...)}             &   & x & x   &  \funref{fun_set_term}       &
+{\tt setcurscreen(SCREEN *)}     &   & x &     &         \\
+{\tt setscrreg(...)}             &   & x & x   &  \funref{fun_setscrreg}       &
+{\tt setsyx(...)}                &   & x & x   &  \funref{fun_setsyx}      \\
+{\tt setterm(char *)}            & x & x & x   &  \funref{fun_setterm}       &
+{\tt setupterm(...)}             &   & x & x   &  \funref{fun_setupterm}      \\
+{\tt slk\_attroff(attr)}         &   & x & x   &  \funref{fun_slk_attroff}       &
+{\tt slk\_attron(attr)}          &   & x & x   &  \funref{fun_slk_attron}       \\
+{\tt slk\_attrset(attr)}         &   & x & x   &  \funref{fun_slk_attrset}       &
+{\tt slk\_clear()}               &   & x & x   &  \funref{fun_slk_clear}       \\
+{\tt slk\_init(fmt)}             &   & x & x   &  \funref{fun_slk_init}       &
+{\tt slk\_label(labnum)}         &   & x & x   &  \funref{fun_slk_label}       \\
+{\tt slk\_noutrefresh()}         &   & x & x   &  \funref{fun_slk_noutrefresh}       &
+{\tt slk\_refresh()}             &   & x & x   &  \funref{fun_slk_refresh}      \\
+{\tt slk\_restore()}             &   & x & x   &  \funref{fun_slk_restore}       &
+{\tt slk\_set(...)}              &   & x & x   &  \funref{fun_slk_set}       \\
+{\tt slk\_touch()}               &   & x & x   &  \funref{fun_slk_touch}       &
+{\tt standend()}                 & x & x & x   &  \funref{fun_standend}       \\
+{\tt standout()}                 & x & x & x   &  \funref{fun_standout}       &
+{\tt start\_color()}             &   & x & x   &  \funref{fun_start_color}      \\
+{\tt subpad(...)}                &   & x & x   &  \funref{fun_subpad}       &
+{\tt subwin(...)}                & x & x & x   &  \funref{fun_subwin}       \\
+{\tt syncok(...)}                &   & x & x   &  \funref{fun_syncok}       &
+{\tt termattrs()}                &   & x & x   &  \funref{fun_termattrs}      \\
+{\tt termname()}                 &   & x & x   &  \funref{fun_termname}       &
+{\tt tgetent(...)}               &   & x & x   &  \funref{fun_nc_tgetent}       \\
+{\tt tgetflag(char [2])}         &   & x & x   &  \funref{fun_nc_tgetflag}       &
+{\tt tgetnum(char [2])}          &   & x & x   &  \funref{fun_nc_tgetnum}       \\
+{\tt tgetstr(...)}               &   & x & x   &  \funref{fun_nc_tgetstr}       &
+{\tt tgoto(...)}                 &   & x & x   &  \funref{fun_tgoto}       \\
+{\tt tigetflag(...)}             &   & x & x   &  \funref{fun_tigetflag}       &
+{\tt tigetnum(...)}              &   & x & x   &  \funref{fun_tigetnum}      \\
+{\tt tigetstr(...)}              &   & x & x   &  \funref{fun_tigetstr}       &
+{\tt timeout(t)}                 &   & x & x   &  \funref{fun_timeout}       \\
+{\tt touchline(...)}             & x & x & x   &  \funref{fun_touchline}       &
+{\tt touchwin(win)}              & x & x & x   &  \funref{fun_touchwin}       \\
+{\tt tparm(...)}                 &   & x & x   &  \funref{fun_tparm}       &
+{\tt tputs(...)}                 &   &   & x   &  \funref{fun_nc_tputs}       \\
+{\tt traceoff()}                 &   & x & x   &  \funref{fun_traceoff}       &
+{\tt traceon()}                  &   & x & x   &  \funref{fun_traceon}       \\
+{\tt typeahead(fd)}              &   & x & x   &  \funref{fun_typeahead}       &
+{\tt unctrl(chtype c)}           &   & x & x   &  \funref{fun_unctrl}       \\
+{\tt ungetch(ch)}                &   & x & x   &  \funref{fun_ungetch}       &
+{\tt ungetwch(c)}                &   & x &     &         \\         
+{\tt untouchwin(win)}            &   & x & x   &  \funref{fun_untouchwin}       &
+{\tt use\_env(bf)}               &   & x & x   &  \funref{fun_use_env}       \\
+{\tt vidattr(...)}               &   & x & x   &  \funref{fun_vidattr}       &
+{\tt vidputs(...)}               &   & x & x   &  \funref{fun_vidputs}       \\
+{\tt vidupdate(...)}             &   & x &     &         & 
+{\tt vline(...)}                 &   & x & x   &  \funref{fun_vline}      \\
+{\tt vwprintw(...)}              &   & x & x   &  \funref{fun_vwprintw}       &
+{\tt vwscanw(...)}               &   & x & x   &  \funref{fun_vwscanw}      \\
+{\tt waddbytes(...)}             & x &   &     &         &
+{\tt waddch(...)}                & x & x & x   &  \funref{fun_waddch}       \\
+{\tt waddchnstr(...)}            &   & x & x   &  \funref{fun_waddchnstr}       &
+{\tt waddchstr(...)}             &   & x & x   &  \funref{fun_waddchstr}      \\
+{\tt waddnstr(...)}              &   & x & x   &  \funref{fun_waddnstr}       &
+{\tt waddnwstr(...)}             &   & x & x   &         \\         
+{\tt waddstr(...)}               & x & x & x   &  \funref{fun_waddstr}       &
+{\tt waddwch(...)}               &   & x &     &         \\         
+{\tt waddwchnstr(...)}           &   & x &     &         &          
+{\tt waddwchstr(...)}            &   & x &     &         \\         
+{\tt waddwstr(...)}              &   & x & x   &         &          
+{\tt wadjcurspos(win)}           &   & x &     &         \\         
+{\tt wattroff(...)}              &   & x & x   &  \funref{fun_wattroff}       &
+{\tt wattron(...)}               &   & x & x   &  \funref{fun_wattron}      \\
+{\tt wattrset(...)}              &   & x & x   &  \funref{fun_wattrset}       &
+{\tt wbkgd(...)}                 &   & x & x   &  \funref{fun_wbkgd}       \\
+{\tt wbkgdset(...)}              &   & x & x   &  \funref{fun_wbkgdset}       &
+{\tt wborder(...)}               &   & x & x   &  \funref{fun_wborder}       \\
+{\tt wclear(win)}                & x & x & x   &  \funref{fun_wclear}       &
+{\tt wclrtobot(win)}             & x & x & x   &  \funref{fun_wclrtobot}       \\
+{\tt wclrtoeol(win)}             & x & x & x   &  \funref{fun_wclrtoeol}       &
+{\tt wcursyncup(win)}            &   & x & x   &  \funref{fun_wcursyncup}       \\
+{\tt wdelch(win)}                & x & x & x   &  \funref{fun_wdelch}       &
+{\tt wdeleteln(win)}             & x & x & x   &  \funref{fun_wdeleteln}       \\
+{\tt wechochar(...)}             &   & x & x   &  \funref{fun_wechochar}       &
+{\tt wechowchar(...)}            &   & x &     &         \\        
+{\tt werase(win)}                & x & x & x   &  \funref{fun_werase}       &
+{\tt wgetch(win)}                & x & x & x   &  \funref{fun_wgetch}      \\
+{\tt wgetnstr(...)}              &   & x & x   &  \funref{fun_wgetnstr}       &
+{\tt wgetnwstr(...)}             &   & x &     &         \\         
+{\tt wgetstr(...)}               & x & x & x   &  \funref{fun_wgetstr}       &
+{\tt wgetwch(...)}               &   & x &     &         \\         
+{\tt wgetwstr(...)}              &   & x &     &         &          
+{\tt whline()}                   &   & x &     &         \\
+{\tt whline(...)}                &   & x &     &         &
+{\tt whline(...)}                &   & x & x   &  \funref{fun_whline}     \\
+{\tt winch(win)}                 & x & x & x   &  \funref{fun_winch}       &
+{\tt winchnstr(...)}             &   & x & x   &  \funref{fun_winchnstr}     \\
+{\tt winchstr(...)}              &   & x & x   &  \funref{fun_winchstr}       &
+{\tt winnstr(...)}               &   & x & x   &  \funref{fun_winnstr}       \\
+{\tt winnwstr(...)}              &   & x & x   &         &          
+{\tt winsch(...)}                & x & x & x   &  \funref{fun_winsch}       \\
+{\tt winsdelln(...)}             & x & x & x   &  \funref{fun_winsdelln}       &
+{\tt winsertln(win)}             &   & x & x   &  \funref{fun_winsertln}      \\
+{\tt winsnstr(...)}              &   & x & x   &  \funref{fun_winsnstr}       &
+{\tt winsnwstr(...)}             &   & x &     &         \\         
+{\tt winsstr(...)}               &   & x & x   &  \funref{fun_winsstr}       &
+{\tt winstr(...)}                &   & x & x   &  \funref{fun_winstr}      \\
+{\tt winswch(...)}               &   & x &     &         &          
+{\tt winswstr(...)}              &   & x &     &         \\        
+{\tt winwch(...)}                &   & x &     &         &          
+{\tt winwchnstr(...)}            &   & x &     &         \\         
+{\tt winwchstr(...)}             &   & x &     &         &          
+{\tt winwstr(...)}               &   & x & x   &         \\         
+{\tt wmouse\_position(...)}      &   & x &     &         &
+{\tt wmove(...)}                 & x & x & x   &  \funref{fun_wmove}     \\
+{\tt wmovenextch(win)}           &   & x &     &         &          
+{\tt wmoveprevch(win)}           &   & x &     &         \\         
+{\tt wnoutrefresh(win)}          &   & x & x   &  \funref{fun_wnoutrefresh}       &
+{\tt wprintw(...)}               & x & x & x   &  \funref{fun_wprintw}      \\
+{\tt wredrawln(...)}             &   & x & x   &  \funref{fun_wredrawln}       &
+{\tt wrefresh(win)}              & x & x & x   &  \funref{fun_wrefresh}       \\
+{\tt wscanw(...)}                & x & x & x   &  \funref{fun_wscanw}       &
+{\tt wscrl(...)}                 &   & x & x   &  \funref{fun_wscrl}       \\
+{\tt wsetscrreg(...)}            &   & x & x   &  \funref{fun_wsetscrreg}       &
+{\tt wstandend(win)}             & x & x & x   &  \funref{fun_wstandend}      \\
+{\tt wstandout(win)}             & x & x & x   &  \funref{fun_wstandout}       &
+{\tt wsyncdown(win)}             &   & x & x   &  \funref{fun_wsyncdown}       \\
+{\tt wsyncup(win)}               &   & x & x   &  \funref{fun_wsyncup}       &
+{\tt wtimeout(...)}              &   & x & x   &  \funref{fun_wtimeout}       \\
+{\tt wtouchln(...)}              &   & x & x   &  \funref{fun_wtouchln}       &
+{\tt wvline()}                   &   & x &     &         \\
+{\tt wvline(...)}                &   & x & x   &         &
+{\tt wvline(...)}                &   & x & x   &  \funref{fun_wvline}      \\
+\end{supertabular}
+\end{scriptsize}
+\end{small}
+
+Bêdzie kontynuowane...
+
+\endinput
