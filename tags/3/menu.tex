@@ -1,0 +1,520 @@
+\author{Pawe³ Niewiadomski}
+
+\section{Menu}
+Poni¿sze informacje zosta³y zebrane z plików \vdmunix{ncurses 4.2}. Przyk³ad
+dostarczany jest z \vdmunix{ncurses, plik ncurses.c}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Tworzenie, usuwanie, wy¶wietlanie}
+\begin{itemize}
+\item  {\tt  MENU *new\_menu(ITEM **items)}\label{fun_new_menu}\\
+Tworzy menu po³±czone ze wska¼nikiem na elementy, zwraca wska¼nik
+na nowe menu. Menu jest inicjowane warto¶ciami domy¶lnego menu.
+\begin{verbatim}Zwraca:  
+        NULL - b³±d
+\end{verbatim}
+
+\item  {\tt  int free\_menu(MENU *menu)}\label{fun_free_menu}\\  
+Od³±cza menu od wska¼nika elementów, zwalnia pamiêæ zaallokowan± na menu.
+\begin{verbatim}Zwraca: 
+        E_OK               - sukces
+        E_BAD_ARGUMENT    - nieprawid³owy wska¼nik
+        E_POSTED           - menu jest wy¶wietlane
+\end{verbatim}
+
+\item  {\tt  int post\_menu(MENU *)}\label{fun_post_menu}\\
+Wy¶wietla menu, czyni to menu widzialnym.
+\begin{verbatim}Zwraca:  
+        E_OK                 - sukces
+        E_BAD_ARGUMENT      - nieprawid³owy wska¼nik
+        E_SYSTEM_ERROR      - b³±d na ni¿szym poziomie
+        E_NO_ROOM           - menu za du¿e
+        E_NOT_CONNECTED     - brak pod³±czonych elementów
+        E_BAD_STATE         - menu wywo³a³o funkcjê userexit
+        E_POSTED             - ju¿ wy¶wietlane
+\end{verbatim}
+
+\item  {\tt  int unpost\_menu(MENU *)}\label{fun_unpost_menu}\\
+Od³±cz menu od ekranu.
+\begin{verbatim}Zwraca: 
+        E_OK               - sukces
+        E_BAD_ARGUMENT    - nieprawid³owy wska¼nik
+        E_BAD_STATE       - menu wywo³a³o funkcjê userexit
+        E_NOT_POSTED      - nie jest wy¶wietlane
+\end{verbatim}
+
+\item  {\tt  int set\_menu\_win(MENU *menu, WINDOW *win)}\label{fun_set_menu_win}\\
+Ustawia okno menu.
+\begin{verbatim}Zwraca:  
+        E_OK               - sukces
+        E_POSTED           - menu jest wy¶wietlane
+\end{verbatim}
+
+\item  {\tt  WINDOW *menu\_win(const MENU *)}\label{fun_menu_win}\\
+Podaje wska¼nik do okna menu.
+\begin{verbatim}Zwraca: 
+        NULL lub wska¼nik
+\end{verbatim}
+
+\item  {\tt  int set\_menu\_sub(MENU *menu, WINDOW *win)}\label{fun_set_menu_sub}\\
+Ustawia podokno menu.
+\begin{verbatim}Zwraca: 
+        E_OK           - sukces
+        E_POSTED       - menu jest wy¶wietlane
+\end{verbatim}
+
+\item  {\tt  WINDOW *menu\_sub(const MENU *menu)}\label{fun_menu_sub}\\
+Zwraca wska¼nik do podokna menu.
+\begin{verbatim}Zwraca:  
+        NULL lub wska¼nik
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Funkcje inicjalizuj±ce}
+\begin{itemize}
+\item {\tt int set\_menu\_init(MENU *menu, void (*f)(MENU *))} \label{fun_set_menu_init}\\
+Ustawia funkcjê, która jest wywo³ywana podczas wy¶wietlania menu lub zaraz po
+zmianie górnego wiersza.   
+\begin{verbatim}
+Zwraca:  
+        E_OK               - sukces
+\end{verbatim}
+
+\item {\tt void (*)(MENU *) menu\_init(const MENU *menu)
+Zwraca adres funkcji wywo³ywanej podczas wy¶wietlania lub po zmianie pierwszego
+wiersza menu.}
+\begin{verbatim}
+Zwraca: 
+        Adres funkcji lub NULL
+\end{verbatim}
+
+\item {\tt int set\_menu\_term (MENU *menu, void (*f)(MENU *))
+Ustawia funkcjê wywo³ywan± gdy menu jest chowane lub przed zmian± górnego
+wiersza.}\label{fun_set_menu_term}\\
+\begin{verbatim}
+Zwraca: 
+        E_OK  - sukces
+\end{verbatim}
+
+\item  {\tt void (*)(MENU *) menu\_term(const MENU *menu)}\label{fun_menu_term}\\
+Podaje adres funkcji wywo³ywanej przed zmian± górnego wiersze, ewentualnie
+chowaniem menu.
+\begin{verbatim}
+Zwraca:  
+        Adres lub NULL
+\end{verbatim}
+
+\item  {\tt int set\_item\_init (MENU *menu, void (*f)(MENU *))}\label{fun_set_item_init}\\
+Ustawia funkcjê, która bêdzie wywo³ywana podczas wy¶wietlania menu lub po 
+zmianie aktualnego elementu.
+\begin{verbatim}
+Zwraca: 
+        E_OK               - sukces
+\end{verbatim}
+
+\item  {\tt void (*)(MENU *) item\_init (const MENU *menu)}\label{fun_item_init}\\
+Podaje adres funkcji ustawionej za pomoc± \vdmfunc{set\_item\_init}.
+\begin{verbatim}
+Zwraca:
+        Adres funkcji inicjuj±cej lub NULL
+\end{verbatim}
+
+\item  {\tt int set\_item\_term (MENU *menu, void (*f)(MENU *))}\label{fun_set_item_term}\\
+Ustawia funkcjê, która jest wywo³ywana gdy menu znika lub tu¿ przed zmian±
+aktualnego elementu.
+\begin{verbatim}
+Zwraca:    
+        E_OK               - sukces
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Formatowanie, skalowanie}
+\begin{itemize}
+\item  {\tt  int set\_menu\_spacing(MENU *menu,int desc, int r, int c)}\label{fun_set_menu_spacing}\\
+Ustaw odstêpny miêdzy elementami.
+\begin{verbatim}Zwraca:
+        E_OK                 - sukces
+\end{verbatim}
+
+\item  {\tt  int menu\_spacing (const MENU *,int *,int *,int *)}\label{fun_menu_spacing}\\
+Pobierz informacje na temat odstêpów miêdzy elementami.
+\begin{verbatim}Zwraca:  
+        E_OK             - sukces
+\end{verbatim}
+\item {\tt int set\_menu\_format(MENU *menu, int rows, int cols)} \label{fun_set_menu_format}\\
+Ustawia maxymaln± liczbê wierszy i kolumn wy¶wietlanych na raz w menu. Je¿eli
+menu zawiera wiêcej elementów bêdzie mo¿na je przesuwaæ.
+\begin{verbatim}
+Zwraca:
+        E_OK                   - sukces
+        E_BAD_ARGUMENT        - nieprawid³owa warto¶æ
+        E_NOT_CONNECTED       - brak pod³±czonych elementów
+        E_POSTED               - menu jest ju¿ wy¶wietlane
+\end{verbatim}
+
+\item {\tt void menu\_format(const MENU *menu, int *rows, int *cols)} \label{fun_menu_format}\\
+Podaje maxymaln± liczbê wierszy i kolumn wy¶wietlanych na raz w menu.
+
+\item  {\tt  int scale\_menu(const MENU *menu)}\label{fun_scale_menu}\\
+Podaje minimalny rozmiar okna potrzebny dla podokna menu.
+\begin{verbatim}Zwraca:  
+        E_OK                   - sukces
+        E_BAD_ARGUMENT        - nieprawid³owy wska¼nik
+        E_NOT_CONNECTED       - brak pod³±czonych elementów
+\end{verbatim}
+
+\item  {\tt  int set\_menu\_pad(MENU *menu, int pad)}\label{fun_set_menu_pad}\\
+Ustaw znak bêdacy separatorem nazwy menu od opisu. Musi to byæ znak drukowalny.
+\begin{verbatim}Zwraca:  
+        E_OK               - sukces
+        E_BAD_ARGUMENT    - podano nieprawid³ow± warto¶æ
+\end{verbatim}
+
+\item  {\tt  int menu\_pad(const MENU *menu)}\label{fun_menu_pad}\\
+Podaj znak ustawiony przez \vdmfunc{set\_menu\_pad}.
+\begin{verbatim}Zwraca:  
+        znak wype³niaj±cy
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Opcje}
+\begin{itemize}
+\item  {\tt  int set\_menu\_opts(MENU *menu, Menu\_Options opts)}\label{fun_set_menu_opts}\\
+Ustawia opcje tego menu. Je¿eli aplikacja ustawieñ wi±¿e siê ze zmian±
+rozmiaru okna zostanie ono przekalkulowane, taka operacja jest
+zabroniona podczas wy¶wietlania menu.
+\begin{verbatim}Zwraca:  
+        E_OK            - sukces
+        E_BAD_ARGUMENT - nieprawid³owe opcje
+        E_POSTED        - menu jest wy¶wietlane
+\end{verbatim}
+
+\item  {\tt  int menu\_opts\_off(MENU *menu, Menu\_Options opts)}\label{fun_menu_opts_off}\\
+Wy³±cz opcje menu. Je¿eli aplikacja ustawieñ wi±¿e siê ze zmian± rozmiaru okna 
+zostanie ono przekalkulowane, taka operacja jest zabroniona podczas wy¶wietlania
+menu.
+\begin{verbatim}Zwraca:  
+        E_OK            - sukces
+        E_BAD_ARGUMENT - nieprawid³owe opcje
+        E_POSTED        - menu jest wy¶wietlane
+\end{verbatim}
+
+\item  {\tt  int menu\_opts\_on(MENU *menu, Menu\_Options opts)}\label{fun_menu_opts_on}\\
+W³±cz opcje menu. Je¿eli aplikacja ustawieñ wi±¿e siê ze zmian±
+rozmiaru okna zostanie ono przekalkulowane, taka operacja jest
+zabroniona podczas wy¶wietlania menu.
+\begin{verbatim}Zwraca:  
+        E_OK            - sukces
+        E_BAD_ARGUMENT - nieprawid³owe opcje
+        E_POSTED        - menu jest wy¶wietlane
+\end{verbatim}
+
+\item  {\tt  Menu\_Options menu\_opts(const MENU *menu)}\label{fun_menu_opts}\\
+Podaj ustawienia menu.
+\begin{verbatim}Zwraca:  
+        opcje menu
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Atrybuty}
+\begin{itemize}
+\item {\tt int set\_menu\_fore(MENU *menu, chtype attr)}  \label{fun_set_menu_fore}\\
+Ustawia atrybut wybieralnego elementu. W menu jednowarto¶ciowym atrybut 
+u¿ywany jest do pod¶wietlenia aktualnego elementu, w multiwarto¶ciowych grupy 
+elementów wybranych. 
+\begin{verbatim}
+Zwraca:
+        E_OK - sukces, 
+        E_BAD_ARGUMENT - podano nieprawid³owy argument.
+\end{verbatim}
+
+item {\tt chtype menu\_fore(const MENU* menu)}  \label{fun_menu_fore}\\
+Zwraca atrybut aktualnego elementu ( lub wybranych elementów ).
+
+\item {\tt int set\_menu\_back(MENU *menu, chtype attr)}  \label{fun_set_menu_back}\\
+Ustawia atrybut wybieralnych, lecz nie aktywnych elementów menu. 
+\begin{verbatim}
+Zwraca:
+        E_OK - sukces, 
+        E_BAD_ARGUMENT - podano nieprawid³owy argument.
+\end{verbatim}
+
+\item {\tt chtype menu\_back(const MENU *menu)}  \label{fun_menu_back}\\
+Podaje atrybut elementu wybieralnego.
+ 
+\item {\tt int set\_menu\_grey(MENU *menu, chtype attr)}  \label{fun_set_menu_grey}\\
+Ustawia atrybut niewybieralnego elementu.   
+
+\item {\tt chtype menu\_grey(const MENU *menu)}  \label{fun_menu_grey}\\
+Zwraca atrubut  niewybieralnego elementu menu.
+
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Wzorce}
+\begin{itemize}
+\item  {\tt  char *menu\_pattern(const MENU *menu)}\label{fun_menu_pattern}\\
+Podaje zawarto¶æ bufora wzorca.
+\begin{verbatim}Zwraca:  
+        NULL          - bufor nie jest zaallokowany
+        pusty ³añcuch - bufor jest pusty
+        oczekiwany ³añcuch
+\end{verbatim}
+\item  {\tt  int set\_menu\_pattern(MENU *menu, const char *p)}\label{fun_set_menu_pattern}\\
+Ustawia wzorzec dopasowania, oraz pozycjê na pierwszy element, który go spe³nia.
+\begin{verbatim}Zwraca:  
+        E_OK               - sukces
+        E_BAD_ARGUMENT    - nieprawid³owe menu lub wska¼nik wzorca
+        E_NOT_CONNECTED   - brak elementów po³±czonych z menu
+        E_BAD_STATE       - menu jest w stanie wykonywania hooka
+        E_NO_MATCH        - brak znaków spe³niaj±cych wzorzec
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{¯±dania}
+\begin{itemize}
+\item  {\tt  const char * menu\_request\_name (int request)}\label{fun_menu_request_name}\\
+Pobierz zewnêtrzn± nazwê ¿±dania menu.
+\begin{verbatim}Zwraca:  
+        wska¼nik na nazwê lub NULL
+\end{verbatim}
+
+\item  {\tt  int menu\_request\_by\_name (const char *str)}\label{fun_menu_request_by_name}\\
+Szukaj ¿±dania o podanej nazwie.
+\begin{verbatim}Zwraca:  
+        id             - sukces
+        E_NO_MATCH   - ¿±danie nie znalezione
+\end{verbatim}
+
+\item {\tt int menu\_driver(MENU *menu, int c)} \label{fun_menu_driver}\\
+T³umaczy logiczne ¿±danie 'c' na opowiedni± akcjê.
+\begin{verbatim}
+Zwraca:
+        E_OK             - sukces
+        E_BAD_ARGUMENT  - nieprawid³owy wska¼nik menu
+        E_BAD_STATE     - menu jest u¿ywane przez funkcjê hook u¿ytkownika
+        E_NOT_POSTED    - menu nie jest wy¶wietlane
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Elementy}
+\begin{itemize}
+\item  {\tt  ITEM *new\_item(char *name, char *description)}\label{fun_new_item}\\
+Tworzy nowy element o podanej nazwie i opisie. Zwraca wska¼nik na nowy
+element. \notenm{element musi mieæ nazwê!}
+\begin{verbatim}
+Zwraca:  
+        wska¼nik lub NULL.
+\end{verbatim}
+
+\item  {\tt  int free\_item(ITEM *item)}\label{fun_free_item}\\
+Zwalnia zallokowan± pamiêæ dla danego elementu. 
+\notenm{element pod³±czony nie mo¿e zostaæ usuniêty}
+\begin{verbatim}
+Zwraca:  
+        E_OK              - sukces
+        E_BAD_ARGUMENT    - nieprawid³owy argument
+        E_CONNECTED       - element jest po³±czony z menu
+\end{verbatim}
+
+\item  {\tt  int set\_menu\_items(MENU *menu, ITEM **items)}\label{fun_set_menu_items}\\
+Ustawia wska¼nik na elementy po³±czone z menu.
+\begin{verbatim}
+Zwraca:  
+        E_OK           - sukces
+        E_POSTED       - menu jest wy¶wietlane
+        E_CONNECTED    - jeden lub wiêcej elementów jest
+		                  po³±czonych z innym menu
+        E_BAD_ARGUMENT - nieprawid³owe menu lub tablica elementów
+                           zosta³y podane
+\end{verbatim}
+
+\item  {\tt  ITEM **menu\_items(const MENU *menu)}\label{fun_menu_items}\\
+Zwraca wska¼nik do wska¼nika elementów menu.   
+\begin{verbatim}
+Zwraca:  
+        NULL na b³±d
+\end{verbatim}
+
+\item  {\tt  int item\_count(const MENU *menu)}\label{fun_item_count}\\
+Pobiera liczbê elementów po³±czonych z menu. Je¿eli wka¼nik menu jest
+NULL zwracamy -1.
+\begin{verbatim}
+Zwraca:  
+        liczbê elementów lub -1.
+\end{verbatim}
+
+\item  {\tt  int set\_menu\_mark( MENU *menu, const char *mark )}\label{fun_set_menu_mark}\\
+Ustaw znak s³u¿±cy do oznaczania aktualnego elementu ( lub wybranych dla
+menu wielowarto¶ciowego ). Argument mo¿e byæ NULL. Mo¿e to byæ
+nieco nieprawid³owe - mo¿e zmieniæ rozmiar menu co jest niemo¿liwe
+gdy jest ono ju¿ wy¶wietlane.
+\begin{verbatim}
+Zwraca:  
+        E_OK               - sukces
+        E_BAD_ARGUMENT     - nieprawid³owy argument
+        E_SYSTEM_ERROR     - brak pamiêci aby zachowaæ znak
+\end{verbatim}
+
+\item  {\tt  char *menu\_mark(const MENU *menu)}\label{fun_menu_mark}\\
+Podaje znacznik ustawiony przez \vdmfunc{set\_menu\_mark}.
+\begin{verbatim}
+Zwraca:  
+        znacznik lub NULL
+\end{verbatim}
+
+\item  {\tt  int set\_current\_item(MENU *menu, const ITEM *item)}\label{fun_set_current_item}\\
+Czyni element aktywnym.
+\begin{verbatim}
+Zwraca:  
+        E_OK                - sukces
+\end{verbatim}
+
+\item  {\tt  ITEM *current\_item(const MENU *menu)}\label{fun_current_item}\\
+Podaje aktualny element menu.
+\begin{verbatim}
+Zwraca:  
+        Wska¼nik na element lub NULL
+\end{verbatim}
+
+\item  {\tt  int item\_index(const ITEM *)}\label{fun_item_index}\\
+Zwraca logiczny index tego elementu.  
+\begin{verbatim}
+Zwraca:  
+        index lub ERR je¿eli wska¼nik nie jest prawid³owy
+\end{verbatim}
+
+\item  {\tt  char *item\_name(const ITEM *item)}\label{fun_item_name}\\
+Zwraca nazwê elementu menu.
+\begin{verbatim}
+Zwraca:  
+        wska¼nik do nazwy lub NULL
+\end{verbatim}
+
+\item  {\tt  char *item\_description(const ITEM *item)}\label{fun_item_description}\\
+Podaje opis elementu.
+\begin{verbatim}
+Zwraca: 
+        zobacz powy¿ej
+\end{verbatim}
+
+\item  {\tt  bool item\_visible(const ITEM *item)}\label{fun_item_visible}\\
+Element jest widoczny je¿eli aktualnie pojawi± siê w podoknie wy¶wietlanego
+menu.
+\begin{verbatim}Zwraca:  
+        TRUE  - widzialny
+        FALSE - amba fatima
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Warto¶ci elementów}
+\begin{itemize}
+\item  {\tt  int set\_item\_value(ITEM *item, int value)}\label{fun_set_item_value}\\
+Ustawia warto¶æ wyboru elementów. Jest to mo¿liwe gdy element jest
+wybieralny, oraz nie jest po³±czony z jednowarto¶ciowym menu.
+Je¿eli element jest po³±czony z wy¶wietlanym menu zostanie ono od¶wie¿one.
+\begin{verbatim}Zwraca:  
+        E_OK               - sukces
+        E_REQUEST_DENIED  - nieobieralny lub menu jednowarto¶ciowe
+\end{verbatim}
+
+\item  {\tt  bool item\_value(const ITEM *item)}\label{fun_item_value}\\
+Zwróæ warto¶æ wyboru.   
+\begin{verbatim}Zwraca: 
+        TRUE   - je¿eli element jest wybrany
+        FALSE  - nie jest
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+\subsection{Opcje elementów}
+\begin{itemize}
+\item  {\tt  int set\_item\_opts(ITEM *item, Item\_Options opts)}\label{fun_set_item_opts}\\  
+Ustaw opcje elementu. Je¿eli jest on wy¶wietlany, a zasz³y znacz±ce zmiany
+menu zostanie od¶wie¿one.
+\begin{verbatim}
+Zwraca:  
+        E_OK            - sukces
+        E_BAD_ARGUMENT  - nieprawid³owa opcja dla elementu
+\end{verbatim}
+
+\item  {\tt  int item\_opts\_off(ITEM *item, Item\_Options opts)}\label{fun_item_opts_off}\\   
+Wy³±cz elementowi podane opcje.
+\begin{verbatim}
+Zwraca:  
+        E_OK            - sukces
+        E_BAD_ARGUMENT  - nieprawid³owe opcje
+\end{verbatim}
+
+\item  {\tt  int item\_opts\_on(ITEM *item, Item\_Options opts)}\label{fun_item_opts_on}\\
+W³±cz elementowi podane opcje.
+\begin{verbatim}
+Zwraca:  
+        E_OK            - sukces
+        E_BAD_ARGUMENT  - nieprawid³owe opcje
+\end{verbatim}
+
+\item  {\tt  Item\_Options item\_opts(const ITEM *item)}\label{fun_item_opts}\\ 
+
+Podaj opcje danego elementu.
+\begin{verbatim}
+Zwraca:  
+        opcje elementu.
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dane u¿ytkownika}
+\begin{itemize}
+\item  {\tt  int set\_menu\_userptr(MENU *menu, void *userptr)}\label{fun_set_menu_userptr}\\
+Ustaw w menu wska¼nik zarezerwowany na dane aplikacji ( twoje dodatkowe dane ).
+\begin{verbatim}Zwraca:  
+        E_OK         - sukces
+\end{verbatim}
+
+\item  {\tt  void *menu\_userptr(const MENU *menu)}\label{fun_menu_userptr}\\
+Zwraca wska¼nik na dane ustawione przez \vdmfunc{set\_menu\_userptr}
+\begin{verbatim}Zwraca:  
+        warto¶æ wska¼nika lub NULL
+\end{verbatim}
+
+\item  {\tt  int set\_item\_userptr(ITEM *item, void *userptr)}\label{fun_set_item_userptr}\\
+Ustawia wska¼nik na dane aplikacji - w ka¿dym elemencie jest dodatkowy 
+wska¼nik, który mo¿esz u¿yæ na swoj± potrzebê.
+\begin{verbatim}
+Zwraca:  
+        E_OK  - sukces
+\end{verbatim}
+
+\item  {\tt  void *item\_userptr(const ITEM *item)}\label{fun_item_userptr}\\
+Zwraca wska¼nik na dane aplikacji.   
+\begin{verbatim}
+Zwraca:  
+        warto¶æ wska¼nika lub NULL.
+\end{verbatim}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Inne}
+\begin{itemize}
+\item  {\tt  int set\_top\_row(MENU *menu, int row)}\label{fun_set_top_row}\\
+Czyni podany wiersz wierszem na górze menu.
+\begin{verbatim}
+Zwraca:  
+        E_OK              - sukces
+        E_BAD_ARGUMENT   - z³y wska¼nik lub wiersz
+        E_NOT_CONNECTED  - brak elementów w menu
+\end{verbatim}
+
+\item  {\tt  int top\_row(const MENU *)}\label{fun_top_row}\\
+Podaje numer górnego wiersza. 
+\begin{verbatim}
+Zwraca:  
+        numer lub ERR.
+\end{verbatim}
+
+\item {\tt int pos\_menu\_cursor(const MENU * menu)}  \label{fun_pos_menu_cursor}\\
+Ustaw logiczny kursor na aktualny element.
+\begin{verbatim}
+Zwraca:
+        E_OK             - sukces
+        E_BAD_ARGUMENT  - nieprawid³owe menu
+        E_NOT_POSTED    - menu nie jest wy¶wietlone
+\end{verbatim}
+\end{itemize}

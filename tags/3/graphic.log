@@ -1,0 +1,25 @@
+This is TeX, Version 3.14159 (Web2C 7.3.1) (format=latex 1999.11.19)  28 SEP 2000 21:06
+**graphic.tex
+(graphic.tex
+LaTeX2e <1998/12/01> patch level 1
+Babel <v3.6x> and hyphenation patterns for american, french, german, ngerman, i
+talian, polish, nohyphenation, loaded.
+! Undefined control sequence.
+l.23 \chapter
+             {\label{vdm}Semigrafika}
+? 
+! Emergency stop.
+l.23 \chapter
+             {\label{vdm}Semigrafika}
+End of file on the terminal!
+
+ 
+Here is how much of TeX's memory you used:
+ 20 strings out of 10875
+ 124 string characters out of 97282
+ 44014 words of memory out of 263001
+ 3035 multiletter control sequences out of 10000+0
+ 3640 words of font info for 14 fonts, out of 400000 for 1000
+ 34 hyphenation exceptions out of 1000
+ 7i,0n,6p,111b,7s stack positions out of 300i,100n,500p,50000b,4000s
+No pages of output.

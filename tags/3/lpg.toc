@@ -1,0 +1,191 @@
+\contentsline {chapter}{\numberline {1}Linux - system operacyjny}{9}
+\contentsline {chapter}{\numberline {2}J\k adro Linuxa}{11}
+\contentsline {chapter}{\numberline {3}Pakiet libc}{13}
+\contentsline {chapter}{\numberline {4}'szwajcarski wojskowy scyzoryk' - ioctl}{15}
+\contentsline {chapter}{\numberline {5}Komunikacja mi\k edzyprocesowa w Linuksie}{17}
+\contentsline {section}{\numberline {5.1}Wst\k ep}{17}
+\contentsline {section}{\numberline {5.2}Jednokierunkowe potoki z Unixa}{17}
+\contentsline {subsection}{\numberline {5.2.1}Podstawy}{17}
+\contentsline {subsection}{\numberline {5.2.2}Tworzenie potok\'ow w C}{19}
+\contentsline {subsection}{\numberline {5.2.3}Potoki - prosta metoda!}{24}
+\contentsline {subsection}{\numberline {5.2.4}Atomowe operacje na potokach}{28}
+\contentsline {subsection}{\numberline {5.2.5}Uwagi na temat jednokierunkowych potok\'ow:}{28}
+\contentsline {section}{\numberline {5.3}Nazwane potoki ( FIFO - First In First Out; Kto pierwszy ten lepszy )}{28}
+\contentsline {subsection}{\numberline {5.3.1}Podstawy}{28}
+\contentsline {subsection}{\numberline {5.3.2}Tworzenie FIFO}{29}
+\contentsline {subsection}{\numberline {5.3.3}Operowanie FIFO}{30}
+\contentsline {subsection}{\numberline {5.3.4}Blokowanie akcji przez FIFO}{31}
+\contentsline {subsection}{\numberline {5.3.5}Ohydny sygna\IeC {\l } SIGPIPE}{32}
+\contentsline {section}{\numberline {5.4}IPC w Systemie V}{32}
+\contentsline {subsection}{\numberline {5.4.1}Podstawy}{32}
+\contentsline {subsubsection}{Identyfikatory IPC}{32}
+\contentsline {subsubsection}{Klucze IPC}{32}
+\contentsline {subsubsection}{Polecenie {\tt ipcs}}{33}
+\contentsline {subsubsection}{Komemda {\tt ipcrm}}{34}
+\contentsline {subsection}{\numberline {5.4.2}Kolejki wiadomo\'sci}{34}
+\contentsline {subsubsection}{Wst\k ep}{34}
+\contentsline {subsubsection}{Struktury danych: Wewn\k etrzne i U\.zytkownika}{34}
+\contentsline {paragraph}{Bufor wiadomo\'sci}{34}
+\contentsline {paragraph}{Struktura {\tt msg} w j\k adrze}{36}
+\contentsline {paragraph}{Struktura {\tt msqid\_ds} w j\k adrze}{36}
+\contentsline {paragraph}{Struktura {\tt ipc\_perm} w j\k adrze}{38}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: msgget()}{38}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: msgsnd()}{39}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: msgctl()}{43}
+\contentsline {subsubsection}{msgtool: Interaktywny manipulator kolejk\k a wiadomo\'sci}{46}
+\contentsline {paragraph}{Wprowadzenie}{46}
+\contentsline {paragraph}{Sk\IeC {\l }adnia wywo\IeC {\l }ania}{46}
+\contentsline {subparagraph}{Wysy\IeC {\l }anie wiadomo\'sci}{46}
+\contentsline {subparagraph}{Odbieranie wiadomo\'sci}{46}
+\contentsline {subparagraph}{Zmiana praw dost\k epu (trybu)}{46}
+\contentsline {subparagraph}{Usuwanie kolejki}{46}
+\contentsline {paragraph}{Przyk\IeC {\l }ady}{47}
+\contentsline {paragraph}{\'Zr\'od\IeC {\l }o}{47}
+\contentsline {subsection}{\numberline {5.4.3}Semafory}{50}
+\contentsline {subsubsection}{Podstawy}{50}
+\contentsline {subsubsection}{Wewn\k etrzne struktury j\k adra}{51}
+\contentsline {paragraph}{Struktura {\tt semid\_ds} w j\k adrze}{51}
+\contentsline {paragraph}{Struktura {\tt sem} w j\k adrze}{52}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: semget()}{52}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: semop()}{54}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: semctl()}{55}
+\contentsline {subsubsection}{semtool: interaktywny manipulator semafor\'ow}{60}
+\contentsline {paragraph}{Wst\k ep}{60}
+\contentsline {paragraph}{Sk\IeC {\l }adnia wywo\IeC {\l }ania}{60}
+\contentsline {subparagraph}{Tworzenie zestawu semafor\'ow}{60}
+\contentsline {subparagraph}{Blokowanie semaforu}{60}
+\contentsline {subparagraph}{Odblokowywanie semaforu}{60}
+\contentsline {subparagraph}{Zmiana praw dost\k epu ( trybu )}{60}
+\contentsline {subparagraph}{Usuwanie zestawu semafor\'ow}{60}
+\contentsline {paragraph}{Przyk\IeC {\l }ady}{60}
+\contentsline {paragraph}{\'Zr\'od\IeC {\l }o}{61}
+\contentsline {subsubsection}{semstat: kompan programu semtool}{66}
+\contentsline {subsection}{\numberline {5.4.4}Pami\k e\'c dzielona}{68}
+\contentsline {subsubsection}{Podstawy}{68}
+\contentsline {subsubsection}{Struktury danych: wewn\k etrzne i u\.zytkownika}{68}
+\contentsline {paragraph}{Struktura {\tt shmid\_ds} w j\k adrze}{68}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: shmget()}{69}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: shmat()}{70}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: shmctl()}{71}
+\contentsline {subsubsection}{WYWO\IeC {\L }ANIE SYSTEMOWE: shmdt()}{72}
+\contentsline {subsubsection}{shmtool: interaktywny manipulator segmentem pami\k eci dzielonej}{72}
+\contentsline {paragraph}{Wst\k ep}{72}
+\contentsline {paragraph}{Sk\IeC {\l }adnia wywo\IeC {\l }ania}{72}
+\contentsline {subparagraph}{Zapisywanie \IeC {\l }a\'ncuch\'ow do segmentu}{72}
+\contentsline {subparagraph}{Odbieranie \IeC {\l }a\'ncuch\'ow z segmentu}{72}
+\contentsline {subparagraph}{Zmiana praw dost\k epu ( trybu )}{72}
+\contentsline {subparagraph}{Usuwanie segmentu}{72}
+\contentsline {paragraph}{Przyk\IeC {\l }ady}{73}
+\contentsline {paragraph}{\'Zr\'od\IeC {\l }o}{73}
+\contentsline {chapter}{\numberline {6}Gniazda sieciowe - podstawy}{77}
+\contentsline {section}{\numberline {6.1}Podstawowe funkcje}{77}
+\contentsline {section}{\numberline {6.2}TCP: SOCK\_STREAM}{83}
+\contentsline {section}{\numberline {6.3}SOCK\_DGRAM (UDP)}{96}
+\contentsline {section}{\numberline {6.4}PF\_UNIX}{104}
+\contentsline {section}{\numberline {6.5}SOCK\_RAW i PF\_PACKET}{108}
+\contentsline {chapter}{\numberline {7}Zaawansowane programowanie gniazd}{121}
+\contentsline {section}{\numberline {7.1}Socket tuning}{121}
+\contentsline {subsection}{\numberline {7.1.1}setsockopt()/getsockopt()}{121}
+\contentsline {subsection}{\numberline {7.1.2}fcntl()}{125}
+\contentsline {subsection}{\numberline {7.1.3}ioctl()}{126}
+\contentsline {subsection}{\numberline {7.1.4}sysctl() (2.2.x)}{128}
+\contentsline {section}{\numberline {7.2}Programowe konfigurowanie sieci - ioctl()}{128}
+\contentsline {subsection}{\numberline {7.2.1}Zbieranie danych o dost\k epnych interfejsach}{128}
+\contentsline {subsection}{\numberline {7.2.2}Konfigurowanie interfejs\'ow}{131}
+\contentsline {subsection}{\numberline {7.2.3}Modyfikowanie ARP cache'u i tablicy routingu}{132}
+\contentsline {subsection}{\numberline {7.2.4}Komunikacja asynchroniczna}{135}
+\contentsline {subsubsection}{O\_NONBLOCK + poll()/select()}{135}
+\contentsline {subsubsection}{O\_NONBLOCK + sigaction()}{138}
+\contentsline {subsection}{\numberline {7.2.5}Dane typu OOB}{141}
+\contentsline {section}{\numberline {7.3}Wsp\'o\IeC {\l }praca z Inetd}{142}
+\contentsline {section}{\numberline {7.4}Pseudoterminale}{143}
+\contentsline {section}{\numberline {7.5}Funkcje pomocnicze}{147}
+\contentsline {subsection}{\numberline {7.5.1}sendfile()}{147}
+\contentsline {subsection}{\numberline {7.5.2}socketpair()}{148}
+\contentsline {subsection}{\numberline {7.5.3}getsockname(), getpeername()}{149}
+\contentsline {subsection}{\numberline {7.5.4}getproto*(), setprotoent(), endprotoent()}{149}
+\contentsline {subsection}{\numberline {7.5.5}getserv*(), setservent(), endservent()}{150}
+\contentsline {subsection}{\numberline {7.5.6}gethostby*(), sethostent(), endhostent()}{150}
+\contentsline {subsection}{\numberline {7.5.7}inet\_*()}{151}
+\contentsline {chapter}{\numberline {8}Programowanie d\'zwi\k eku}{153}
+\contentsline {section}{\numberline {8.1}Programowanie wewn\k etrznego speakera}{153}
+\contentsline {section}{\numberline {8.2}Programowanie karty d\'zwi\k ekowej}{154}
+\contentsline {section}{\numberline {8.3}Funkcje We/Wy w libc}{156}
+\contentsline {subsection}{\numberline {8.3.1}Sformatowane wyj\'scie}{156}
+\contentsline {subsection}{\numberline {8.3.2}Sformatowane wej\'scie}{158}
+\contentsline {section}{\numberline {8.4}Biblioteka Termcap}{158}
+\contentsline {subsection}{\numberline {8.4.1}Wst\k ep}{158}
+\contentsline {subsection}{\numberline {8.4.2}Szukanie opisu terminala}{159}
+\contentsline {subsection}{\numberline {8.4.3}Spojrzenie na opis terminala}{160}
+\contentsline {subsection}{\numberline {8.4.4}Zdolno\'sci termcap}{161}
+\contentsline {subsubsection}{Zdolno\'sci logiczne}{161}
+\contentsline {subsubsection}{Zdolno\'sci numeryczne}{161}
+\contentsline {subsubsection}{Zdolno\'sci \IeC {\l }a\'ncuchowe}{162}
+\contentsline {section}{\numberline {8.5}Ncurses - Wst\k ep}{168}
+\contentsline {section}{\numberline {8.6}Inicjalizacja}{170}
+\contentsline {section}{\numberline {8.7}Okna}{171}
+\contentsline {section}{\numberline {8.8}Wyj\'scie}{174}
+\contentsline {subsection}{\numberline {8.8.1}Sformatowane wyj\'scie}{175}
+\contentsline {subsection}{\numberline {8.8.2}Wstawianie znak\'ow/linii}{175}
+\contentsline {subsection}{\numberline {8.8.3}Usuwanie znak\'ow/linii}{176}
+\contentsline {subsection}{\numberline {8.8.4}Ramki i linie}{176}
+\contentsline {subsection}{\numberline {8.8.5}T\IeC {\l }o}{177}
+\contentsline {section}{\numberline {8.9}Wej\'scie}{177}
+\contentsline {subsection}{\numberline {8.9.1}Sformatowane wej\'scie}{179}
+\contentsline {section}{\numberline {8.10}Opcje}{179}
+\contentsline {subsubsection}{Opcje wyj\'scia}{179}
+\contentsline {subsection}{\numberline {8.10.1}Opcje wej\'scia}{179}
+\contentsline {subsection}{\numberline {8.10.2}Atrybuty terminala}{181}
+\contentsline {subsection}{\numberline {8.10.3}U\.zywanie opcji}{182}
+\contentsline {section}{\numberline {8.11}Usuwanie okien i linii}{184}
+\contentsline {section}{\numberline {8.12}Aktualizacja terminala}{185}
+\contentsline {section}{\numberline {8.13}Atrybuty video i kolory}{186}
+\contentsline {section}{\numberline {8.14}Wsp\'o\IeC {\l }rz\k edne kursora i okna}{189}
+\contentsline {section}{\numberline {8.15}Przewijanie}{190}
+\contentsline {section}{\numberline {8.16}Dope\IeC {\l }nienie}{191}
+\contentsline {section}{\numberline {8.17}Etykiety programowe}{192}
+\contentsline {section}{\numberline {8.18}Menu}{192}
+\contentsline {subsection}{\numberline {8.18.1}Tworzenie, usuwanie, wy\'swietlanie}{192}
+\contentsline {subsection}{\numberline {8.18.2}Funkcje inicjalizuj\k ace}{194}
+\contentsline {subsection}{\numberline {8.18.3}Formatowanie, skalowanie}{195}
+\contentsline {subsection}{\numberline {8.18.4}Opcje}{196}
+\contentsline {subsection}{\numberline {8.18.5}Atrybuty}{196}
+\contentsline {subsection}{\numberline {8.18.6}Wzorce}{197}
+\contentsline {subsection}{\numberline {8.18.7}\.Z\k adania}{197}
+\contentsline {subsection}{\numberline {8.18.8}Elementy}{198}
+\contentsline {subsection}{\numberline {8.18.9}Warto\'sci element\'ow}{200}
+\contentsline {subsection}{\numberline {8.18.10}Opcje element\'ow}{200}
+\contentsline {subsection}{\numberline {8.18.11}Dane u\.zytkownika}{201}
+\contentsline {subsection}{\numberline {8.18.12}Inne}{201}
+\contentsline {section}{\numberline {8.19}Inne}{202}
+\contentsline {section}{\numberline {8.20}Dost\k ep niskopoziomowy}{203}
+\contentsline {section}{\numberline {8.21}Zrzut ekranu}{203}
+\contentsline {section}{\numberline {8.22}Emulacja termcap}{203}
+\contentsline {section}{\numberline {8.23}Funkcje terminfo}{204}
+\contentsline {section}{\numberline {8.24}Funkcje odpluskwiaj\k ace}{205}
+\contentsline {section}{\numberline {8.25}Zdolno\'sci terminfo}{205}
+\contentsline {subsection}{\numberline {8.25.1}Zdolno\'sci logiczne}{205}
+\contentsline {subsection}{\numberline {8.25.2}Zdolno\'sci liczbowe}{206}
+\contentsline {subsection}{\numberline {8.25.3}Zdolno\'sci \IeC {\l }a\'ncuchowe}{207}
+\contentsline {section}{\numberline {8.26}Przegl\k ad funkcji $[$N$]$Curses}{215}
+\contentsline {chapter}{\numberline {9}Programowanie port\'ow We/Wy}{219}
+\contentsline {section}{\numberline {9.1}Programowanie myszki}{221}
+\contentsline {section}{\numberline {9.2}Programowanie modemu}{222}
+\contentsline {section}{\numberline {9.3}Programowanie drukarki}{222}
+\contentsline {section}{\numberline {9.4}Programowanie joysticka}{222}
+\contentsline {chapter}{\numberline {10}Przenoszenie aplikacji do Linuxa}{223}
+\contentsline {section}{\numberline {10.1}Wst\k ep}{223}
+\contentsline {section}{\numberline {10.2}Obs\IeC {\l }uga sygna\IeC {\l }\'ow}{224}
+\contentsline {subsection}{\numberline {10.2.1}Sygna\IeC {\l }y pod SVR4, BSD i POSIX.1}{224}
+\contentsline {subsection}{\numberline {10.2.2}Opcje sygna\IeC {\l }\'ow w Linuksie}{225}
+\contentsline {subsection}{\numberline {10.2.3}{\em signal\/} pod Linuxem}{225}
+\contentsline {subsection}{\numberline {10.2.4}Sygna\IeC {\l }y obs\IeC {\l }ugiwane przez Linuxa}{226}
+\contentsline {section}{\numberline {10.3}I/O terminala}{226}
+\contentsline {section}{\numberline {10.4}Kontrola i informacja o procesach}{227}
+\contentsline {subsection}{\numberline {10.4.1}Funkcje {\em kvm}}{227}
+\contentsline {subsection}{\numberline {10.4.2}{\em ptrace} i system plik\'ow {\em /proc}}{227}
+\contentsline {subsection}{\numberline {10.4.3}Kontrola proces\'ow pod Linuxem}{227}
+\contentsline {section}{\numberline {10.5}Przeno\'sna warunkowa kompilacja}{228}
+\contentsline {section}{\numberline {10.6}Dodatkowe uwagi}{230}
+\contentsline {chapter}{\numberline {11}Wywo\IeC {\l }ania systemowe w porz\k adku alfabetycznym}{231}
+\contentsline {chapter}{\numberline {12}Skr\'oty}{237}

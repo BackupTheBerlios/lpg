@@ -1,0 +1,87 @@
+\author {Sven Goldt}
+\title {The Linux Programmer's Guide}
+
+\chapter {Programowanie d¼wiêku}
+Ka¿dy PeCet ma co najmniej jedno urz±dzenie generuj±ce d¼wiêk: wewnêtrzny 
+g³o¶nik. Jednak¿e, mo¿esz dokupiæ kartê d¼wiêkow± i pod³±czyæ do twojego 
+komputera, aby uzyskaæ bardziej wyrafinowane urz±dzenie do odtwarzania d¼wiêku.
+Proszê zajrzeæ do "Linux Sound User's Guide" lub do "Sound-HOWTO" po listê 
+obs³ugiwanych kart d¼wiêkowych. 
+
+\section {Programowanie wewnêtrznego speakera}
+Wierzcie lub nie, ale wasz g³o¶nik jest czê¶ci± Linuxowej konsoli i w ten sposób
+urz±dzeniem znakowym. Dlatego, istniej± ¿±dania ioctl() do obs³ugiwania go. 
+Dla wewnêtrznego g³o¶niczka instniej± 2 podstawowe ¿±dania:
+
+\begin {enumerate}
+\item KDMKTONE
+
+	\noindent Generuje sygna³ przez okre¶lony czas u¿ywaj±c zegara j±dra.
+	
+	\noindent Przyk³ad: {\tt ioctl (fd, KDMKTONE, (long) argument)}.
+
+\item KIOCSOUND
+
+	\noindent Generuje nieskoñczony d¼wiêk lub zatrzymuje ten, który w³a¶nie trwa.
+
+	\noindent Przyk³ad: {\tt ioctl(fd, KICOSOUND, (int) ton)}.
+\end {enumerate}
+
+
+{\tt Argument} sk³ada siê z warto¶ci {\tt tonu} w m³odszym s³owie i warto¶ci 
+trwania d¼wiêku w starszym s³owie. Warto¶æ {\tt ton} nie okre¶la czêstotliwo¶ci. 
+Zegar 8254 p³yty g³ównej jest taktowany z czêstotliwo¶ci± 1.19 Mhz, wiêc jest to 
+1190000/czêstotliwo¶æ. Trwanie d¼wiêku mierzone jest tykaniem zegara. Oba 
+wezwania ioctl wracaj± natychmiastowo, tak wiêc mo¿esz robiæ dzwiêki bez 
+blokowania programu.\\
+KDMKTONE powinno siê u¿ywaæ do sygna³ów ostrzegawczych, poniewa¿ nie nale¿y siê 
+martwiæ zatrzymaniem d¼wiêku.\\
+KIOCSOUND mo¿e byæ u¿ywane do odtwarzania melodyjek jak zademonstrowano w 
+przyk³adowym programie splay {\it (przy¶lij wiêcej plików .sng).} Aby zatrzymaæ 
+dzwiêk nale¿y u¿yæ {\tt tonu} o warto¶ci 0.
+
+\section {Programowanie karty d¼wiêkowej}
+
+Dla ciebie jako programisty wa¿na jest wiadomo¶æ czy w danym systemie Linux 
+znajdujê siê pod³±czona karta d¼wiêkowa. Jednym ze sposobów sprawdzenia tego 
+jest sprawdzenie /dev/sndstat. Je¶li otwarcie /dev/sndstat siê nie powiedzie 
+i errno=ENODEV znaczy to, ¿e sterownik d¼wiêku jest nieaktywny, co znaczy, 
+¿e nie otrzymasz pomocy ze strony sterownika d¼wiêku j±dra. Taki sam rezultat 
+otrzymamy przez otwarcie /dev/dsp pod warunkiem, ¿e nie jest to odno¶nik do 
+sterownika pcsnd, gdy¿ w takim przypadku polecenie open() siê uda. 
+
+Je¶li chcesz siê bawiæ kart± dzwiêkow± na poziomie sprzetowym musisz wiedzieæ, 
+¿e pewne kombinacje wywo³añ outb() i inb() wykryj± kartê, której szukasz. 
+
+U¿ywaj±c sterownika d¼wiêku w twoich programach, s± szanse ¿e bêd± one tak¿e 
+chodzi³y na innych systemach ni¿ i386, poniewa¿ jacy¶ m±drzy ludzie u¿yli tych 
+samych sterowników w Linuksie, isc, Free-BSD i wiekszo¶ci innych systemów 
+bazowanych na i386. Pomo¿e to w dostosowaniu programów dla innych architektur, 
+je¶li Linux oferuje ten sam interfejs sterownika d¼wiêku na innej platformie. 
+Nale¿y jednak pamiêtaæ, ¿e karta d¼wiêkowa nie nale¿y do konsoli Linuxa, lecz 
+jest specjalnym urz±dzeniem. Karta d¼wiêkowa g³ównie oferuje te trzy podstawowe 
+cechy:
+
+\begin {samepage}
+\begin {itemize}
+\item Cyfrowe próbkowanie wej¶cia/wyj¶cia
+\item Wyj¶cie o modulowanej czêstotliwo¶ci
+\item Interfejs midi
+\end {itemize}
+\end {samepage}
+
+Ka¿da z tych cech ma w³asny interfejs. Dla próbkowania cyfrowego jest to /dev/dsp, 
+dla modulacji czêstotliwo¶ci jest to /dev/sequencer, a dla interfejsu midi 
+/dev/midi. Ustawienia d¼wiêku (takie jak g³o¶no¶æ, balans, basy, tony) mog± byæ 
+kontrolowane przez interfejs /dev/mixer. Dla kompatybilno¶ci istnieje urz±dzenie 
+/dev/audio, które potrafi czytaæ format d¼wiêku SUN $\mu$-law, ale pasuje to do
+urz±dzenia próbkowania cyfrowego.
+
+Masz racjê zgaduj±c, ¿e u¿ywamy ioctl() do manipulowania tymi urz±dzeniami. 
+Polecenie ioctl() zdefiniowne jest w $<linux/soundcard.h>$ i zaczyna siê od 
+SNDCTL\_.
+
+\bigskip {\bf Poniewa¿ nie posiadam karty d¼wiêkowej, kto¶ inny musi kontynuowaæ dalej}\\
+\\
+Przet³umaczy³: Przemys³aw Nowak $<nowakp@box43.gnet.pl>$
+\endinput

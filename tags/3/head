@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+ 
+foreach $p ( `ls -1 *.html` )
+{
+ $_=$p;
+ /(.*)/;
+ $p=$1;  
+ open( i, $p );
+ @t=<i>;
+ $_="@t";
+ close( i );
+ $h='</HEAD';
+ $m='<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2"></HEAD';
+ 
+ s/$h/$m/i; 
+ 
+ open( o, ">$p");
+ print o ($_);
+ close( o);
+}

@@ -1,0 +1,344 @@
+% To jest samoistna wersja dokumentu 
+
+% Copyright (c)1994-1995, M. Welsh, mdw@cs.cornell.edu
+% Nieograniczona dystrybucja i modyfikacja tego dokumentu s± dozwolone,
+% pod warunkiem, ¿e wspomina siê o autorze orygina³u oraz powy¿sze
+% copyright pozostaje nienaruszone.
+
+\chapter{\label{mdw}Przenoszenie aplikacji do Linuxa}
+\author{Matt Welsh \\ {\tt mdw@cs.cornell.edu}}
+\date{26 Stycznia 1995}
+
+\section{Wstêp}
+
+Przenoszenie aplikacji Unix do Linuxa jest dosyæ ³atwe. Linux i biblioteka 
+GNU C u¿ywana przez niego zosta³y zaprojektowane z my¶l± o przeno¶no¶ci,
+rozumiej±c, ¿e wiele aplikacji skompijuje siê przez zmianê {\tt make}. 
+Te, które generalnie nie u¿ywaj± jakich¶ dziwnych cech lub osobliwych 
+implementacji, lub nie s± oparte na nieudokumentowanym lub niezdefiniowanym
+zachowaniu, powiedzmy, jednego wywo³ania systemowego powinny dzia³aæ.
+
+Linux jest w zasadzie zgodny ze standardem IEEE 1003.1-1988 (POSIX.1), jednak¿e
+nie ma on obecnie takiego certyfikatu. Linux ma tak¿e zaimplementowane
+wiele cech, które mo¿na znale¼æ w odmianach Unixa takich jak SVID lub BSD,
+jednocze¶nie niekoniecznie jest on zgodny we wszystkich wypadkach. Generalnie,
+Linux zosta³ zaprojektowany aby byæ kompatybilnym z innymi implementacjami Unixa,
+aby uczyniæ przenoszenie aplikacji ³atwym; w wielu przypadkach ma poprawione lub
+unowocze¶nione zachowanie znajdywane w innych implementacjach.
+
+Dla przyk³adu, argument {\em timeout\/} przekazywany wywo³aniu systemowemu 
+{\em select\/} jest zmniejszany podczas dzia³ania przez Linuxa. 
+Inne implementacje nie zmieniaj± tej warto¶ci, a aplikacje, które nie spodziewaj±
+siê takiego dzia³ania mog± siê za³amaæ po przeniesienu na Linuxa.
+Strony podrêcznika w BSD i SunOS ostrzegaj±, ¿e w przysz³o¶ci implementacja
+wywo³ania {\em select\/} mo¿e modyfikowaæ argument timeout. Niestety, wiele
+aplikacji zak³ada, i¿ warto¶æ pozostanie nienaruszona.
+
+Celem tego dokumentu jest przedstawienie g³ównych zagadnieñ zwi±zanych z 
+przenoszeniem aplikacji pod Linuxa, podkre¶laj±c róznice miêdzy Linuxem, POSIX.1 oraz 
+SVID i BSD w nastêpuj±cych obszarach: obs³uga sygna³ów, I/O terminala, kontrola
+procesów, zbieranie informacji i przeno¶na warunkowa kompilacja (portable conditional compilation).
+
+\section{Obs³uga sygna³ów}
+
+Przez lata, defninicja i sk³adnia sygna³ów by³a modyfikowana na ró¿ne
+sposoby przez ró¿ne implementacje Unixa. Obecnie, istniej± dwie g³ówne klasy
+symboli: {\em niepewny (unreliable)\/} i {\em pewny (reliable)}. Niepewne
+sygna³y to te, dla których obs³uga sygna³u nie pozostaje po tym jak zosta³
+wywo³any. Te 'jednorazowe' sygna³y musz± zainstalowaæ ponownie obs³ugê sygna³u
+wewn±trz tej¿e obs³ugi, pod warunkiem, ¿e program chce aby obs³uga sygna³u
+pozosta³a zainstalowana. W zwi±zku z tym, mamy sytuacjê wy¶cigu, w którym
+sygna³ mo¿e przybyæ przed obs³ug± sygna³u, co mo¿e spowodowaæ utratê sygna³u
+lub wykonanie oryginalnej obs³ugi ( np. takiej jak zabicie procesu ).
+Dlatego sygna³y te s± niepewne, gdy¿ operacje wychwytywania sygna³u i
+prze-instalowywania obs³ugi nie s± automatyczne.
+
+Podczas dzia³ania sygna³ów niepewnych wywo³ania systemowe nie s± restartowane
+automatycznie kiedy zostan± przerwane przez sygna³. Zatem, aby przygotowaæ
+program na wszelkie wypadki nale¿y sprawdzaæ warto¶æ {\em errno\/} po ka¿dym
+wywo³aniu systemowym oraz je¿eli warto¶ci± jest {\em EINTR} nale¿y ponowiæ
+wywo³anie systemowe.
+ 
+Budowa niepewnych sygna³ów nie daje nam ¿adnego prostego sposobu na atomow±
+pauzê operacji ( u¶pienie procesu do czasu pojawienia siê sygna³u ). Z
+powodu niepewnej natury reinstalacji sygna³ów zachodz± wypadki, w których
+sygna³ przybywa bez realizacji przez program.
+ 
+Podczas dzia³ania sygna³ów pewnych obs³uga sygna³u pozostaje 
+zainstalowana po wywo³aniu, przez to sytuacja wy¶cigu zostaje ominiêta. Do
+tego, wywo³ania systemowe mog± byæ restartowane i atomowa pauza dzia³ania
+jest dostêpna poprzez funkcjê POSIX {\em sigsuspend\/}.
+
+\subsection{Sygna³y pod SVR4, BSD i POSIX.1}
+
+Implementacja sygna³ów pod SVR4 zawiera funkcje {\em signal}, {\em sigset}, 
+{\em sighold}, {\em sigrelse}, {\em sigignore} oraz {\em sigpause}. 
+Funkcja {\em signal\/} pod SVR4 jest identyczna do klasycznych sygna³ów
+Unix V7, dostarczaj±c jedynie niepewne sygna³y. Inne funkcje dostarczaj±
+sygna³y z automatyczn± reinstalacj± obs³ugi sygna³u, jednak¿e nie jest
+os³ugiwana reintalacja wywo³añ systemowych.
+ 
+Pod BSD, funkcje {\em signal}, {\em sigvec}, {\em sigblock},
+{\em sigsetmask} oraz {\em sigpause} s± obs³ugiwane. Wszystkie z tych
+funkcji dostarczaj± pewnych sygna³ów, domy¶lnie, z restartowaniem wywo³añ
+systemowych, jednocze¶nie to zachowanie mo¿e byæ wy³±czone je¿eli sobie tego
+¿yczymy.
+
+Zgodnie z POSIX.1, {\em sigaction}, {\em sigprocmask}, {\em sigpending} i
+{\em sigsuspend} s± dostarczone. Zauwa¿, ¿e nie ma funkcji {\em signal} i
+zgodnie z POSIX.1 jest ona uniewa¿niona. Powy¿sze funckje dostarczaj± pewnych
+sygna³ów, jednocze¶nie resart wywo³añ systemowych nie jest zdefiniowany przez
+POSIX. Je¿eli {\em sigaction} jest u¿ywana pod SVR4 lub BSD restartowanie wywo³añ
+systemowych jest wy³±czone, ale mo¿ee zostaæ w³±czone przez ustawienie znacznika
+sygna³u {\tt SA\_RESTART}.
+
+Zatem, 'najlepszym' sposobem u¿ywania sygna³ów w programie jest pos³ugiwnanie
+siê {\em sigaction}, która pozwala na dok³adne okre¶lenie zachowania siê
+obs³ugi sygna³ów. Niestety, {\em signal} jest nadal u¿ywany i jak widzimy powy¿ej
+dostarcza nam inne dzia³anie pod SVR4 i BSD.
+
+\subsection{Opcje sygna³ów w Linuksie}
+
+W Linuksie zdefiniowano nastêpuj±ce warto¶ci dla {\tt sa\_flags}, cz³onka
+struktury {\tt sigaction}:
+
+\begin{itemize}
+\item {\tt SA\_NOCLDSTOP}: Nie wysy³aj {\tt SIGCHLD} kiedy proces potomny
+zostaje zakoñczony.
+\item {\tt SA\_RESTART}: Wymusza restart wywo³añ systemowych je¿eli zostan±
+przerwane przez obs³ugê sygna³u.
+\item {\tt SA\_NOMASK}: Wy³±cza maskê sygna³ów (signal mask) ( która blokuje sygna³y
+podczas wykonywania obs³ugi sygna³u )
+\item {\tt SA\_ONESHOT}: Usuñ obs³ugê sygna³u po wykonaniu. Zauwa¿, ¿e SVR4
+u¿ywa {\tt SA\_RESETHAND} do tego celu.
+\item {\tt SA\_INTERRUPT}: Zdefiniowane w Linuksie ale nie u¿ywane. Pod SunOS
+wywo³ania systemowe by³y automatycznie restartowane, a ta flaga wy³±cza³a to.
+\item {\tt SA\_STACK}: Obecnie nie u¿ywane (?) (no-op), bêdzie u¿ywane dla
+stosu sygna³ów.
+\end{itemize}
+
+POSIX.1 definiuje tylko {\tt SA\_NOCLDSTOP}, istnieje parê opcji zdefiniowanych
+pod SVR4, które s± niedostêpne pod Linuxem. Podczas przenoszenia aplikacji,
+które u¿ywaj± {\em sigaction} bêdziesz musia³ zmieniæ warto¶ci {\tt sa\_flags}
+aby otrzymaæ po¿±dane dzia³anie.
+
+\subsection{{\em signal\/} pod Linuxem}
+
+Pod Linuxem, funkcja {\em signal\/} jest równowa¿na u¿yciu {\em sigaction}
+z opcjami: {\tt SA\_ONESHOT}, {\tt SA\_NOMASK}.
+Oznacz to, ¿e odpowiada klasycznej budowie sygna³ów niepewnych,
+takich jakie s± u¿ywane pod SVR4.
+
+Je¿eli chcesz aby {\em signal} u¿ywa³ sk³adni BSD: wiêkszo¶æ systemów
+Linux posiada kompatybiln± z BSD bibliotekê, któr± nale¿y po³±czyæ z programem.
+Aby u¿yæ tej biblioteki powiniene¶ dodaæ opcjê
+\begin{verbatim}
+  -I/usr/include/bsd -lbsd
+\end{verbatim}
+do argumentów kompilatora. Kiedy przenosisz aplikacje u¿ywaj±ce {\em signal}
+zwróæ uwagê na to jakie za³o¿enia robi program odno¶nie ob³ugi sygna³ów i
+zmodyfikuj kod ( lub skompiluj z odpowiedni± bibliotek± ) aby otrzymaæ
+odpowiednie dzia³anie.
+
+\subsection{Sygna³y obs³ugiwane przez Linuxa}
+
+Linux obs³uguje prawie wszystkie sygna³y dostarczane w SVR4, BSD i POSIX,
+oprócz paru wyj±tków:
+\begin{itemize}
+\item {\tt SIGEMT} nieobs³ugiwane; pod SVR4 i BSD odpowiada za b³±d sprzêtowy
+\item {\tt SIGINFO} nieobs³ugiwane; pod SVR4 u¿ywane do ¿±dania informacji o 
+klawiaturze
+\item {\tt SIGSYS} nieobs³ugiwane; odpowiada za nieprawid³owe wywo³anie 
+systemowe w SVR4 i BSD. Je¿eli w³±czy³e¶ {\tt libbsd} sygna³ jest przedefiniowany
+na {\tt SIGUNUSED}.
+\item {\tt SIGABRT} i {\tt SIGIOT} s± identyczne.
+\item {\tt SIGIO}, {\tt SIGPOLL}, i {\tt SIGURG} s± identyczne.
+\item {\tt SIGBUS} jest zdefniowane jak {\tt SIGUNUSED}. Technicznie, pod Linuxem
+nie ma czego¶ takiego jak "b³±d magistrali". 
+\end{itemize}
+
+\section{I/O terminala}
+
+Tak jak sygna³y, kontrola I/O terminala ma trzy ró¿ne implementacje pod
+SVR4, BSD i POSIX.1. 
+
+SVR4 u¿ywa struktury {\tt termio}, oraz ró¿nych wywo³añ {\em ioctl} ( takich
+jak {\tt TCSETA}, {\tt TCGETA}, itd. ) na urz±dzeniu terminala w celu uzyskania
+lub ustawienia parametrów struktury {\tt termio}.
+Struktura ta ma postaæ:
+\begin{verbatim}
+  struct termio {
+    unsigned short c_iflag;  /* Tryby wej¶cia */
+    unsigned short c_oflag;  /* Tryby wyj¶cia */
+    unsigned short c_cflag;  /* Tryby kontroli */
+    unsigned short c_lflag;  /* Tryby ustawiania (discipline) linii */
+    char c_line;             /* Porz±dek (discipline) linii */
+    unsigned char c_cc[NCC]; /* Znaki kontrolne */
+  };
+\end{verbatim}
+
+Pod BSD u¿ywana jest struktura {\tt sgtty} w powi±zaniu z ró¿nymi wywo³aniami
+{\em ioctl}, takimi jak {\tt TIOCGETP}, {\tt TIOCSETP}, itd.
+
+Pod POSIX u¿ywana jest struktura {\tt termios}, oraz ró¿ne funkcje zdefiniowane
+przez POSIX.1, takie jak: {\em tcsetattr} i {\tt tcgetattr}. Struktura {\tt termios}
+jest identyczna ze struktur± {\tt termio} u¿ywan± przez SVR4, jednocze¶nie typy
+maj± zmienione nazwy ( np.:{\tt tcflag\_t} zamiast {\tt unsigned short} ), a
+{\tt NCCS} u¿ywane jest dla okre¶lenia rozmiaru tablicy {\tt c\_cc}.
+
+Pod Linuxem obs³ugiwane przez j±dro s± {\em termios} z POSIX.1 i {\em termio} 
+z SVR4. Oznacza to, ¿e program korzystaj±cy z której¶ z tych metod powinien
+skompilowaæ siê pod Linuxem. Je¿eli nie wierzysz w to, bardzo ³atwo zmodyfikowaæ
+kod u¿ywaj±cy {\tt termio} aby u¿ywa³ {\tt termios}, wystarczy odrobina wiedzy.
+Na szczê¶cie, to nigdy nie powinno byæ konieczne. Nale¿y jednak zwróciæ uwagê na
+to czy program zamierza u¿yæ pole {\tt c\_line} znajduj±ce siê w {\tt termio}.
+Dla wiêkszo¶ci aplikacji warto¶ci± powinno byæ {\tt N\_TTY}, a gdy program
+zak³ada, ¿e inne ustawienie linii jest dostêpne mo¿esz mieæ k³opoty.
+
+Je¿eli twój program u¿ywa {\em sgtty} z BSD, mo¿esz go zlinkowaæ z 
+{\tt libbsd.a}. To zast±pi ¿±dania I/O {\em ioctl} na wywo³ania {\tt termios}
+z POSIX, których u¿ywa j±dro. Je¿eli kompiluj±c taki program oka¿e siê, ¿e
+symbole takie jak {\tt TIOCGETP} s± niezdefiniowane bêdziesz musia³ zlinkowaæ
+program z {\tt libbsd}.
+
+\section{Kontrola i informacja o procesach}
+
+Programy takie jak {\em ps}, {\em top} lub {\tt free} musz± mieæ jaki¶ sposób
+na otrzymawanie informacji z j±dra o procesach i zasobach systemu. Podobnie,
+odpluskiwacze i inne narzêdzia musz± mieæ zdolno¶æ do kontroli i nadzoru
+uruchomionych procesów. Takie mo¿liwo¶ci zosta³y dostarczone pod postaci± ró¿nych
+interfejsów w ró¿nych Unixach i prawie wszystkie z nich s± specyficzne dla
+maszyny lub budowy j±dra. Jak na razie, nie zosta³ stworzony ¿aden ogólnie
+przyjêty interfejs tego rodzaju.
+
+\subsection{Funkcje {\em kvm}}
+
+Wiele programów u¿ywa funkcji takich jak {\em kvm\_open}, {\em kvm\_nlist} i
+{\em kvm\_read} aby dotrzeæ do struktur j±dra prosto poprzez {\em /dev/kmem}.
+Takie programy otwieraj± {\em /dev/kmem}, odczytuj± tabelê sumboli j±dra,
+znajduj± dane w uruchomionym j±drze dziêki tabeli i odczytuj± odpowiednie
+adresy za pomoc± tych funkcji. Poniewa¿ metoda ta wymaga od programu i j±dra
+zgodno¶ci co do rozmiaru i typu struktur takie programy, w wiêkszo¶ci przypadków,
+musz± byæ przekompilowane dla nowego j±dra, rodzaju CPU, itd.
+
+\subsection{{\em ptrace} i system plików {\em /proc}}
+
+Wywo³anie systemowe {\em ptrace} u¿ywane jest pod 4.3BSD i SVID do kontroli
+procesów i odbierania od nich informacji. Klasycznym zastosowaniem tej funkcji
+s± odpluskwiacze, u¿ywaj± one tego wywo³ania do odczytywania stanu lub 
+zatrzymywania uruchomionych procesów. Pod SVR4 {\em ptrace} jest zast±piony
+systemem plików {\em /proc}, który pojawia siê jako katalog zawieraj±cy pojedyñcze pliki
+dla ka¿dego uruchomionego procesu, maj±ce za nazwê ID procesu. Program mo¿e
+otworzyæ plik interesuj±cego procesu i przeprowadziæ ró¿ne wywo³ania
+{\em ioctl} na nim w celu kontroli lub uzyskania informacji o procesie. Podobnie
+program mo¿e czytaæ lub zapisywaæ dane bezpo¶rednio w przestrzeñ adresow±
+procesu poprzez deskryptor pliku z systemu plików {\em /proc}.
+
+\subsection{Kontrola procesów pod Linuxem}
+
+Pod Linuxem wywo³anie systemowe {\em ptrace} jest obs³ugiwane i dzia³a tak jak
+w 4.3BSD. Do otrzymywania informacji o procesach i systemie mo¿na pos³u¿yæ siê
+równie¿ systemem plików {\em /proc}, jednak¿e ró¿ni siê on znacz±co od tego z
+SVR4. Pod Linuxem {\em /proc} zawiera pliki z ogólnymi informacjami o systemie,
+np.: u¿ycie pamiêci, ¶rednie obci±¿enie, za³adowane modu³y, informacje o sieci.
+Do obs³ugi tych plików u¿ywa siê {\em read} i {\em write}, a ich zawarto¶æ
+mo¿e byæ przetworzona przez {\em scanf}. System plików {\em /proc} dostarcza
+katalogu dla ka¿dego uruchomionego procesu, maj±cy za nazwê id procesu. Katalog
+zawiera pliki dostarczaj±ce informacji na temat: linii poleceñ, odno¶ników do
+katalogu roboczego i wykonywanego pliku, otwartych deskryptorów plików, itd.
+J±dro dostarcza tych informacji 'w locie', w odpowiedzi na ¿±dania {\em read}.
+Implementacja taka powoduje, ¿e program taki jak {\em ps} musi przej¶æ przez
+wiele katalogów i otworzyæ wiele plików. Dla porównania, funkcje {\em kvm}
+u¿ywane w innych Unixach odczytuj± bezpo¶rednio struktury danych j±dra
+za pomoc± kilku wywo³añ systemowych.
+
+Oczywi¶cie, ka¿da implemetacja jest tak odmienna, i¿ przenoszenie takich
+aplikacji mo¿e byæ naprawdê ciê¿kie. Powinni¶my zaznaczyæ, ¿e system plików 
+{\em /proc} z SVR4 znacznie ró¿ni siê od tego z Linuxa i nie powinno ich siê
+u¿ywaæ w tym samym znaczeniu. Notabene ka¿dy program, który korzysta z {\em kvm}
+lub systemu plików {\em /proc} z SVR4 nie jest zbytnio przeno¶ny i czê¶ci kodu
+zawieraj±ce te wywo³ania musz± byæ przepisane dla ka¿dego systemu operacyjnego.
+
+Wywo³ania {\em ptrace} w Linuksie s± prawie identyczne z tymi z BSD, jednak¿e
+istnij± ró¿nice:
+\begin{itemize}
+\item ¿adania {\tt PTRACE\_PEEKUSER} i {\tt PTRACE\_POKEUSER} z BSD 
+s± nazwane {\tt PTRACE\_PEEKUSR} i {\tt PTRACE\_POKEUSR} pod Linuxem.
+\item Rejestry procesów mog± byæ ustawione u¿ywaj±c ¿±dania {\tt PTRACE\_POKEUSR}
+z przesuniêciami (offsets) zawartymi w pliku {\tt  /usr/include/linux/ptrace.h}.
+\item ¯±dania {\tt PTRACE\_\{READ,WRITE\}\{TEXT,DATA\}}, {\tt PTRACE\_SETACBKPT},
+{\tt PTRACE\_SETWRBKPT}, {\tt PTRACE\_CLRBKPT} i {\tt PTRACE\_DUMPCORE}
+z SunOS nie s± obs³ugiwane
+
+Brak tych ¿adañ powinien wp³yn±æ na ma³± liczbê istniej±cych programów.
+\end{itemize}
+
+Linux {\em nie dostarcza} funkcji {\em kvm} do czytania przestrzeni adresowej
+j±dra przez program u¿ytkowy, jednak niektóre programy ( w szczególno¶ci
+{\em kmem\_ps} ) u¿ywaj± swoich w³asnych wersji tych funkcji.
+Ogólnie rzecz bior±c, nie s± one przeno¶ne, jakikolwiek kod u¿ywaj±cy funkcji 
+{\em kvm} jest prawdopodobnie zale¿ny od dostêpno¶ci symboli lub struktur danych
+j±dra, nie jest to zbyt bepieczne. U¿ycie funkcji {\em kvm} powinno byæ
+uznane za specyficzne dla architektury.
+
+\section{Przeno¶na warunkowa kompilacja}
+
+Je¿eli musisz zmodyfikowaæ istniej±cy kod w celu przeniesienia go do Linuxa
+mo¿esz u¿yæ parê {\tt ifdef}\ldots {\tt endif} aby wyodrêbniæ specyficzne dla
+Linuxa czê¶ci, lub kod odpowiadaj±cy innym systemom. Czê¶æ programów u¿ywa
+pewnych konwencji co do oddzielania kodu definicjami: {\tt SVR4} dla kodu
+pod System V, {\tt BSD} dla kodu BSD i {\tt linux} dla kodu pod Linuxa.
+
+Biblioteka GNU C u¿ywana przez Linuxa pozwala ci na w³±czenie ró¿nych opcji
+poprzez zdefiniowanie makr:
+\begin{itemize}
+\item {\tt \_\_STRICT\_ANSI\_\_}: tylko ANSI C
+\item {\tt \_POSIX\_SOURCE}: cechy POSIX.1
+\item {\tt \_POSIX\_C\_SOURCE}: je¿eli zdefiniowana jako 1 cechy POSIX.1;
+je¿eli jako 2 cechy POSIX.2.
+\item {\tt \_BSD\_SOURCE}: cechy ANSI, POSIX i BSD.
+\item {\tt \_SVID\_SOURCE}: cechy ANSI, POSIX i System V.
+\item {\tt \_GNU\_SOURCE}: rozszerzenia ANSI, POSIX, BSD, SVID i GNU.
+Domy¶lne je¿eli ¿adne z powy¿szych nie zosta³o zdefiniowane.
+\end{itemize}
+
+Je¿eli zdefiniujesz {\tt \_BSD\_SOURCE} i dodatkowo zostanie zdefiniowana
+{\tt \_FAVOR\_BSD} spowoduje ona, i¿ cechy POSIX i SVR4 zostan±
+przes³oniête przez BSD. Dla przyk³adu: je¿eli zdefiniowano {\tt \_FAVOR\_BSD}
+{\em setjmp} i {\em longjmp} bêd± zachowywaæ i odtwarzaæ maskê sygna³u, 
+{\em getpgrp} bêdzie akceptowa³ jako argument PID. Zauwa¿, i¿ nadal musisz
+zlinkowaæ program z bibliotek± {\tt libbsd} aby otrzymaæ dzia³anie podobne do BSD 
+dla rzeczy, o których by³o mowa wcze¶niej.
+
+Pod Linuxem {\tt gcc} definiuje parê makr automatycznie, a ty mo¿esz je u¿ywaæ.
+Oto one:
+\begin{itemize}
+\item {\tt \_\_GNUC\_\_} (g³ówna wersja GNU C, np.: 2)
+\item {\tt \_\_GNUC\_MINOR\_\_} ( podrzêdna wersja GNU C, np.: 5)
+\item {\tt unix}
+\item {\tt i386}
+\item {\tt linux}
+\item {\tt \_\_unix\_\_}
+\item {\tt \_\_i386\_\_}
+\item {\tt \_\_linux\_\_}
+\item {\tt \_\_unix}
+\item {\tt \_\_i386}
+\item {\tt \_\_linux}
+\end{itemize}
+Wiele programów u¿ywa 
+\begin{verbatim}
+  #ifdef linux
+\end{verbatim} 
+aby wyodrêbniæ kod pod Linuxa. U¿ywaj±c tych makr mo¿esz ³atwo zaadaptowaæ
+istniej±cy kod aby kompilowa³ siê pod Linuxem. Pamiêtaj, i¿ Linux zawiera
+wiêcej cech z System V, wiêc maj±c kod pod SVR4 i BSD najlepiej startowaæ z
+kodu dla System V. Alternatywnie, mo¿esz rozpocz±æ z kodu dla BSD i
+zlinkowaæ program z {\tt libbsd}.
+
+\section{Dodatkowe uwagi} \footnote {Zrobione przez Svena Goldta}
+Rozdzia³ ten opisuje wiêkszo¶æ informacji o przenoszeniu programów za wyj±tkiem
+wywo³añ systemowych, o których mowa w nastêpnym rozdziale, oraz strumieni
+( plotka mówi, ¿e ³adowalny modu³ strumieni istnieje gdzie¶ w 
+ftp.uni-stuttgart.de:pub/systems/linux/isdn ).
+
+\endinput

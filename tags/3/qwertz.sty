@@ -1,0 +1,13 @@
+		
+% qwertz makra TeX-a
+% usuno³em niektóre denerwuj±ce makra - Sven Goldt <25 Oct 94>
+
+\catcode`\"=12 
+\sloppy 
+\newcommand{\mch}[1]{{\ifmmode#1 \else\(#1\)\fi}} 
+\newcommand{\lt}{{\ifmmode{<}\else{\verb+<+}\fi}} 
+\newcommand{\gt}{{\ifmmode{>}\else{\verb+>+}\fi}} 
+\newcommand{\verbar}{{\ifmmode{|}\else{\tt|}\fi}} 
+\newcommand{\idx}[1]{#1\index{#1}}
+\newcommand{\cdx}[1]{#1\index{#1@{\tt #1}}}  
+
