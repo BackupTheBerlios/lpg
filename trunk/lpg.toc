@@ -1,5 +1,5 @@
 \contentsline {chapter}{\numberline {1}Linux - system operacyjny}{9}
-\contentsline {chapter}{\numberline {2}J\k adro Linuxa}{11}
+\contentsline {chapter}{\numberline {2}J\k adro Linuksa}{11}
 \contentsline {chapter}{\numberline {3}Pakiet libc}{13}
 \contentsline {chapter}{\numberline {4}'szwajcarski wojskowy scyzoryk' - ioctl}{15}
 \contentsline {chapter}{\numberline {5}Komunikacja mi\k edzyprocesowa w Linuksie}{17}
@@ -173,13 +173,13 @@
 \contentsline {section}{\numberline {9.2}Programowanie modemu}{222}
 \contentsline {section}{\numberline {9.3}Programowanie drukarki}{222}
 \contentsline {section}{\numberline {9.4}Programowanie joysticka}{222}
-\contentsline {chapter}{\numberline {10}Przenoszenie aplikacji do Linuxa}{223}
+\contentsline {chapter}{\numberline {10}Przenoszenie aplikacji do Linuksa}{223}
 \contentsline {section}{\numberline {10.1}Wst\k ep}{223}
 \contentsline {section}{\numberline {10.2}Obs\IeC {\l }uga sygna\IeC {\l }\'ow}{224}
 \contentsline {subsection}{\numberline {10.2.1}Sygna\IeC {\l }y pod SVR4, BSD i POSIX.1}{224}
 \contentsline {subsection}{\numberline {10.2.2}Opcje sygna\IeC {\l }\'ow w Linuksie}{225}
 \contentsline {subsection}{\numberline {10.2.3}{\em signal\/} pod Linuxem}{225}
-\contentsline {subsection}{\numberline {10.2.4}Sygna\IeC {\l }y obs\IeC {\l }ugiwane przez Linuxa}{226}
+\contentsline {subsection}{\numberline {10.2.4}Sygna\IeC {\l }y obs\IeC {\l }ugiwane przez Linuksa}{226}
 \contentsline {section}{\numberline {10.3}I/O terminala}{226}
 \contentsline {section}{\numberline {10.4}Kontrola i informacja o procesach}{227}
 \contentsline {subsection}{\numberline {10.4.1}Funkcje {\em kvm}}{227}

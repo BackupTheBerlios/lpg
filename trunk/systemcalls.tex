@@ -4,8 +4,8 @@
 
  Wywo³anie systemowe jest zazwyczaj pro¶b± do systemu operacyjnego (j±dra) aby
  zosta³a wykonana operacja zale¿na od sprzêtu/systemu lub uprzywilejowana.  
- Dla Linuxa 1.2 zadeklarowanych zosta³o 140 wywo³añ systemowych. Wywo³ania takie jak
- close() zaimplementowane s± w libc Linuxa. Taka implementacja czêsto
+ Dla Linuksa 1.2 zadeklarowanych zosta³o 140 wywo³añ systemowych. Wywo³ania takie jak
+ close() zaimplementowane s± w libc Linuksa. Taka implementacja czêsto
  wymaga wywo³ania makra, które odwo³uje siê do syscall().  Parametry
  przekazywane do syscall() to numer wywo³ania oraz potrzebne 
  argumenty.  Aktualne numery wywo³ania mo¿na znale¼æ w
@@ -27,7 +27,7 @@ int my_close(int filedescriptor)
 
  Na platformie i386 wywo³ania systemowe maj± ograniczon± do 5, oprócz
  numeru wywo³ania, liczbê argumentów - ze wzglêdu na liczbê
- rejestrów sprzêtowych.  Je¿eli u¿ywasz Linuxa na innej platformie sprawd¼
+ rejestrów sprzêtowych.  Je¿eli u¿ywasz Linuksa na innej platformie sprawd¼
  w $<asm/unistd.h>$  makro \_syscall aby poznaæ ile argumentów
  wspomaga twój sprzêt lub ile zosta³o zdefiniowanych do u¿ycia przez twórców.
  Makra \_syscall mog± byæ u¿ywane zamiast syscall(), jednak¿e nie jest to 

@@ -60,7 +60,7 @@ gethostid & pobierz unikalny identyfikator hosta (m!c)\\
 gethostname & pobierz hostname systemu (m!c)\\
 getitimer & pobierz warto¶æ wewnêtrznego timera (mc)\\
 getpagesize & pobierz rozmiar strony systemowej (m-!c)\\
-getpeername & pobierz addres pod³±czonego gniazda peer (m!c)\\
+getpeername & pobierz adres pod³±czonego gniazda klienta (m!c)\\
 getpgid & pobierz id procesu rodzica (+c)\\
 getpgrp & pobierz id grupy procesu rodzica (m+c)\\
 getpid & pobierz id aktualnego procesu (m+c)\\
@@ -71,14 +71,14 @@ getrusage & pobierz wykorzystanie zasobów (m)\\
 getsockname & pobierz adres gniazda (m!c)\\
 getsockopt & pobierz ustawienia gniazda (m!c)\\
 gettimeofday & pobierz strefê czasow± i sekundy od 1.1.1970 (mc)\\
-getuid & pobierz rzeczywisty uid (m+c)\\
+getuid & pobierz rzeczywisty identyfikator u¿ytkownika (m+c)\\
 gtty & niezaimplementowane ()\\
 idle & zrób proces kandydatem do zapisu do pliku wymiany (mc)\\
 init\_module & za³aduj ³adowalny modu³ j±dra (-)\\
 ioctl & manipuluj urz±dzeniem znakowym (mc)\\
 ioperm & ustaw niektóre prawa portu we/wy (m-c)\\
-iopl & ustaw wszytkie prawa portu we/wy (m-c)\\
-ipc & komunikacja miedzyprocesowa (-c)\\
+iopl & ustaw wszystkie prawa portu we/wy (m-c)\\
+ipc & komunikacja miêdzyprocesowa (-c)\\
 kill & wy¶lij sygna³ do procesu (m+c)\\
 killpg & wy¶lij sygna³ grupie procesów (mc!)\\
 klog & zobacz syslog (-!)\\
@@ -115,12 +115,12 @@ pipe & stwórz potok (m+c)\\
 prof & niezaimplementowane ()\\
 profil & mierzy czas wykonania funkcji (m!c)\\
 ptrace & ¶led¼ proces potomny (mc)\\
-quotactl & niezaimplementowano ()\\
+quotactl & nie zaimplementowano ()\\
 read & odczytaj dane z pliku (m+c)\\
 readv & odczytaj tablicê z pliku (m!c)\\
 readdir & odczytaj katalog (m+c)\\
 readlink & pobierz zawarto¶æ symbolicznego odno¶nika (mc)\\
-reboot & restartuj lub w³±cz/wy³acz ¶wiêt± trójcê (-mc)\\
+reboot & restartuj lub w³±cz/wy³±cz ¶wiêt± trójcê (-mc)\\
 recv & odbierz wiadomo¶æ z pod³±czonego gniazda (m!c)\\
 recvfrom & odbierz wiadomo¶æ z gniazda (m!c)\\
 rename & przenie¶/zmieñ nazwê pliku (m+c)\\
@@ -138,7 +138,7 @@ setfsuid & ustaw id u¿ytkownika systemu plików ()\\
 setgid & ustaw rzeczywiste id grupy (m+c)\\
 setgroups & ustaw dodatkowe grupy (mc)\\
 sethostid & ustaw unikalny identyfikator hosta (mc)\\
-sethostname & ustaw hostname systemu (mc)\\
+sethostname & ustaw nazwê systemu (mc)\\
 setitimer & ustaw wewnêtrzny timer (mc)\\
 setpgid & ustaw id grupy procesu (m+c)\\
 setpgrp & brak dzia³ania (mc!)\\
@@ -163,8 +163,8 @@ siggetmask & pobierz blokowanie sygna³ów aktywnego procesu (!c)\\
 signal & ustaw obs³ugê sygna³u (mc)\\
 sigpause & u¿yj now± maskê sygna³u do czasu sygna³u (mc)\\
 sigpending & pobierz nadchodz±ce, ale zablokowane sygna³y (m+c)\\
-sigprocmask & ustaw/poberz blokowanie sygna³ów przez aktywny proces (+c)\\
-sigreturn & powróæ z obs³ugi synga³u i oczy¶æ ramkê stosu (m)\\
+sigprocmask & ustaw/pobierz blokowanie sygna³ów przez aktywny proces (+c)\\
+sigreturn & powróæ z obs³ugi sygna³u i oczy¶æ ramkê stosu (m)\\
 sigsetmask & ustaw blokowanie sygna³ów przez proces (c!)\\
 sigsuspend & zastêpstwo sigpause (m+c)\\
 sigvec & zobacz sigaction (m!)\\
@@ -178,7 +178,7 @@ stime & ustaw sekundy od 1.1.1970 (mc)\\
 stty & niezaimplementowane ()\\
 swapoff & przestañ swapowaæ do pliku/urz±dzenia (m-c)\\
 swapon & uruchom swapowanie do pliku/urz±dzenia (m-c)\\
-symlink & uwtórz symboliczny odno¶nik do pliku (m+c)\\
+symlink & utwórz symboliczny odno¶nik do pliku (m+c)\\
 sync & synchronizuj bufory dyskowe z pamiêci± (mc)\\
 syscall & uruchom wywo³anie systemowe przez numer (-!c)\\
 sysconf & pobierz warto¶æ zmiennej systemowej (m+!c)\\
@@ -215,7 +215,7 @@ writev & zapisz tablicê do pliku (m!c)\\
 \\
 (m) istnieje strona podrêcznika. \\
 (+) zgodne z POSIX. \\
-(-) specyficzne dla Linuxa. \\
+(-) specyficzne dla Linuksa. \\
 (c) w libc. \\
 (!) nie jest to czyste wywo³anie systemowe, korzysta z innego wywo³ania systemowego.\\
 \\

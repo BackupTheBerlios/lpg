@@ -5,13 +5,13 @@
 % pod warunkiem, ¿e wspomina siê o autorze orygina³u oraz powy¿sze
 % copyright pozostaje nienaruszone.
 
-\chapter{\label{mdw}Przenoszenie aplikacji do Linuxa}
+\chapter{\label{mdw}Przenoszenie aplikacji do Linuksa}
 \author{Matt Welsh \\ {\tt mdw@cs.cornell.edu}}
 \date{26 Stycznia 1995}
 
 \section{Wstêp}
 
-Przenoszenie aplikacji Unix do Linuxa jest dosyæ ³atwe. Linux i biblioteka 
+Przenoszenie aplikacji Unix do Linuksa jest dosyæ ³atwe. Linux i biblioteka 
 GNU C u¿ywana przez niego zosta³y zaprojektowane z my¶l± o przeno¶no¶ci,
 rozumiej±c, ¿e wiele aplikacji skompijuje siê przez zmianê {\tt make}. 
 Te, które generalnie nie u¿ywaj± jakich¶ dziwnych cech lub osobliwych 
@@ -27,15 +27,15 @@ aby uczyniæ przenoszenie aplikacji ³atwym; w wielu przypadkach ma poprawione lub
 unowocze¶nione zachowanie znajdywane w innych implementacjach.
 
 Dla przyk³adu, argument {\em timeout\/} przekazywany wywo³aniu systemowemu 
-{\em select\/} jest zmniejszany podczas dzia³ania przez Linuxa. 
+{\em select\/} jest zmniejszany podczas dzia³ania przez Linuksa. 
 Inne implementacje nie zmieniaj± tej warto¶ci, a aplikacje, które nie spodziewaj±
-siê takiego dzia³ania mog± siê za³amaæ po przeniesienu na Linuxa.
+siê takiego dzia³ania mog± siê za³amaæ po przeniesienu na Linuksa.
 Strony podrêcznika w BSD i SunOS ostrzegaj±, ¿e w przysz³o¶ci implementacja
 wywo³ania {\em select\/} mo¿e modyfikowaæ argument timeout. Niestety, wiele
 aplikacji zak³ada, i¿ warto¶æ pozostanie nienaruszona.
 
 Celem tego dokumentu jest przedstawienie g³ównych zagadnieñ zwi±zanych z 
-przenoszeniem aplikacji pod Linuxa, podkre¶laj±c róznice miêdzy Linuxem, POSIX.1 oraz 
+przenoszeniem aplikacji pod Linuksa, podkre¶laj±c róznice miêdzy Linuxem, POSIX.1 oraz 
 SVID i BSD w nastêpuj±cych obszarach: obs³uga sygna³ów, I/O terminala, kontrola
 procesów, zbieranie informacji i przeno¶na warunkowa kompilacja (portable conditional compilation).
 
@@ -140,7 +140,7 @@ zwróæ uwagê na to jakie za³o¿enia robi program odno¶nie ob³ugi sygna³ów i
 zmodyfikuj kod ( lub skompiluj z odpowiedni± bibliotek± ) aby otrzymaæ
 odpowiednie dzia³anie.
 
-\subsection{Sygna³y obs³ugiwane przez Linuxa}
+\subsection{Sygna³y obs³ugiwane przez Linuksa}
 
 Linux obs³uguje prawie wszystkie sygna³y dostarczane w SVR4, BSD i POSIX,
 oprócz paru wyj±tków:
@@ -254,7 +254,7 @@ za pomoc± kilku wywo³añ systemowych.
 
 Oczywi¶cie, ka¿da implemetacja jest tak odmienna, i¿ przenoszenie takich
 aplikacji mo¿e byæ naprawdê ciê¿kie. Powinni¶my zaznaczyæ, ¿e system plików 
-{\em /proc} z SVR4 znacznie ró¿ni siê od tego z Linuxa i nie powinno ich siê
+{\em /proc} z SVR4 znacznie ró¿ni siê od tego z Linuksa i nie powinno ich siê
 u¿ywaæ w tym samym znaczeniu. Notabene ka¿dy program, który korzysta z {\em kvm}
 lub systemu plików {\em /proc} z SVR4 nie jest zbytnio przeno¶ny i czê¶ci kodu
 zawieraj±ce te wywo³ania musz± byæ przepisane dla ka¿dego systemu operacyjnego.
@@ -283,13 +283,13 @@ uznane za specyficzne dla architektury.
 
 \section{Przeno¶na warunkowa kompilacja}
 
-Je¿eli musisz zmodyfikowaæ istniej±cy kod w celu przeniesienia go do Linuxa
+Je¿eli musisz zmodyfikowaæ istniej±cy kod w celu przeniesienia go do Linuksa
 mo¿esz u¿yæ parê {\tt ifdef}\ldots {\tt endif} aby wyodrêbniæ specyficzne dla
-Linuxa czê¶ci, lub kod odpowiadaj±cy innym systemom. Czê¶æ programów u¿ywa
+Linuksa czê¶ci, lub kod odpowiadaj±cy innym systemom. Czê¶æ programów u¿ywa
 pewnych konwencji co do oddzielania kodu definicjami: {\tt SVR4} dla kodu
-pod System V, {\tt BSD} dla kodu BSD i {\tt linux} dla kodu pod Linuxa.
+pod System V, {\tt BSD} dla kodu BSD i {\tt linux} dla kodu pod Linuksa.
 
-Biblioteka GNU C u¿ywana przez Linuxa pozwala ci na w³±czenie ró¿nych opcji
+Biblioteka GNU C u¿ywana przez Linuksa pozwala ci na w³±czenie ró¿nych opcji
 poprzez zdefiniowanie makr:
 \begin{itemize}
 \item {\tt \_\_STRICT\_ANSI\_\_}: tylko ANSI C
@@ -329,7 +329,7 @@ Wiele programów u¿ywa
 \begin{verbatim}
   #ifdef linux
 \end{verbatim} 
-aby wyodrêbniæ kod pod Linuxa. U¿ywaj±c tych makr mo¿esz ³atwo zaadaptowaæ
+aby wyodrêbniæ kod pod Linuksa. U¿ywaj±c tych makr mo¿esz ³atwo zaadaptowaæ
 istniej±cy kod aby kompilowa³ siê pod Linuxem. Pamiêtaj, i¿ Linux zawiera
 wiêcej cech z System V, wiêc maj±c kod pod SVR4 i BSD najlepiej startowaæ z
 kodu dla System V. Alternatywnie, mo¿esz rozpocz±æ z kodu dla BSD i
