@@ -1,7 +1,7 @@
 \author{Marcin Dawcewicz}
 \chapter{Zaawansowane programowanie gniazd}
 Po cyklu artyku³ów traktuj±cych o podstawach programowania gniazd sieciowych
-przyszedl czas na poszerzenie wiedzy na ten temat. Zaznajomimy siê z kilkoma
+przyszed³ czas na poszerzenie wiedzy na ten temat. Zaznajomimy siê z kilkoma
 bardziej zaawansowanymi technikami i postaramy siê o omówienie pozosta³ych
 funkcji pomocnych w programowaniu aplikacji sieciowych.
 
@@ -14,7 +14,7 @@ deskryptorów (w tym w³a¶nie gniazd) oraz urz±dzeñ. Po drugie: mamy do dyspozycji
 parê funkcji stworzonych specjalnie na potrzeby gniazd.
 
 \subsection{setsockopt()/getsockopt()}
-Funkcje te to {\bf setsockopt()} i {\bf getsockopt()}. Zaczniemy wla¶nie od nich:
+Funkcje te to {\bf setsockopt()} i {\bf getsockopt()}. Zaczniemy w³a¶nie od nich:
 \begin{verbatim}
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -29,7 +29,7 @@ int setsockopt(int s, int level, int optname,  const  void *optval,
 \item {\tt s}       - Deskryptor gniazda.
 
 \item {\tt level}   - Poziom, na którym bêdziemy dokonywaæ operacji. Omawiane funkcje
-          udostêpniaj± dostêp do manipulownia opcjami od poziomu gniazda
+          udostêpniaj± dostêp do manipulowania opcjami od poziomu gniazda
           "w dó³". Tzn. mo¿emy zmieniaæ opcje w³a¶ciwe dla samego gniazda ale
           mo¿emy te¿ ingerowaæ w funkcjonowanie protoko³ów skojarzonych z tym
           gniazdem. Najczê¶ciej wykorzystywanymi warto¶ciami tego parametru s±
@@ -67,10 +67,10 @@ Zaczniemy od poziomu SOL\_SOCKET (wszystkie opcje znajduj± siê w {\sl asm/socket
 
 \item {\tt SO\_OOBINLINE} - Je¶li w³±czone to dane typu out-of-band bêd± wymieszane razem
                z danymi w³a¶ciwymi w strumieniu wej¶ciowym. Oznacza to, ze
-               dane OOB bêd± odbierane przy kazdym wywo³aniu {\bf recv()}. Je¶li
+               dane OOB bêd± odbierane przy ka¿dym wywo³aniu {\bf recv()}. Je¶li
                opcja ta bêdzie wy³±czona (domy¶lnie) to OOB bêdzie odbierane
                tylko w przypadku do³±czenia flagi MSG\_OOB w wywo³aniu {\bf recv()}.
-               Samej obsludze OOB po¶wiêcimy trochê czasu w dalszej czê¶ci.
+               Samej obs³udze OOB po¶wiêcimy trochê czasu w dalszej czê¶ci.
 
 \item {\tt SO\_BINDTODEVICE} - Zwi±zuje gniazdo z konkretnym interfejsem sieciowym. Warto¶æ
                   dla tej opcji to nazwa interfejsu (np. {\sl eth0}). Takie gniazdo
@@ -153,12 +153,12 @@ struct ip_mreqn
                     pakiety skierowane pod adresy typu multicast docieraj±
                     do pewnej grupy hostów skonfigurowanych tak aby obs³ugiwaæ
                     dany adres multicast. Linux pozwala na wysy³anie 
-                    multicastów tylko na gniazdach SOCK\_DGRAM i SOCK\_RAW.
+                    pakietów multicast tylko na gniazdach SOCK\_DGRAM i SOCK\_RAW.
 
                     Znaczenie poszczególnych pól struktury ip\_mreqn powinno
-                    byæ jasne. Tylko jedna uwaga: nie nalezy myliæ opisywanych
+                    byæ jasne. Tylko jedna uwaga: nie nale¿y myliæ opisywanych
                     obecnie adresów multicast w warstwie IP z adresami
-                    multicast warstwy wizycznej. Tymi ostatnimi zajmiemy sie
+                    multicast warstwy fizycznej. Tymi ostatnimi zajmiemy sie
                     pó¼niej.
 
 \item IP\_DROP\_MEMBERSHIP - Powoduje opuszczenie danej grupy multicast. Argumentem
@@ -170,7 +170,7 @@ SOL\_TCP (domena PF\_INET, typ SOCK\_STREAM) dysponuje tylko trzema opcjami
 \begin{itemize}
 \item {\tt TCP\_NODELAY} - Je¶li równe 1 to zostaje wy³±czony tzw. algorytm Nagle. Mowi±c
               oglêdnie algorytm ten wstrzymuje transmisjê segmentów TCP dopóki
-              nie zostanie uzbierana wystarczaj±ca paczka danych. Szczególy w
+              nie zostanie uzbierana wystarczaj±ca paczka danych. Szczegó³y w
               RFC1122. W³±czenie tej opcji jest uzasadnione je¶li zale¿y nam
               na wysy³aniu ma³ych porcji danych bez zbêdnych opó¼nieñ.
 
@@ -253,7 +253,7 @@ int fcntl(int fd, int cmd, long arg);
 \end{verbatim}
 \begin{itemize}
 \item {\tt fd}  - Deskryptor gniazda
-\item {\tt cmd} - Komenda. W operacjach na gniazdach przydatne sa:
+\item {\tt cmd} - Komenda. W operacjach na gniazdach przydatne s±:
 \begin{itemize}
    \item {\tt F\_SETFL} -  Ustawia flagi deskryptora. Dla gniazda maja zastosowanie tylko
                  dwie flagi:
@@ -277,7 +277,7 @@ int fcntl(int fd, int cmd, long arg);
 
 \item {\tt F\_SETOWN} - Wskazuje proces (PID) albo grupê procesów, które maj±
                  otrzymywaæ wspomniane wcze¶niej sygna³y SIGIO/SIGURG. Grupy
-                 procesów, dla odróznienia od pojedynczych procesów, podaje siê
+                 procesów, dla odró¿nienia od pojedynczych procesów, podaje siê
                  w postaci liczb ujemnych.
 
 \item {\tt F\_GETOWN} - Odczytuje proces/grupê.
@@ -296,7 +296,7 @@ Powy¿ej wymienili¶my tylko kilka spo¶ród dostêpnych komend funkcji {\bf fcntl()}
 Reszta nie znajduje raczej zastosowania w stosunku do gniazd.
 
 \subsection{ioctl()}
-O funkcji {\bf ioctl()} mo¿naby mówiæ d³ugo. W za³o¿eniu przeznaczona do 
+O funkcji {\bf ioctl()} mo¿na by mówiæ d³ugo. W za³o¿eniu przeznaczona do 
 kontrolowania zachowania ró¿nych urz±dzeñ, w praktyce mo¿e byæ wykorzystana do
 zmieniania atrybutów gniazd, pobierania listy interfejsów, zmieniania tabeli
 routingu, tablic ARP ...
@@ -313,9 +313,9 @@ int ioctl (int d, int request, ...)
 
 \item {\tt ...}     - Ró¿ne parametry w zale¿no¶ci od request.
 \end{itemize}
-Wszystkich ioctl'sow jest bardzo du¿o. Praktycznie ka¿de urz±dzenie udostêpnia
-jakis ioctl. Ca³kiem obfit± listê mo¿na zobaczyæ wydaj±c polecenie {\sl man
-ioctl\_list}. Natomiast wszystkie ioctls ukierunkowane na sterowanie szeroko
+Wszystkich ioctl'sów jest bardzo du¿o. Praktycznie ka¿de urz±dzenie udostêpnia
+jaki¶ ioctl. Ca³kiem obfit± listê mo¿na zobaczyæ wydaj±c polecenie {\sl man
+ioctl\_list}. Natomiast wszystkie ioctl ukierunkowane na sterowanie szeroko
 pojêt± sieci± (gniazda, interfejsy, routing itp.) mo¿na zobaczyæ w pliku
 {\sl /usr/include/bits/ioctls.h}. Teraz tylko króciutko przyjrzymy siê kilku
 najczê¶ciej u¿ywanym - jak z nich skorzystaæ zobaczymy trochê pó¼niej. Oto one:
@@ -329,7 +329,7 @@ najczê¶ciej u¿ywanym - jak z nich skorzystaæ zobaczymy trochê pó¼niej. Oto one:
 \item {\tt SIOCGIFADDR} , {\tt SIOCSIFADDR}  - odczyt/zmiana adresów interfejsów
 \item {\tt SIOCGIFNETMASK}, {\tt SIOCSIFNETMASK} - odczyt/zmiana masek sieciowych interfejsów 
 \item {\tt SIOCGIFHWADDR} , {\tt SIOCSIFHWADDR}  - odczyt/zmiana adresów MAC
-\item {\tt FIOCSETOWN}, {\tt FIOCGETOWN} - dokladnie to samo, co wywo³anie {\bf fcntl()} z argumentami
+\item {\tt FIOCSETOWN}, {\tt FIOCGETOWN} - dok³adnie to samo, co wywo³anie {\bf fcntl()} z argumentami
                          F\_SETOWN/F\_GETOWN ...
 \item {\tt SIOCSPGRP} , {\tt SIOCGPGRG}  - SIOCSPGRP=FIOCSETOWN, SIOCGPGRP=FIOCGETOWN
 \item {\tt FIOASYNC}               - to samo co fcntl(sd,F\_SETFL,O\_ASYNC) 
@@ -344,7 +344,7 @@ najczê¶ciej u¿ywanym - jak z nich skorzystaæ zobaczymy trochê pó¼niej. Oto one:
 \end{itemize}
 \subsection{sysctl() (2.2.x)}
 Tej funkcji po¶wiêcimy tylko chwilê. Jej przeznaczeniem jest dostrajanie pracy
-j±dra. Mowi±c wprost jest ona programowym interfejsem dostêpu do plików
+j±dra. Mówi±c wprost jest ona programowym interfejsem dostêpu do plików
 znajduj±cych siê w {\sl /proc/sys}. Raczej sporadycznie bêdziemy zmuszeni z niej
 skorzystaæ. Jednym z zastosowañ, które przychodzi do g³owy jest zmiana
 domy¶lnego odstêpu czasowego miêdzy kolejnymi pakietami keep-alive (plik
@@ -464,9 +464,9 @@ struct ifreq
 #define ifr_newname     ifr_ifru.ifru_newname   /* nowa nazwa (SIOCSIFNAME) */
 \end{verbatim}
 
-Wa¿ne jest aby pamietaæ, ¿e SIOCGIFCONF wype³nia tylko pole ifr\_name - reszta
+Wa¿ne jest aby pamiêta³, ¿e SIOCGIFCONF wype³nia tylko pole ifr\_name - reszta
 pól ma zupe³nie przypadkow± warto¶æ ! Do uzyskania reszty informacji o danym
-interfejsie slu¿± oddzielne polecenia {\bf ioctl()} ({\sl linux/sockios.h}):
+interfejsie s³u¿± oddzielne polecenia {\bf ioctl()} ({\sl linux/sockios.h}):
 \begin{itemize}
 \item {\tt SIOCGIFNAME}    - wype³nia pole ifr\_name maj±c dane tylko pole ifr\_ifindex, np.:
 \begin{verbatim}
@@ -667,7 +667,7 @@ To by³ ARP. Kolej na tablicê routingu. Dla niej przeznaczono dwa polecenia:
    memcpy (rte.rt_gateway.sa_data + 2, (char *) &gaddr, 4);
    memcpy (rte.rt_genmask.sa_data + 2, (char *) &naddr, 4);
 
-   /* Ustawiamy dwie flagi mówi±ce, ¿e dana scie¿ka jest aktywna  */
+   /* Ustawiamy dwie flagi mówi±ce, ¿e dana ¶cie¿ka jest aktywna  */
    /* (RTF_UP) i ¿e nale¿y skorzystaæ z bramki (RTF_GATEWAY)      */
    rte.rt_flags = RTF_UP | RTF_GATEWAY;
 
@@ -725,10 +725,10 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout);
  struct pollfd {
     int fd;           /* deskryptor                 */
     short events;     /* zdarzenia do monitorowania */
-    short revents;    /* zdarzenia, które zaszly    */
+    short revents;    /* zdarzenia, które zasz³y    */
  };
 \end{verbatim}
-          Pola events oraz revents mog± przyjmowaæ m.in. takie warto¶æi:
+          Pola events oraz revents mog± przyjmowaæ m.in. takie warto¶ci:
 \begin{itemize}          
 \item          {\tt POLLIN}   - S± nowe dane do odczytu (odpowiednik readfds w select()).
 \item          {\tt POLLPRI}  - S± nowe specjalne dane do odczytu (odpowiednik exceptfds).
@@ -736,7 +736,7 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout);
 \item          {\tt POLLERR}  - B³±d.
 \item          {\tt POLLNVAL} - Nie ma takiego deskryptora.
 \end{itemize}
-          Reszta warto¶æi znajduje siê w {\sl bits/poll.h}
+          Reszta warto¶ci znajduje siê w {\sl bits/poll.h}
 
           Pole events zawiera warunki, które chcemy sprawdzaæ na danym
           deskryptorze fd. Natomiast pole revents jest wype³niane przez funkcjê
@@ -775,7 +775,7 @@ Szybki przyk³ad:
       {
         if (pfd[0].revents == POLLIN || pfd[1].revents == POLLOUT)
           {
-            printf ("Jeden z deskryptorow zmienil stan.\n");
+            printf ("Jeden z deskryptorów zmieni³ stan.\n");
             exit (0);
           }
         else
@@ -806,7 +806,7 @@ nas³uchu na kilku gniazdach naraz ? Robi siê to w ten sposób;
    
    /* Dopiero w tym miejscu wykonywanie programu zostanie wstrzymane. */
    /* Funkcja select() nie zwróci bowiem sterowania dopóki które¶ z   */
-   /* gniazd nie zmieni swego stanu, co bêdzie oznaczalo, ¿e          */
+   /* gniazd nie zmieni swego stanu, co bêdzie oznacza³o, ¿e          */
    /* najprawdopodobniej dobija sie do nas jaki¶ klient.              */
    ret = select(..., fds, ..., ..., ...);
 
@@ -825,7 +825,7 @@ nas³uchu na kilku gniazdach naraz ? Robi siê to w ten sposób;
 
 Powy¿sze rozwi±zanie bêdzie spe³nia³o swoje zadanie ale nadal nie jest idealne.
 Zauwa¿yli¶my pewnie, ¿e w pewnym momencie program jest mimo wszystko 
-wstrzymywany na bli¿ej nieokre¶lony czas ({\bf select()}). Oczekuje on bezczynnnie
+wstrzymywany na bli¿ej nieokre¶lony czas ({\bf select()}). Oczekuje on bezczynnie
 na nadej¶cie po³±czenia. By³oby du¿o lepiej gdyby¶my mogli w tym czasie robiæ
 inne rzeczy. Tak± mo¿liwo¶æ zapewni nam po³±czenie gniazd nieblokuj±cych z 
 obs³ug± sygna³ów.
@@ -1011,7 +1011,7 @@ Ka¿da para po³±czonych gniazd posiada logicznie wydzielony kana³ komunikacyjny
 przeznaczony w³a¶nie dla danych typu {\tt Out-Of-Band}. Dane te nie s± dostarczane
 procesowi podczas u¿ycia zwyk³ych wywo³añ {\bf recv()} - aby je odczytaæ musimy
 wyra¼nie powiedzieæ systemowi, ¿e teraz chcemy obs³u¿yæ OOB. Robi siê to
-doaj±c flagê {\tt MSG\_OOB} do wywo³ania {\bf recv()}:
+dodaj±c flagê {\tt MSG\_OOB} do wywo³ania {\bf recv()}:
 \begin{verbatim}
 recv (s, buf, sizeof(buf), MSG_OOB);
 \end{verbatim}
@@ -1041,10 +1041,10 @@ polecenie:
 \begin{verbatim}
 $ cat bardzo\_du¿y\_plik
 \end{verbatim}
-Po kilku linijkach widzimy, ¿e niezupe³nie o ten plik nam chodzilo. Co teraz ?
+Po kilku linijkach widzimy, ¿e niezupe³nie o ten plik nam chodzi³o. Co teraz ?
 Czy musimy d³ugo czekaæ a¿ ten ogromny plik zostanie wy¶wietlony ? Otó¿ nie. 
-Zazwyczaj wciskamy ctrl+c i po chwili mamy znowu dostêp do shella. Spróbujmy
-dla odmiany zamiast ctrl+c wpisaæ dowolne polecenie shella. Zauwa¿ymy, ¿e nie
+Zazwyczaj wciskamy ctrl+c i po chwili mamy znowu dostêp do pow³oki. Spróbujmy
+dla odmiany zamiast ctrl+c wpisaæ dowolne polecenie pow³oki. Zauwa¿ymy, ¿e nie
 zosta³o ono wykonane natychmiast - wykona siê dopiero, kiedy polecenie cat
 wy¶wietli ca³y plik. Sk±d wiêc ta ró¿nica ? W³a¶nie w tym, ¿e nasz klient
 telnetu wysy³a pewne priorytetowe polecenia z w³±czon± flag± {\tt MSG\_OOB}. Z kolei
@@ -1062,15 +1062,15 @@ umo¿liwia jednorazowe wys³anie tylko JEDNEGO BAJTU OOB.
 
 \section{Wspó³praca z Inetd}
 Je¶li tworzymy jakiego¶ demona sieciowego to warto siê zastanowiæ, czy nie
-skorzystaæ z uslug inetd'a. Ten super-serwer zbli¿a kwestiê programowania
-demonów sieciowych do poziomu zwyklych programików korzystaj±ych ze
-standardwowych strumieni I/O.
+skorzystaæ z us³ug inetd'a. Ten super-serwer zbli¿a kwestiê programowania
+demonów sieciowych do poziomu zwyk³ych programików korzystaj±cych ze
+standardowych strumieni I/O.
 
-Jak dziala inetd ? Przy starcie odczytuje swój plik konfiguracyjny (zazwyczaj
+Jak dzia³a inetd ? Przy starcie odczytuje swój plik konfiguracyjny (zazwyczaj
 {\sl /etc/inetd.conf}). Na podstawie danych tam znalezionych tworzy odpowiedni±
 ilo¶æ nas³uchuj±cych gniazd - po jednym dla ka¿dego zdefiniowanego serwisu.
 Nastêpnie wykonuje {\bf select()} na gniazdach czekaj±c na po³±czenia przychodz±ce.
-Kiedy wreszcie wykryje, ze ktos "puka do drzwi" wywo³uje {\bf accept()} i tworzy
+Kiedy wreszcie wykryje, ze kto¶ "puka do drzwi" wywo³uje {\bf accept()} i tworzy
 nowy proces ({\bf fork()}) obs³uguj±cy to konkretne po³±czenie. Kolejne kroki to
 przekierowanie stdin/stdout do gniazda ({\bf dup2()}) oraz uruchomienie ({\bf exec*()})
 w³a¶ciwego demona obs³uguj±cego dan± us³ugê.
@@ -1093,7 +1093,7 @@ po³±czonych gniazd.
 Na pseudoterminal sk³adaj± siê w istocie dwa urz±dzenia: master i slave. 
 W systemach BSD czê¶æ master pseudoterminala ma nazwê {\sl /dev/ttyXY}, gdzie X
 to [a-z], a Y to [0-9a-f]. Z kolei czê¶æ slave ma nazwê {\sl /dev/ptyXY}, gdzie
-X i Y s± takie same, jak w odpowiadj±cej jej czê¶ci master. Linux wspiera
+X i Y s± takie same, jak w odpowiadaj±cej jej czê¶ci master. Linux wspiera
 taki sposób nazywania pseudoterminali ale umo¿liwia tak¿e sposób alternatywny
 w stylu {\tt Unix98}. W tym przypadku proces chc±cy skorzystaæ z pseudoterminala
 otwiera plik {\sl /dev/ptmx} (pseudo-terminal multiplexer) i jest mu przydzielany
@@ -1302,9 +1302,9 @@ zdaj±c sobie sprawy, ¿e spe³ni³ ju¿ swoje zadanie.
 Na zakoñczenie przyjrzymy siê kilku nieomówionym dot±d ale przydatnym funkcjom.
 
 \subsection{sendfile()}
-Ta wygodna funkcja zostala wprowadzona dopiero w linuxach serii 2.2.x. Slu¿y do
+Ta wygodna funkcja zosta³a wprowadzona dopiero w Linuksach serii 2.2.x. S³u¿y do
 kopiowania danych pomiêdzy deskryptorami (zarówno plików jak i gniazd), a 
-prototyp wyglada tak ({\bf sendfile(2)}):
+prototyp wygl±da tak ({\bf sendfile(2)}):
 \begin{verbatim}
 #include <unistd.h>
 
@@ -1356,9 +1356,9 @@ stosuje siê j± przede wszystkim do szybkiego utworzenia pary gniazd w domenie
 
 int socketpair(int d, int type, int protocol, int sv[2]);
 \end{verbatim}
-Pierwsze trzy argumenty maj± znaczenie znalogiczne, jak w wywo³aniu {\bf socket()}.
+Pierwsze trzy argumenty maj± znaczenie analogiczne, jak w wywo³aniu {\bf socket()}.
 Ostatni argument to dwie zmienne typu int, którym zostan± przypisane
-nowoutworzone deskryptory. Funkcja zwraca 0 albo -1 (b³±d).
+nowo utworzone deskryptory. Funkcja zwraca 0 albo -1 (b³±d).
 
 Funkcje {\bf socketpair()} mo¿na wykorzystaæ na przyk³ad w taki sposób:
 \begin{verbatim}
@@ -1468,7 +1468,7 @@ konfiguracja znajduje siê w plikach {\sl /etc/resolv.conf} oraz {\sl /etc/host.c
 struct hostent *gethostbyname(const char *name);
 \end{verbatim}
 Na podstawie parametru name, który mo¿e byæ zarówno zapisany w postaci 
-adresu IP, jak i nazwy domenowej funkcja zwraca stukturê:
+adresu IP, jak i nazwy domenowej funkcja zwraca strukturê:
 \begin{verbatim}
  struct hostent {
     char    *h_name;        /* oficjalna nazwa hosta */
@@ -1501,7 +1501,7 @@ do serwera DNS bêd± siê odbywa³y za pomoc± sta³ego po³±czenia TCP. W przeciwnym
 wypadku bêd± u¿ywane datagramy UDP.
 
 \subsection{inet\_*()}
-Grupa funkcji przeznazcona do konwersji miêdzy ró¿nymi formatami zapisu adresów
+Grupa funkcji przeznaczona do konwersji miêdzy ró¿nymi formatami zapisu adresów
 internetowych.
 \begin{verbatim}
 #include <sys/socket.h>

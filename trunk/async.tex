@@ -58,11 +58,11 @@ ms\_init wymaga nastêpuj±cych 10 argumentów:\\
 \begin {enumerate}
 \item {\it int acceleration}\\
 wspó³czynnik akceleracji. Je¿eli przesuniesz muszkê wiêcej ni¿
-{\it delta} pixeli ruch stanie siê szybszy zale¿nie od tej warto¶ci. 
+{\it delta} pikseli ruch stanie siê szybszy zale¿nie od tej warto¶ci. 
 \item {\it int baud} \\
-prêdko¶æ w bps z jak± pracuje myszka ( normalnie 1200 ).
+prêdko¶æ w bitach na sekundê z jak± pracuje myszka ( normalnie 1200 ).
 \item {\it int delta}\\
-ilo¶æ pixeli o ile nale¿y przesun±æ myszkê zanim zostanie
+ilo¶æ pikseli o ile nale¿y przesun±æ myszkê zanim zostanie
 w³±czona akceleracja .
 \item {\it char *device}\\
 nazwa urz±dzenia myszki ( np.: /dev/mouse ).
@@ -74,15 +74,14 @@ rozdzielczo¶æ ( dpi ) myszki ( normalnie 100 ).
 identyfikator pod³±czonej myszy, np. P\_MSC (Mouse Systems Corp.) dla
 mojej myszki ;).
 \item {\it int slack}\\
-amount of slack for wraparound which means if slack is -1 a try to move the
-mouse over the screen border will leave the mouse at the border.
-Values $>=$ 0 mean that the mouse cursor will wrap to the other end after
-moving the mouse {\it slack} pixels against the border.
+je¿eli warto¶æ wynosi -1 próba przesuniêcia myszy poza granicê obrazu
+pozostawia kursor na miejscu. Je¿eli $>=$ 0 kursor pojawi siê z drugiej
+strony po przesuniêciu go o {\it slack} pikseli poza granicê ekranu.
 \item {\it int maxx}\\
-rozdzielczo¶æ x terminala. Przy domy¶lnej czcionce znak ma 10 pixeli szeroko¶ci
+rozdzielczo¶æ pozioma terminala. Przy domy¶lnej czcionce znak ma 10 pikseli szeroko¶ci
 co daje nam rozdzielczo¶æ 10*80-1.
 \item {\it int maxy}\\
-rozdzielczo¶æ y terminala. Przy domy¶lnej czcionce znak ma 12 pixeli wysoko¶ci
+rozdzielczo¶æ pionowa terminala. Przy domy¶lnej czcionce znak ma 12 pikseli wysoko¶ci
 co daje nam rozdzielczo¶æ 12*25-1.
 \end {enumerate}
 get\_ms\_event() potrzebuje tylko wska¼nika do struktury ms\_event.
@@ -91,7 +90,7 @@ struktura ms\_event zawiera aktualny stan myszki.
 
 \section {Programowanie modemu}
 Zobacz przyk³ad miniterm.c\\
-U¿yj termios aby kontrolowaæ port rs232.\\
+U¿yj termios aby kontrolowaæ port RS232.\\
 U¿yj poleceñ Hayesa aby kontrolowaæ modem.
 
 \section {Programowanie drukarki}

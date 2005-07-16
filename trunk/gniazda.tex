@@ -6,12 +6,12 @@ miêdzyprocesowa). Ich implementacja w systemie Linux wzorowana jest na kodzie
 pochodz±cym z systemu {\tt BSD} (Berkeley System Distribution) w wersji 4.4. Je¶li
 dwa procesy maj± siê miêdzy sob± komunikowaæ, ka¿dy z nich tworzy po swojej
 stronie jedno gniazdo. Parê takich gniazd mo¿na wiêc okre¶liæ mianem koñcówek
-kana³u komunikacyjnego. Gniazd u¿ywa siê g³ównie do komunikacji z odleglym
+kana³u komunikacyjnego. Gniazd u¿ywa siê g³ównie do komunikacji z odleg³ym
 procesem za po¶rednictwem sieci, jednak mo¿na je zastosowaæ tak¿e w przypadku
 wymiany informacji miêdzy procesami dzia³aj±cymi w obrêbie jednej maszyny. 
-Ta uniwersalno¶æ zastosowañ jest zapewniona dziêki istieniu ró¿nych odmian 
+Ta uniwersalno¶æ zastosowañ jest zapewniona dziêki istnieniu ró¿nych odmian 
 gniazd. Gniazdo jest opisywane za pomoc± kombinacji trzech atrybutów: domeny
-adresowej, sposobu komunikacji i protoko³u sieciowego. Szczególy poznamy ju¿
+adresowej, sposobu komunikacji i protoko³u sieciowego. Szczegó³y poznamy ju¿
 za chwilê. 
 
 Najlepszym sposobem na poznanie mechanizmu gniazd bêdzie napisanie i
@@ -28,7 +28,7 @@ stworzyæ kilka takich przyk³adowych programów, m.in.:
 \section{Podstawowe funkcje}
 Czas przej¶æ do rzeczy. Niezale¿nie od tego, do jakich specyficznych zastosowañ
 zamierzamy wykorzystaæ gniazda, za ka¿dym razem bêdziemy zaczynali od tego
-samego - utworzenia naszej (klienta lub serwera) koñcówki pol±czenia (czyli
+samego - utworzenia naszej (klienta lub serwera) koñcówki po³±czenia (czyli
 w³a¶nie jednego z pary gniazd). Gniazdowe {\tt API} (ang. Application Programmer's
 Interface - interfejs programisty) systemu {\tt BSD} desygnuje do tego celu funkcjê
 {\bf socket()}. Spójrzmy na  jej prototyp i potrzebne pliki nag³ówkowe ({\sl man 2 socket}):
@@ -57,14 +57,14 @@ PF\_PACKET          - niskopoziomowy interfejs do odbierania pakietów
                       w tzw. surowej (ang. raw) postaci
 
 Wszystkie dopuszczalne warto¶ci znajduj± siê w pliku bits/socket.h. 
-Zagl±dajac tam spostrze¿emy, ¿e zamiennie u¿ywa siê notacji PF\_xxx
+Zagl±daj±c tam spostrze¿emy, ¿e zamiennie u¿ywa siê notacji PF\_xxx
 (ang. {\tt PF} - Protocol Family) oraz AF\_xxx (ang. {\tt AF} - Address Family). 
 Nie zdziwmy siê wiêc, kiedy w jednym kodzie zobaczymy PF\_INET, a w
 innym AF\_INET - to praktycznie jedno i to samo.
 
-\item {\tt type}   - Sposob komunikacji. Do wyboru m.in.:
-SOCK\_STREAM - dwukierunkowa komunikacja zorientowana na pol±czenia
-SOCK\_DGRAM  - komunikacja bezpol±czeniowa korzystaj±ca z tzw. 
+\item {\tt type}   - Sposób komunikacji. Do wyboru m.in.:
+SOCK\_STREAM - dwukierunkowa komunikacja zorientowana na po³±czenia
+SOCK\_DGRAM  - komunikacja bezpo³±czeniowa korzystaj±ca z tzw. 
                        datagramów
 SOCK\_RAW    - dostêp do surowych (ang. raw) pakietów na poziomie 
                        warstwy sieciowej (ang. network layer) warstwowego
@@ -83,7 +83,7 @@ mamy du¿y stopieñ pewno¶ci, ¿e wysy³ane pakiety dotr± do celu poniewa¿
 podczas inicjacji transmisji tworzony jest tzw. wirtualny obwód (ang.
 virtual circuit) i odbiór ka¿dego pakietu przez zdalny proces jest za
 ka¿dym razem potwierdzany. Do obs³ugi takiej komunikacji w domenie
-PF\_INET u¿ywany jest protoko³ TCP. Natomiast komunikacja 
+PF\_INET u¿ywany jest protokó³ TCP. Natomiast komunikacja 
 bezpo³±czeniowa nie daje nam ¿adnej gwarancji, ¿e pakiet danych 
 (nazywany w tym przypadku datagramem) nie zaginie gdzie¶ po drodze do
 celu. Tak wiêc wysy³amy datagram "w sieæ" na ¶lepo w nadziei, ¿e przy
@@ -92,7 +92,7 @@ sposób komunikacji obs³ugiwany jest przez protokó³ UDP. Na pierwszy
 rzut oka mog³oby siê zdawaæ, ¿e SOCK\_DGRAM jest zupe³nie zbêdny, jako
 "gorszy" (niepewny, zawodny) sposób. Jednak to, który jest lepszy
 zale¿y ¶ci¶le od tego, do czego wykorzystujemy dane gniazdo. Je¶li
-chcemy wysy³aæ pojedyñcze paczki danych i zale¿y nam na szybko¶ci, a
+chcemy wysy³aæ pojedyncze paczki danych i zale¿y nam na szybko¶ci, a
 nie przywi±zujemy wiêkszej wagi do niezawodno¶ci to uzasadnione bêdzie
 skorzystanie z SOCK\_DGRAM. Natomiast, kiedy wysy³amy/odbieramy du¿o
 danych w obydwu kierunkach lepszym rozwi±zaniem jest SOCK\_STREAM.
@@ -132,10 +132,10 @@ sockfd=socket(PF_INET,SOCK_RAW,IPPROTO_ICMP);
 /* surowe pakiety IP przenosz±ce dane protoko³u ICMP */
 \end{verbatim}
 
-W tym momencie stworzyli¶my w³asne gniazdo i tutaj w³a¶nie scie¿ki siê
+W tym momencie stworzyli¶my w³asne gniazdo i tutaj w³a¶nie ¶cie¿ki siê
 rozwidlaj± zale¿nie od tego, czy bêdziemy odgrywaæ rolê klienta, czy te¿
 serwera. Na pocz±tek zajmiemy siê t± pierwsz± mo¿liwo¶ci±. Obs³ug± procesów
-pe³ni±cych fukcjê serwera zajmiemy siê pó¼niej.
+pe³ni±cych funkcjê serwera zajmiemy siê pó¼niej.
 
 Gniazda u¿ywane przez procesy klienckie nazywane s± gniazdami aktywnymi 
 poniewa¿ to one inicjuj± po³±czenie. Takim w³a¶nie gniazdem dysponujemy po
@@ -147,7 +147,7 @@ programisty (szczegó³y przy okazji omawiania procesu-serwera).
 Od teraz nic nie stoi na przeszkodzie aby sprobowaæ po³±czyæ siê ze zdalnym
 procesem-serwerem.  W przypadku gniazd SOCK\_STREAM odpowiedzialna za to jest
 funkcja {\bf connect()} , trochê inaczej bêdzie z gniazdami bezpo³±czeniowymi ale 
-narazie zajmiemy siê tylko pierwszym przypadkiem.
+na razie zajmiemy siê tylko pierwszym przypadkiem.
 Oto prototyp + nag³ówki ({\sl man 2 connect});
 
 \begin{verbatim}
@@ -200,7 +200,7 @@ nied³ugo podczas tworzenia prymitywnego klienta POP3.
        
 {\tt addrlen}    - wielko¶æ (w bajtach) struktury zawieraj±cej adres (*servaddr)        
 Funkcja {\bf connect()} zwraca warto¶æ -1, kiedy po³±czenie nie powiod³o siê oraz 0,
-kiedy po³±czenie doszlo do skutku. Je¶li otrzymali¶my warto¶æ 0 to od tej pory
+kiedy po³±czenie dosz³o do skutku. Je¶li otrzymali¶my warto¶æ 0 to od tej pory
 istnieje wspomniany wirtualny obwód pomiêdzy naszym klientem oraz zdalnym 
 serwerem. Oznacza to, ¿e od tego momentu mo¿emy przyst±piæ do przesy³ania 
 danych miêdzy procesami.
@@ -235,11 +235,11 @@ int recv(int s, void *buf, int len, unsigned int flags);
 {\tt flags} - W tym w³a¶nie parametrze uwidacznia siê przewaga funkcji {\bf recv()/send()}
         nad {\bf read()/write()}. Niektóre z mo¿liwych warto¶ci:
 
-        MSG\_OOB     - Onacza chêæ odebrania tzw. danych out-of-band. Trochê
+        MSG\_OOB     - Oznacza chêæ odebrania tzw. danych out-of-band. Trochê
                       wiêcej na ten temat przy okazji opisu funkcji {\bf send()}. 
         MSG\_PEEK    - Powoduje odebranie danych z pocz±tku kolejki danych 
                       gotowych do odebrania ale bez usuwania odczytanej porcji
-                      danych z kolejki. To co¶ w stylu preview ;). Nastêpne
+                      danych z kolejki. To co¶ w stylu podgl±du ;). Nastêpne
                       wywo³anie {\bf recv()} odczyta wiêc te same dane.
         MSG\_WAITALL - Je¶li ta flaga nie jest w³±czona to {\bf recv()} odczytuje tyle
                       danych z kolejki, ile jest aktualnie dostêpnych ale nie
@@ -247,7 +247,7 @@ int recv(int s, void *buf, int len, unsigned int flags);
                       je¶li parametr len ustawili¶my na 100 bajtów, a w kolejce
                       do odebrania znajduje siê tylko 50 bajtów. W takim 
                       przypadku funkcja {\bf recv()} wype³ni podany bufor tylko 50
-                      bajtami i je¶li chcemy mieæ pewno¶æ, ¿e otrzymay ca³e
+                      bajtami i je¶li chcemy mieæ pewno¶æ, ¿e otrzymamy ca³e
                       100 bajtów to musimy wywo³ywaæ {\bf recv()} kilkukrotnie a¿ do
                       skutku. 
                       W³a¶nie aby u³atwiæ rozwi±zanie takiego problemu mo¿emy
@@ -372,7 +372,7 @@ main ()
   struct sockaddr_in saddr; /* adres gniazda serwera POP3                 */
   struct servent   *srvent; /* struktura zawieraj±ca numer portu POP3     */
   struct hostent     *sent; /* z tej struktury odczytamy adres IP serwera */
-  char        msgbuf[1024], /* bufor na wiadomosci */
+  char        msgbuf[1024], /* bufor na wiadomo¶ci */
                   buf[256]; /* bufor na komendy/odpowiedzi protoko³u POP3 */
 
   sd = socket (PF_INET, SOCK_STREAM, 0);
@@ -394,10 +394,10 @@ if (!srvent)
 \end{verbatim}
 U¿yli¶my pomocniczej funkcji {\bf getservbyname()}. Zwraca ona wska¼nik do struktury
 servent, z której pó¼niej odczytamy numer portu dla us³ugi SERVICE ("pop-3")
-korzystaj±cej z protoko³u "tcp". Fukcja ta opiera swoje dzia³anie na zawarto¶ci
+korzystaj±cej z protoko³u "tcp". Funkcja ta opiera swoje dzia³anie na zawarto¶ci
 pliku {\sl /etc/services}. 
 \begin{verbatim}
-printf ("Probuje znalezc adres IP maszyny %s...\n", POPSERV);
+printf ("Probuje znale¼æ adres IP maszyny %s...\n", POPSERV);
 sent = gethostbyname (POPSERV);
 if (!sent)
   {
@@ -488,7 +488,7 @@ systemy, podobnie jak sieæ, uk³adaj± warto¶ci w porz±dku big endian.
 Kto¶ mo¿e siê spytaæ, dlaczego nie u¿yli¶my konwersji warto¶ci podczas
 wype³niania struktury sockaddr\_in z przytoczonego fragmentu kodu. Otó¿ nie 
 zrobili¶my tego poniewa¿ funkcje {\bf gethostbyname()}, oraz {\bf getservbyname()} zwracaj±
-wyniki od razu przekonwertowane do odpowiedniego formatu (network order), a
+wyniki od razu skonwertowane do odpowiedniego formatu (network order), a
 warto¶ci którymi wype³nili¶my strukturê pochodz± od tych¿e funkcji. Trzeba
 dodaæ, ze znakomita wiêkszo¶æ funkcji "sieciowych" dla wygody zwraca warto¶ci
 od razu w odpowiednim formacie. Trzeba by natomiast pamiêtaæ o konwersji 
@@ -496,7 +496,7 @@ gdyby¶my podawali warto¶ci "z palca", np. tak:
 \begin{verbatim}
 saddr.sin\_port = htons(110);
 \end{verbatim}
-Jako, ¿e saddr.sin\_port jest warto¶ci± typu short (dwubajtow±) musieli¶my
+Jako, ¿e saddr.sin\_port jest warto¶ci± typu short (dwu-bajtow±) musieli¶my
 dokonaæ rêcznej konwersji z LE na BE. Jest jeszcze drugi przypadek, kiedy
 bêdziemy zmuszeni do rêcznej konwersji - nie obêdzie siê bez niej, kiedy
 INTERPRETUJEMY warto¶ci, które przywêdrowa³y z sieci. Mniej wiêcej taki
@@ -519,14 +519,14 @@ if (ret < 0)
      perror ("connect()");
      exit (1);
    }
-  else printf ("Polaczony.\n");
+  else printf ("Po³±czony.\n");
 \end{verbatim}
 Wywo³ali¶my funkcjê {\bf connect()} aby po³±czyæ siê ze zdalnym procesem. W u¿ytej
 sk³adni nie ma nic specjalnego poza zamian± struktury, na jak± wskazuje zmienna
 saddr. Pamiêtajmy, ¿e funkcja {\bf connect()} oczekuje w tym miejscu wska¼nika do
 struktury sockaddr, a zmienna saddr jest wska¼nikiem do struktury sockaddr\_in.
 Musimy wiêc odpowiednio zmieniæ typ (ang. cast) zmiennej saddr. Co prawda 
-mo¿naby pomin±æ ten krok i wszystko powinno dzia³aæ ale prawdopodobnie nasz
+mo¿na by pomin±æ ten krok i wszystko powinno dzia³aæ ale prawdopodobnie nasz
 kompilator wy¶wietli ostrze¿enie o niezgodno¶ci typów.
 
 Koniecznie, nale¿y sprawdziæ, czy {\bf connect()} nie zwróci³o b³êdu. Najczêstszymi
@@ -540,7 +540,7 @@ Kolejne linijki kodu:
   recv (sd, buf, sizeof (buf), 0);
   vrfy_ans (buf);
 
-  printf ("Loguje sie jako uzytkownik: %s\n", USERNAME);
+  printf ("Loguje sie jako u¿ytkownik: %s\n", USERNAME);
   sprintf (buf, "USER %s\n", USERNAME);
   send (sd, buf, strlen (buf), 0);
 
@@ -556,7 +556,7 @@ Kolejne linijki kodu:
   vrfy_ans (buf);
   printf ("Zalogowany.\n", USERNAME);
 
-  printf ("Sprawdzam, czy sa nowe wiadomosci ...\n");
+  printf ("Sprawdzam, czy s± nowe wiadomo¶ci ...\n");
   sprintf (buf, "STAT\n");
   send (sd, buf, strlen (buf), 0);
 
@@ -578,7 +578,7 @@ vrfy_ans (char *b)
     return 1;
   else
     {
-      printf ("\nBlad! Serwer zwrocil odpowiedz:\n%s\nKoncze ...\n", b);
+      printf ("\nBlad! Serwer zwróci³ odpowiedz:\n%s\nKoncze ...\n", b);
       exit (2);
     }
 }
@@ -594,7 +594,7 @@ na serwerze i ¿e mo¿emy przyst±piæ do pobierania poczty:
 \begin{verbatim}
 if (nrmsg > 0)
   {
-    printf ("Nowych wiadomosci: %i . Calkowity rozmiar: %i.\n\n", nrmsg, msgsize);
+    printf ("Nowych wiadomo¶ci: %i . Calkowity rozmiar: %i.\n\n", nrmsg, msgsize);
 
     fd = open (MAILFILE, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
     if (fd == -1)
@@ -624,7 +624,7 @@ w odpowiedzi zawarty jest ci±g '+OK' ({\bf vrfy\_ans()}) a dopiero potem przecho
 do kolejnych czynno¶ci:
 \begin{verbatim}
           sscanf (buf, "+OK %i", &msize);
-          printf ("Pobieram wiadomosc nr. %i (rozmiar: %i) ... ", n, msize);
+          printf ("Pobieram wiadomo¶æ nr. %i (rozmiar: %i) ... ", n, msize);
           fflush (stdout);
           bzero (msgbuf, sizeof (msgbuf));
 
@@ -669,7 +669,7 @@ Zapisujemy "czysty" kawa³ek wiadomo¶ci ...
 ... i wychodzimy z pêtli je¶li pobrali¶my ju¿ kompletn± wiadomo¶æ (msg\_end==1).
 \begin{verbatim}
 #ifndef KEEPM
-          printf ("Usuwam wiadomosc nr. %i ... ", n);
+          printf ("Usuwam wiadomo¶æ nr. %i ... ", n);
           fflush (stdout);
           sprintf (buf, "DELE %i\n", n);
           send (sd, buf, strlen (buf), 0);
@@ -679,11 +679,11 @@ Zapisujemy "czysty" kawa³ek wiadomo¶ci ...
 #endif
         }
 
-      printf ("\nWszystkie wiadomosci pobrane. Koncze ...\n");
+      printf ("\nWszystkie wiadomo¶ci pobrane. Koñczê ...\n");
       close (fd);
     }
   else
-    printf ("Nie ma nowych wiadomosci. Koncze ...\n");
+    printf ("Nie ma nowych wiadomo¶ci. Koñczê ...\n");
   sprintf (buf, "QUIT\n");
   send (sd, buf, strlen (buf), 0);
   recv (sd, buf, sizeof (buf), 0);
@@ -767,7 +767,7 @@ sterowanie do g³ównego programu tylko wtedy, kiedy jaki¶ proces próbuje siê
 z nami ³±czyæ. W takim wypadku opisywana funkcja wype³nia strukturê sockaddr
 danymi zdalnego (klienta) gniazda a pod adresem wskazywanym przez addrlen
 umieszcza d³ugo¶æ tak wype³nionej struktury. Funkcja zwraca deskryptor 
-nowoutworzonego gniazda lub -1 (b³±d). Wspomnianego gniazda mo¿emy od tej
+nowo utworzonego gniazda lub -1 (b³±d). Wspomnianego gniazda mo¿emy od tej
 pory u¿ywaæ do komunikacji z klientem, natomiast "stare" gniazdo nadal istnieje
 i nic nie stoi na przeszkodzie aby przyjmowaæ na nim kolejnych klientów.
 
@@ -873,8 +873,8 @@ void sigchld_handler (int sig)
   while ((pid = waitpid (-1, NULL, WNOHANG)) > 0);
 }
 \end{verbatim}
-Czêsto pope³nianym b³edem jest tylko jednokrotne wywo³anie {\bf waitpid()} wewn±trz
-funkcji. Trzeba pamiêtaæ, ¿e sygna³y w systemach unixowych nie s± ustawiane w 
+Czêsto pope³nianym b³êdem jest tylko jednokrotne wywo³anie {\bf waitpid()} wewn±trz
+funkcji. Trzeba pamiêtaæ, ¿e sygna³y w systemach uniksowych nie s± ustawiane w 
 kolejce (wyj±tkiem s± sygna³y czasu rzeczywistego), a wiêc kiedy wywo³ywana
 jest funkcja {\bf sigchld\_handler()} to wiemy tylko tyle, ¿e zakoñczy³ siê CO NAJMNIEJ
 jeden potomek. Wywo³anie {\bf waitpid()} wykonywane w pêtli zagwarantuje nam
@@ -900,7 +900,7 @@ zg³osi chêæ po³±czenia z serwerem. W takim przypadku {\bf accept()} wype³ni stru
 wskazywan± przez caddr danymi klienta, a w zmiennej cd zwróci deskryptor
 gniazda, którego bêdziemy u¿ywaæ do komunikacji z tym konkretnym klientem.
 \begin{verbatim}
-      printf ("Polaczenie od klienta %s:%i\n", inet_ntoa (caddr.sin_addr),
+      printf ("Po³±czenie od klienta %s:%i\n", inet_ntoa (caddr.sin_addr),
               ntohs (caddr.sin\_port));
 \end{verbatim}
 Trochê informacji o kliencie ... Zwróæmy ponownie uwagê na konieczno¶æ 
@@ -929,13 +929,13 @@ dowiemy siê za chwile.
 \end{verbatim}
 Zamykamy gniazdo sd, które dla nas jest niepotrzebne.
 \begin{verbatim}
-          printf ("\nProsze czekac. Uruchamiam powloke ...\n\n");
-//        send (cd, "\nProsze czekac. Uruchamiam powloke ...\n\n", 40, 0);
+          printf ("\nProsze czekaæ. Uruchamiam pow³okê ...\n\n");
+//        send (cd, "\nProsze czekaæ. Uruchamiam pow³okê ...\n\n", 40, 0);
 \end{verbatim}
 W tym miejscu mo¿emy dowiedzieæ siê po co u¿ywali¶my wcze¶niej {\bf dup2()}.
 Dziêki temu, ¿e standardowe wej¶cie/wyj¶cie przekierowali¶my do gniazda 
 po³±czonego z klientem mo¿emy u¿ywaæ standardowych funkcji do operacji
-na strumieniach we/wy ({\bf printf()}, {\bf scanf()}, {\bf getchar()} itp.). Zakomentowana jest
+na strumieniach we/wy ({\bf printf()}, {\bf scanf()}, {\bf getchar()} itp.). Wykomentowana jest
 alternatywna linijka zawieraj±ca wywo³anie {\bf send()} - równie¿ tego wywo³ania
 (plus {\bf recv()}) mo¿emy u¿ywaæ do komunikacji z klientem ale czy¿ rodzina funkcji
 printf/scanf nie jest wygodniejsza ... ? 
@@ -951,7 +951,7 @@ aby ten nasz przyk³adowy serwer robi³ co¶ konkretnego:
             }
 \end{verbatim}
 
-Wcze¶niejsze rzekierowanie standardowych strumieni nie by³o podyktowane tylko
+Wcze¶niejsze przekierowanie standardowych strumieni nie by³o podyktowane tylko
 wygod±. Zrobili¶my to z my¶l± o programie, który jest uruchamiany przez 
 powy¿sze polecenie. Dziêki temu przekierowaniu uruchomiona w³a¶nie pow³oka
 nie bêdzie oczekiwa³a poleceñ z klawiatury komputera, na którym jest
@@ -1016,7 +1016,7 @@ int main (void)
   struct sockaddr_in saddr, /* adres lokalnego gniazda    */
                      caddr; /* adres zdalnego gniazda     */
   char           buf[1024], /* bufor                      */
-                  hash[20]; /* bufor na zahashowane has³o */
+                  hash[20]; /* bufor na zaszyfrowane has³o */
 
   sd = socket (PF_INET, SOCK_DGRAM, 0);
   if (sd < 0)
@@ -1046,8 +1046,8 @@ nim).
 \end{verbatim}
 Nastêpnie obliczyli¶my tzw. one way hash na podstawie has³a (PASSWD) i tzw.
 salt. To ostatnie jest prawie dowolnym dwuliterowym ci±giem znaków 
-([a-zA-Z0-9./]) i jest stosowane przez algorytm liczenia funkcji hashuj±cej.
-Ta sama funkcja ({\bf crypt()}) jest u¿ywana w wiêkszo¶ci systemów unixowych do
+([a-zA-Z0-9./]) i jest stosowane przez algorytm liczenia funkcji szyfruj±cej.
+Ta sama funkcja ({\bf crypt()}) jest u¿ywana w wiêkszo¶ci systemów uniksowych do
 weryfikacji hase³ u¿ytkowników. U¿yli¶my tej funkcji aby uniemo¿liwiæ przejêcie
 has³a w czystej postaci poprzez pods³uchiwanie sieci.
 
@@ -1126,11 +1126,11 @@ Tymczasem popatrzmy, co dalej dzieje siê w pêtli:
                   sizeof (caddr));
 \end{verbatim}
 Ten fragment dokonuje sprawdzenia, czy klient jest upowa¿niony do komunikacji z
-serwerem. Wybrali¶my procedurê autentyfikacji klienta opart± na dwóch
+serwerem. Wybrali¶my procedurê autentykacji klienta opart± na dwóch
 elementach: ha¶le i porcie ¼ród³owym (porcie, z którego nadaje klient). Serwer
 oczekuje od klienta datagramu zawieraj±cego ci±g (hash) utworzony na maszynie
 klienta w ten sam sposób, co na serwerze (funkcja {\bf crypt()}). Je¶li wyniki
-dzia³ania funkcji hashuj±cych na serwerze i na kliencie pokrywaj± siê oraz
+dzia³ania funkcji szyfruj±cej na serwerze i na kliencie pokrywaj± siê oraz
 je¶li port ¼ród³owy zgadza siê z wcze¶niej ustalonym po obu stronach (CLIPOR)
 to serwer wysy³a w stronê klienta datagram zawieraj±cy odpowied¼ 'OK'.
 \begin{verbatim}
@@ -1168,15 +1168,15 @@ ci±g 'END' aby poinformowaæ, ¿e transmisja siê powiod³a.
     }
 }
 \end{verbatim}
-Blok else wykonuje siê je¶li który¶ z elementów autentyfikacji (has³o, port
+Blok else wykonuje siê je¶li który¶ z elementów autentykacji (has³o, port
 ¼ród³owy) jest niepoprawny. Tutaj te¿ koñczy siê pêtla while oraz ca³y kod
 serwera.
 
-Jakie ró¿nice w stosunku do serwera TCP ? Nie u¿ywalismy funkcji {\bf listen()} oraz
+Jakie ró¿nice w stosunku do serwera TCP ? Nie u¿ywali¶my funkcji {\bf listen()} oraz
 {\bf accept()}. Wystarczy³o otworzyæ gniazdo korzystaj±ce z UDP (PF\_INET, SOCK\_DGRAM)
 i odbieraæ po kolei wszystkie datagramy, które nadchodz± na to gniazdo. Nie
 zachodzi³a te¿ konieczno¶æ tworzenia oddzielnego procesu dla ka¿dego klienta. 
-Dlaczego ? Poniewa¿ lokalne gniazdo nie by³o skojarzone z pojedyñczym gniazdem
+Dlaczego ? Poniewa¿ lokalne gniazdo nie by³o skojarzone z pojedynczym gniazdem
 zdalnym. Wystarczy³o jedno gniazdo aby obs³u¿yæ wszystkich chêtnych. Pamiêtajmy
 jednak, ¿e mieli¶my do czynienia z bardzo prost± wymian± informacji opart± na
 systemie pytanie-odpowied¼. W bardziej skomplikowanych przypadkach uzasadnione
@@ -1208,8 +1208,8 @@ Kod klienta niewiele ró¿ni siê w zasadniczych kwestiach od kodu serwera:
 #define SRVPORT 1111            /* numer portu serwera                      */
 #define CLIPORT 31337           /* numer portu gniazda klienta              */
 #define SRVADDR "localhost"     /* adres serwera                            */
-#define PASSWD  "sikret"        /* haslo wymagane do polaczenia z serwerem  */
-#define CSALT   "Zz"            /* dwuznakowy tzw. salt dla funkcji crypt() */
+#define PASSWD  "sikret"        /* haslo wymagane do po³±czenia z serwerem  */
+#define CSALT   "Zz"            /* dwu-znakowy tzw. salt dla funkcji crypt() */
 
 // Dosz³o jedno nowe makro zawieraj±ce nazwê maszyny, na której uruchomiony 
 // jest serwer.
@@ -1242,7 +1242,7 @@ int main (void)
     }
 \end{verbatim}
 Do pierwszej czynno¶ci ju¿ siê przyzwyczaili¶my - utworzenie lokalnego gniazda.
-Drugim krokiem w tym przypadu jest rêczne przypisanie adresu do lokalnego
+Drugim krokiem w tym przypadku jest rêczne przypisanie adresu do lokalnego
 gniazda. Z tym jeszcze nie mieli¶my do czynienia w przypadku klienta. Jak
 pamiêtamy system zrobi³by to za nas ale wybra³by pierwszy z dostêpnych portów.
 Nie mo¿emy pozwoliæ sobie na taki luksus poniewa¿ nasz serwer nie zgodzi siê na
@@ -1277,9 +1277,9 @@ gniazd strumieniowych. Funkcja {\bf connect()} u¿yta w takim kontek¶cie kojarzy
 po prostu adres zdalnego gniazda z gniazdem lokalnym i nic wiêcej. W ¿adnym 
 razie nie próbuje nawi±zywaæ po³±czenia z serwerem ! Jej dzia³anie ma znaczenie
 jedynie dla naszej wygody poniewa¿ od tej pory mogliby¶my (je¶li linia nie by³a
-by zakomentowana oczywi¶cie) u¿ywaæ funkcji {\bf recv()/send()} w miejsce 
+by wykomentowana oczywi¶cie) u¿ywaæ funkcji {\bf recv()/send()} w miejsce 
 {\bf recvfrom()/sendto()}. Po prostu system automatycznie wype³nia³by za nas 
-parametry *from i *fromlen tej drugej pary funkcji warto¶ciami podanymi dla
+parametry *from i *fromlen tej drugiej pary funkcji warto¶ciami podanymi dla
 wywo³ania {\bf connect()}. W tym przypadku, jak widaæ nie skorzystali¶my z tej 
 mo¿liwo¶ci ale zawsze warto wiedzieæ, ¿e mo¿na to zrobiæ.
 \begin{verbatim}
@@ -1305,7 +1305,7 @@ nasz adres. Wychodzimy z pêtli tylko wtedy, je¶li otrzymany datagram pochodzi
 od serwera. Pamiêtajmy o tym, ¿e istnieje mo¿liwo¶æ przyj¶cia na nasz adres
 jakiego¶ przypadkowego datagramu nie zwi±zanego zupe³nie z sesj± miêdzy nami
 a serwerem. Tutaj ma³a uwaga odno¶nie u¿ytych zmiennych: adresy ¼ród³owe
-przybywaj±cyh datagramów przechowujemy w strukturze wskazywanej przez caddr.
+przybywaj±cych datagramów przechowujemy w strukturze wskazywanej przez caddr.
 Skorzystali¶my z faktu, ¿e struktura ta chwilê po wywo³aniu {\bf bind()} dla 
 lokalnego gniazda mo¿e byæ bez problemów u¿ywana do innych celów. Jeszcze jedna
 uwaga: w ¿adnym wypadku nie nale¿y korzystaæ z adresu ¼ród³owego datagramu w
@@ -1316,11 +1316,11 @@ pakietów obs³ugiwanych przez TCP.
   if (strncmp (buf, "OK", 2))
     {
       fprintf (stderr,
-               "Nieprawidlowe haslo albo zly port zrodlowy. Koncze ...\n");
+               "Nieprawid³owe has³o albo z³y port ¼ród³owy. Koñczê ...\n");
       exit (1);
     }
   else
-    printf ("Polaczenie przyjete.\n\n");
+    printf ("Po³±czenie przyjête.\n\n");
 \end{verbatim}
 Je¶li doszli¶my do tego warunku if to znaczy, ¿e dotar³ do nas jaki¶ datagram
 od serwera. Najprawdopodobniej (pamiêtajmy o wadach UDP) jest to odpowied¼ na
@@ -1353,14 +1353,14 @@ zgodzi³ siê na obs³u¿enie nas (ci±g 'OK' na pocz±tku datagramu).
 \end{verbatim}
 Ostatnim fragmentem programu jest pêtla, która ponownie przegl±da wszystkie
 nadchodz±ce datagramy, sprawdza, czy pochodz± one od serwera, a nastêpnie
-podejumuje jedno z trzech dzia³añ:
+podejmuje jedno z trzech dzia³añ:
 \begin{itemize}
 \item je¶li datagram zawiera ci±g 'END' to znaczy, ¿e serwer zakoñczy³ ju¿ 
   transmisjê pliku i mo¿emy koñczyæ wykonywanie programu
 \item je¶li zawiera ci±g 'B³±d:' to wy¶wietlamy ten¿e komunikat b³êdu i tak¿e
   koñczymy program
 \item ostatnia mo¿liwo¶æ to po prostu nadej¶cie datagramu zawieraj±cego czê¶æ
-  przesy³anegopliku; w takim przypadku po prostu wy¶wietlamy ca³± zawarto¶æ
+  przesy³anego pliku; w takim przypadku po prostu wy¶wietlamy ca³± zawarto¶æ
   datagramu na stdout (mo¿na to zapisaæ do pliku korzystaj±c z prostego
   przekierowania wyj¶cia)
 \end{itemize}
@@ -1386,7 +1386,7 @@ podanej ¶cie¿ce.
 Ogólny sposób korzystania z gniazd PF\_UNIX tylko nieznacznie odbiega od
 konwencji przyjêtych wcze¶niej. Stworzymy pro¶ciutki program aby przyswoiæ
 sobie niuanse dotycz±ce takich gniazd. Program umo¿liwi komunikacjê miêdzy
-uzytkownikami zalogowanymi na tym samym systemie - co¶ w stylu write(1) ale
+u¿ytkownikami zalogowanymi na tym samym systemie - co¶ w stylu write(1) ale
 oparte na gniazdach PF\_UNIX:
 \begin{verbatim}
 #include <sys/types.h>
@@ -1397,7 +1397,7 @@ oparte na gniazdach PF\_UNIX:
 #include <signal.h>             /* signal()                            */
 #include <sys/stat.h>           /* chmod()                             */
 
-#define CHATDIR       "/tmp/"   /* katalog, w ktorym zak³adane bêd± sockety */
+#define CHATDIR       "/tmp/"   /* katalog, w którym zak³adane bêd± gniazda */
 \end{verbatim}
 Pliki reprezentuj±ce gniazda zazwyczaj tworzy siê w katalogu {\sl /tmp}. Nic nie stoi
 na przeszkodzie aby by³ to inny katalog ale w przypadku tego programu musz±
@@ -1417,7 +1417,7 @@ main (int argc, char *argv[])
 
   if (argc != 2)
     {
-      printf ("Uzycie:\n%s nazwa_uzytkownika\n", argv[0]);
+      printf ("U¿ycie:\n%s nazwa_uzytkownika\n", argv[0]);
       exit (1);
     }
 
@@ -1450,7 +1450,7 @@ struct sockaddr_un {
 };
 \end{verbatim}
 Pole sun\_family musi zawieraæ warto¶æ AF\_UNIX. Pole sun\_path to ci±g znaków,
-który musimy wype³niæ ¶cie¿k± do pliku reprezetuj±cego gniazdo.
+który musimy wype³niæ ¶cie¿k± do pliku reprezentuj±cego gniazdo.
 
 W przypadku tego programu gniazdo zostanie utworzone w katalogu CHATDIR
 ({\sl chdir} (CHATDIR)) i bêdzie mia³o tak±, nazwê, jak u¿ytkownika go u¿ywaj±cy
@@ -1465,7 +1465,7 @@ W przypadku tego programu gniazdo zostanie utworzone w katalogu CHATDIR
     }
 \end{verbatim}
 Przypisujemy gniazdu nazwê aby inni u¿ytkownicy mogli wysy³aæ do nas
-wiadomo¶æi. Jak widaæ zmieni³ siê sposób obliczania d³ugo¶ci adresu: dodajemy
+wiadomo¶ci. Jak widaæ zmieni³ siê sposób obliczania d³ugo¶ci adresu: dodajemy
 do siebie wielko¶æ pola sun\_family i d³ugo¶æ ci±gu sun\_path.
 \begin{verbatim}
   if (chmod (saddr.sun_path, S_IRUSR | S_IWUSR | S_IWOTH) < 0)
@@ -1474,7 +1474,7 @@ do siebie wielko¶æ pola sun\_family i d³ugo¶æ ci±gu sun\_path.
       exit (1);
     }
 \end{verbatim}
-Ustawiamy odpowiednie prawa dostêpu do nowoutworzonego pliku i zarazem do
+Ustawiamy odpowiednie prawa dostêpu do nowo utworzonego pliku i zarazem do
 gniazda. Sobie dajemy prawa do odczytu (S\_IRUSR) i zapisu (S\_IWUSR), a reszcie
 u¿ytkowników tylko prawo do zapisu (S\_IWOTH). Dziêki temu inni u¿ytkownicy
 bêd± mogli wysy³aæ wiadomo¶ci na adres naszego gniazda. Gdyby¶my korzystali
@@ -1504,7 +1504,7 @@ gniazda. Do tego s³u¿y powy¿sza funkcja.
   strncpy (caddr.sun_path, argv[1], UNIX_PATH_MAX);
 \end{verbatim}
 Wype³niamy strukturê reprezentuj±c± adres gniazda u¿ytkownika, do którego
-bêdziemy wysy³aæ wiadomo¶ci. W lini komend, jako argument dla programu
+bêdziemy wysy³aæ wiadomo¶ci. W linii komend, jako argument dla programu
 podajemy w³a¶nie nazwê tego u¿ytkownika.
 
 Przechodzimy do g³ównej pêtli:
@@ -1571,7 +1571,7 @@ zmieni³y stan, resztê czy¶ci). Sprawdzili¶my wiêc, czy jest co¶ do odczytania
 ze standardowego wej¶cia, czyli mówi±c wprost, czy u¿ytkownik chce wpisaæ
 jaki¶ komunikat do wys³ania. W takim przypadku wywo³ujemy {\bf fgets()}, które
 zapisze do bufora buf1 ca³± linijkê wpisan± przez u¿ytkownika. Nastêpnie t±
-linijkê wysy³amy do u¿ytkownika, którego podali¶my w linni komend.
+linijkê wysy³amy do u¿ytkownika, którego podali¶my w linii komend.
 \begin{verbatim}
       if (FD_ISSET (sd, &fds))
         {
@@ -1643,7 +1643,7 @@ main (int argc, char *argv[])
 
   if (argc != 2)
     {
-      printf ("Uzycie:\n%s adres_hosta\n", argv[0]);
+      printf ("U¿ycie:\n%s adres_hosta\n", argv[0]);
       exit (1);
     }
 
@@ -1749,7 +1749,7 @@ Wróæmy do omawianego fragmentu kodu. Pozosta³o jeszcze skopiowanie ca³ego
 stworzonego w³a¶nie nag³ówka ICMP do bufora pktbuf, który bêdzie nam s³u¿y³
 zarówno do wysy³ania pakietów, jak i do ich odbierania.
 \begin{verbatim}
-      printf ("Wysylanie ICMP Echo Request nr. %i ... ", n);
+      printf ("Wysy³anie ICMP Echo Request nr. %i ... ", n);
       fflush (stdout);
 
       sendto (sd, pktbuf, sizeof (struct icmphdr), 0,
@@ -1828,7 +1828,7 @@ Sprawdza on, czy up³yn±³ limit czasowy. Je¶li tak by³o istotnie to przestajemy
 oczekiwaæ na pakiety i wychodzimy z pêtli:
 \begin{verbatim}
       if (!resp)
-        printf ("Uplynal limit czasu.\n");
+        printf ("Up³yn±³ limit czasu.\n");
     }
 }
 \end{verbatim}
@@ -1844,7 +1844,7 @@ SOCK\_DGRAM. Kiedy korzystamy z pierwszego typu otrzymujemy tzw. ramki
 tak¿e kompletne ramki. Musimy wiêc zatroszczyæ siê o samodzielne stworzenie
 wszystkich potrzebnych nag³ówków pocz±wszy od nag³ówka ramki ethernetowej 
 (zajmiemy siê tylko Ethernetem). Drugi typ gniazda - SOCK\_DGRAM operuje na
-poziomie o szczebel wy¿szym, czyli kiedy oczytujemy dane system usuwa nag³ówek
+poziomie o szczebel wy¿szym, czyli kiedy odczytujemy dane system usuwa nag³ówek
 ethernetowy i udostêpnia nam wszystko, co znajduje siê "powy¿ej" niego. Podobna
 sytuacja zachodzi podczas wysy³ania danych, z tym ¿e teraz system sam zajmie
 siê stworzeniem odpowiedniego nag³ówka ethernetowego.  
@@ -1905,7 +1905,7 @@ int main (int argc, char *argv[])
 
   if (argc != 2)
     {
-      printf ("Uzycie:\n%s IP\n", argv[0]);
+      printf ("U¿ycie:\n%s IP\n", argv[0]);
       exit (1);
     }
 
@@ -1936,7 +1936,7 @@ by³y dostarczane tylko ramki zawieraj±ce dane protoko³u ARP. Konieczna jest
 zamiana numeru protoko³u na format sieciowy ({\bf htons()}). Innymi czêsto 
 wykorzystywanymi protoko³ami s± ETH\_P\_IP (IP) i ETH\_P\_ALL (wszystkie ramki 
 niezale¿nie od przenoszonego protoko³u wy¿szej warstwy). Wszystkie dostêpne
-warto¶æi znajduj± siê w pliku {\sl linux/if\_ether.h} .
+warto¶ci znajduj± siê w pliku {\sl linux/if\_ether.h} .
 \begin{verbatim}
   memset (pktbuf, 0, sizeof (pktbuf));
   memcpy (ethd.h_dest, ethdaddr, ETH_ALEN);
@@ -1951,7 +1951,7 @@ struct ethhdr
 {
         unsigned char   h_dest[ETH_ALEN];       /* docelowy adres MAC       */
         unsigned char   h_source[ETH_ALEN];     /* ¼ród³owy adres MAC       */
-        unsigned short  h_proto;                /* protokól wy¿szej warstwy */
+        unsigned short  h_proto;                /* protokó³ wy¿szej warstwy */
 };
 \end{verbatim}
 Nigdy nie zaszkodzi na pocz±tek wyczy¶ciæ ca³± wype³nian± strukturê. Nastêpnie
@@ -1964,7 +1964,7 @@ komputerów w sieci) poniewa¿ w chwili ich wysy³ania nie znamy adresu MAC
 komputera docelowego - dopiero po otrzymaniu odpowiedzi na zapytanie ARP poznamy
 ten adres. Trzecie pole nag³ówka ethernetowego zawiera numer przenoszonego
 protoko³u wy¿szej warstwy - tutaj jest to ARP. Po stworzeniu nag³ówka wstawiamy
-go na pocz±tek bufora przeznaczonego na ca³± ramkê (pktbuf). Mo¿eby teraz zaj±æ
+go na pocz±tek bufora przeznaczonego na ca³± ramkê (pktbuf). Mo¿emy teraz zaj±æ
 siê stworzeniem nastêpnego nag³ówka (ARP):
 \begin{verbatim}
   memset (&arphd, 0, sizeof (arphd));
@@ -2018,7 +2018,7 @@ t± ramkê i patrzy, co jest w ¶rodku. Znajduje tam zapytanie ARP (ARPOP\_REQUEST)
 Sprawdza wiêc, czy docelowy adres IP (adr\_tip) jest jego w³asnym adresem. Je¶li
 stwierdzi, ¿e tak jest to zamienia miejscami pola: ar\_sha<->ar\_tha oraz
 ar\_sip<->ar\_tip a ar\_op ustawia na ARPOP\_REPLY (odpowied¼ ARP). Nastêpnie tak
-zmieniony paket opakowuje w ramkê ethernetow± i wysy³a pod adres ar\_tha. Kiedy
+zmieniony pakiet opakowuje w ramkê ethernetow± i wysy³a pod adres ar\_tha. Kiedy
 komputer inicjuj±cy ca³± t± operacjê otrzyma odpowied¼ ARP, zagl±da do pola
 ar\_sha (b±d¼ do adresu ¼ród³owego w nag³ówku ethernetowym) gdzie znajduje siê
 adres, o który prosi³.
@@ -2077,10 +2077,10 @@ U¿ywamy znanej ju¿ funkcji {\bf select()} aby poczekaæ na odpowied¼ ARP. Czekamy
 maksymalnie TIMEOUT sekund.
 \begin{verbatim}
   else if (ret == 0)
-    printf ("Uplynal limit czasu.\n");
+    printf ("Up³yn±³ limit czasu.\n");
   else
 \end{verbatim}
-Je¶li {\bf select()} zwróci 0 to znaczy, ¿e up³yn±l limit czasowy.
+Je¶li {\bf select()} zwróci 0 to znaczy, ¿e up³yn±³ limit czasowy.
 \begin{verbatim}
     {
       recv (sd, pktbuf, sizeof (pktbuf), 0);
@@ -2118,9 +2118,9 @@ wszystkich mo¿liwych adresów, tzn. je¶li jeste¶my pod³±czeni do sieci
 192.168.1.1-254. Potem oczekujemy ju¿ tylko na odpowiedzi ARP.
 
 
-Na tym na razie poprzestaniemy. Opanowali¶my wszyskie podstawowe umiejêtno¶ci
+Na tym na razie poprzestaniemy. Opanowali¶my wszystkie podstawowe umiejêtno¶ci
 potrzebne do zaaran¿owania komunikacji przy wykorzystaniu mechanizmu gniazd.
-Jak widzieli¶my na przyk³adzie analizowanych programow nasza obecna wiedza na
+Jak widzieli¶my na przyk³adzie analizowanych programów nasza obecna wiedza na
 ten temat wystarcza w zupe³no¶ci do realizacji nawet ca³kiem z³o¿onych zadañ.
 Jednak aby nie mieæ ¿adnych problemów z tworzeniem najbardziej wyrafinowanych
 programów sieciowych pozosta³o jeszcze do przyswojenia kilka bardziej

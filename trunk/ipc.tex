@@ -11,7 +11,7 @@ zaimplementowanej w Linuksie.}
 IPC w Linuksie dostarcza metod komunikacji miêdzy ró¿nymi procesami. Istnieje
 kilka metod IPC dostêpnych w Linuksie:
 \begin{itemize}
-\item Jednokierunkowe potoki z Unixa
+\item Jednokierunkowe potoki z Uniksa
 \item FIFO ( nazwane potoki )
 \item kolejki wiadomo¶ci stylu SYSV
 \item semafory stylu SYSV
@@ -23,7 +23,7 @@ kilka metod IPC dostêpnych w Linuksie:
 Narzêdzia te, u¿ywane efektywnie, dostarczaj± porz±dnych podstaw do tworzenia
 aplikacji typu klient/serwer w Uniksie ( w³±czaj±c Linuksa ).
 
-\section{Jednokierunkowe potoki z Unixa}
+\section{Jednokierunkowe potoki z Uniksa}
 
 
 \subsection{Podstawy}
@@ -42,7 +42,7 @@ S± szeroko u¿ywane, nawet w linii poleceñ pow³oki.
 \end{tscreen}
 
 Powy¿szy przyk³ad pokazuje zbiór potoków; przetworzenie wyj¶cia ls na
-wej¶cie programu sort, a pó¿niejsze u¿ycie wyj¶cia sort jako wej¶cie lp.
+wej¶cie programu sort, a pó¼niejsze u¿ycie wyj¶cia sort jako wej¶cie lp.
 Dane przemieszczaj± siê w jednokierunkowym potoku, wizualnie od lewej do prawej.
 
 Aczkolwiek z zami³owaniem u¿ywamy potoków w ró¿nych skryptach, rzadko zadajemy 
@@ -61,13 +61,13 @@ Oto reprezentacja procesu i j±dra po utworzeniu potoku:
 Z powy¿szego rysunku ³atwo mo¿na dostrzec jak deskryptory s± po³±czone nawzajem.
 Je¿eli proces wysy³a dane poprzez potok ( fd0 ), mo¿e je otrzymaæ z fd1.
 Jest to bardziej z³o¿ony proces, ni¿ widaæ na rysunku. Gdy proces tworzy
-potok, a pó¿niej podczas przekazywania danych informacje przep³ywaj± przez j±dro.
-Pod Linuxem, potoki s± obecnie prezentowane wewnêtrznie jako prawid³owe i-wêz³y
+potok, a pó¼niej podczas przekazywania danych informacje przep³ywaj± przez j±dro.
+Pod Linuksem, potoki s± obecnie prezentowane wewnêtrznie jako prawid³owe i-wêz³y
 ( inodes ). Oczywi¶cie taki i-wêze³ przebywa wewn±trz j±dra, nie na jakim¶ 
 fizycznym systemie plików. Takie podej¶cie otwiera nam ³adn±, porêczn± furtkê We/Wy,
-o czym przekonamy siê pó¿niej.
+o czym przekonamy siê pó¼niej.
 
-Na razie potoki s± daleko bezurzyteczne. Po co zadawaæ sobie trud tworzenia
+Na razie potoki s± daleko bezu¿yteczne. Po co zadawaæ sobie trud tworzenia
 potoku aby porozmawiaæ ze sob±? Najczê¶ciej proces tworz±cy potok tworzy
 ( forkuje ;) proces potomny. Proces potomny odziedzicza po rodzicu wszelkie otwarte
 deskryptory plików, mamy teraz podstawy aby komunikowaæ siê miêdzy procesami.
@@ -81,7 +81,7 @@ Oto uaktualniony diagram:
 Widzimy, i¿ oba procesy maj± dostêp do deskryptorów plików, które tworz± potok.
 Na tym poziomie musimy podj±æ krytyczn± decyzjê: w jakim kierunku bêd± przesy³ane
 dane? Po wybraniu kierunku procesy zamykaj± koñcówkê potoku, z której nie bêd±
-korzystaæ. Przyjmijmy, ¿e potomek przeprowadza jak±¶ akcjê i wywsy³a wynik poprzez
+korzystaæ. Przyjmijmy, ¿e potomek przeprowadza jak±¶ akcjê i wysy³a wynik poprzez
 potok do rodzica. Oto nasz nowy rysunek:
 
 \begin {center}
@@ -109,7 +109,7 @@ Tworzenie potoków wraz z C mo¿e byæ troszeczkê trudniejsze ni¿ to wynika z naszy
 do¶wiadczeñ z pow³oki. Aby utworzyæ prosty potok w C musimy pos³u¿yæ siê wywo³aniem
 systemowym pipe(). Podaje siê jeden argument, który jest tablic± dwóch liczb 
 ca³kowitych, je¿eli nasze wywo³anie powiod³o siê macierz zawiera dwa deskryptory
-plików, które urzywamy do operacji na potoku. Najczê¶ciej po takiej operacji
+plików, które u¿ywamy do operacji na potoku. Najczê¶ciej po takiej operacji
 proces tworzy swojego potomka, który dziedziczy wszystkie otwarte deskryptory
 plików.
 
@@ -155,7 +155,7 @@ potok s± przesy³ane przez j±dro.
 
 
 Pamiêtaj, ¿e nazwa macierzy w C {\em wskazuje\/} pierwszy element. Czyli {\tt fd}
-jest wska¼nikiem do {\tt \&fd[0]}. Po stworzeniu potoku forkujemy naszego potomka.
+jest wska¼nikiem do {\tt \&fd[0]}. Po stworzeniu potoku tworzymy naszego potomka.
 
 \begin{verbatim}
         #include <stdio.h>
@@ -257,7 +257,7 @@ int main(void)
                 /* Potomek zamyka koñcówkê wej¶ciow± */
                 close(fd[0]);
 
-                /* Przesy³amy "string" poprzez koñcówke wyj¶ciow± potoku */
+                /* Przesy³amy "string" poprzez koñcówkê wyj¶ciow± potoku */
 		write(fd[1], string, strlen(string));
                 exit(0);
         }
@@ -278,7 +278,7 @@ int main(void)
 
 Czêsto deskryptory w procesie potomnym s± duplikowane na standardowe wej¶cie lub
 wyj¶cie, nastêpnie proces potomny mo¿e wykonaæ - exec() inny program, który dziedziczy
-standardowe strumienie. Przyj¿yjmy siê wywo³aniu dup():
+standardowe strumienie. Przyjrzyjmy siê wywo³aniu dup():
 
 \par
 \addvspace{\medskipamount}
@@ -298,7 +298,7 @@ standardowe strumienie. Przyj¿yjmy siê wywo³aniu dup():
 \addvspace{\medskipamount}
 
 
-Pomimo tego, i¿ stary deskryptor mo¿e byæ u¿ywany zamiennie z nowowo utworzonym
+Pomimo tego, i¿ stary deskryptor mo¿e byæ u¿ywany zamiennie z nowo utworzonym
 najczê¶ciej najpierw zamyka siê standardowe strumienie. Wywo³anie systemowe
 dup() u¿ywa pierwszego wolnego deskryptora.
 new one.
@@ -322,16 +322,16 @@ Rozwa¿:
         }
 \end{verbatim}
 
-Zamkneli¶my deskryptor pliku 0 ( stdin ), poprzez wywo³anie dup() zduplikowali¶my
-deskryptor potoku (fd$0$) na stardardowe wej¶cie potomka. Po tym wywo³ali¶my
+Zamknêli¶my deskryptor pliku 0 ( stdin ), poprzez wywo³anie dup() skopiowali¶my
+deskryptor potoku (fd$0$) na standardowe wej¶cie potomka. Po tym wywo³ali¶my
 execlp() aby zamieniæ segment tekstowy potomka ( kod ) programem sort.
 Dziêki temu, ¿e programy uruchomione poprzez exec dziedzicz± standardowe
 strumienie programów wywo³uj±cych je, sort dziedziczy wej¶ciow± czê¶æ potoku
-jako swoje standardowe wej¶cie! Teraz wszystko co wysys³a rodzic do potoku 
+jako swoje standardowe wej¶cie! Teraz wszystko co wysy³a rodzic do potoku 
 kierowane jest do programu sort.
 
 Istnieje inne wywo³anie systemowe - dup2(), którego mo¿na równie¿ u¿ywaæ.
-To wywo³anie oryginalnie powsta³o w 7 Wersji Unixa i zosta³o przeniesione do
+To wywo³anie oryginalnie powsta³o w 7 Wersji Uniksa i zosta³o przeniesione do
 BSD, obecnie wymagane jest przez standard POSIX.
 
 
@@ -401,18 +401,18 @@ zrobiæ to w inny sposób.
 \nopagebreak\hrule 
 \addvspace{\medskipamount}
 
-Ta standardowa funckja biblioteki tworzy potok wywo³uj±c wewnêtrznie pipe().
-Po tym forkuje proces potomny, uruchamia pow³okê Bourne'a oraz uruchamia
+Ta standardowa funkcja biblioteki tworzy potok wywo³uj±c wewnêtrznie pipe().
+Po tym tworzy proces potomny, uruchamia pow³okê Bourne'a oraz uruchamia
 argument "komenda" korzystaj±c z pow³oki. Kierunek przep³ywu danych
 okre¶lany jest przez argument "typ", który mo¿e przybieraæ warto¶ci
 "r" ( odczyt ) lub "w" ( zapis ). Nie mo¿na ich u¿yæ jednocze¶nie. 
-Je¿eli ciê podkusi i podasz "rw" pod Linuxem potok zostanie otwarty w trybie
+Je¿eli ciê podkusi i podasz "rw" pod Linuksem potok zostanie otwarty w trybie
 wskazanym przez pierwsz± literê, czyli w tym wypadku w trybie odczytu.
 
 Przez to, ¿e ta funkcja odwala za ciebie wiêkszo¶æ roboty tracisz kontrolê, 
 któr± mia³e¶ pos³uguj±c siê pipe() i samemu forkuj±c. Z drugiej strony 
 dziêki temu, i¿ pow³oka Bourne'a jest u¿ywana bezpo¶rednio mo¿esz korzystaæ z 
-dobrodziejstwa masek oraz rozwijania metaznaków.
+dobrodziejstwa masek oraz rozwijania meta-znaków.
 
 Potoki otwierane za pomoc± popen() musz± zostaæ zamkniête funkcj± pclose().
 Prawdopodobnie ju¿ spostrzeg³e¶ podobieñstwo popen/pclose do standardowych
@@ -428,7 +428,7 @@ funkcji strumieniowego We/Wy do plików - fopen() i fclose().
     ZWRACA: status wyj¶ciowy wywo³ania wait4()
              -1 je¿eli "stream" jest nieprawid³owy lub zawiod³o wait4()
 
-  UWAGI: czeka na zakoñczenie operacji na potoku, pó¿niej zamyka potok
+  UWAGI: czeka na zakoñczenie operacji na potoku, pó¼niej zamyka potok
 \end{verbatim} 
 \nopagebreak\hrule 
 \addvspace{\medskipamount}
@@ -482,7 +482,7 @@ int main(void)
 
 
 Dziêki temu, i¿ {\tt popen()} korzysta z pow³oki wszystkie rozwiniêcia znaków i
-metaznaków s± dostêpne! Mo¿emy równie¿ korzystaæ z bardziej zaawansowanych 
+meta-znaków s± dostêpne! Mo¿emy równie¿ korzystaæ z bardziej zaawansowanych 
 technik jak przekierowywanie, u¿ywanie potoków. Popatrz na poni¿sze przyk³ady:
 
 \begin{verbatim}
@@ -589,7 +589,7 @@ int main(int argc, char *argv[])
 }
 \end{verbatim}
 
-Wyprubuj program:
+Wypróbuj program:
 \begin{verbatim}
         popen3 sort popen3.c
         popen3 cat popen3.c
@@ -608,7 +608,7 @@ Wyprubuj program:
 
 Aby operacja mog³a zostaæ uznana za 'atomow±', musi spe³niæ jeden warunek - nic
 nie mo¿e jej przerwaæ. Standard POSIX ustala w /usr/include/posix1\_lim.h, i¿ 
-maxymalny rozmiar bufora dla operacji atomowej na potoku to:
+maksymalny rozmiar bufora dla operacji atomowej na potoku to:
 
 \begin{verbatim}
         #define _POSIX_PIPE_BUF         512
@@ -616,7 +616,7 @@ maxymalny rozmiar bufora dla operacji atomowej na potoku to:
 
 Czyli do 512 bajtów mo¿e zostaæ zapisanych lub odczytanych atomowo z potoku.
 Je¿eli warto¶æ ta zostanie przekroczona operacja zostanie podzielona i nie
-bêdzie atomowa. Pod Linuxem limit dla operacji atomowej zosta³ zdefiniowany
+bêdzie atomowa. Pod Linuksem limit dla operacji atomowej zosta³ zdefiniowany
 w 'linux/limits.h' na:
 
 \begin{verbatim}
@@ -662,8 +662,8 @@ Nazwany potok pracuje podobnie jak normalny ale znacz±co ró¿ni siê.
 \begin{itemize}
 \item Nazwane potoki istniej± w systemie plików jako plik urz±dzenia.
 \item Procesy ró¿nych rodziców mog± dzieliæ dane poprzez nazwany potok.
-\item Po skoñczeniu wszystkich operacji nazwany potok pozastaje w systemie plików
-w celu pó¿niejszego u¿ycia.
+\item Po skoñczeniu wszystkich operacji nazwany potok pozostaje w systemie plików
+w celu pó¼niejszego u¿ycia.
 \end{itemize}
 
 
@@ -799,7 +799,7 @@ int main(void)
 \end{verbatim}
 
 
-Jako¿e FIFO domy¶lnie blokuje program, uruchom go w tle:
+Poniewa¿ FIFO domy¶lnie blokuje program, uruchom go w tle:
 
 \begin{verbatim}
         $ fifoserver&
@@ -886,7 +886,7 @@ W Systemie V AT\&T wprowadzi³ trzy nowe formy IPC ( kolejki wiadomo¶ci,
 standaryzacj± tych us³ug wiêkszo¶æ implementacji wspiera³a je. Dodatkowo, BSD
 u¿ywa gniazd (sockets) jako podstawê IPC czê¶ciej ni¿ elementy z Systemu V.
 Linux mo¿e obs³ugiwaæ obie formy IPC ( BSD lub System V ), jednak¿e gniazda
-omówimy w pó¿niejszym rozdziale.
+omówimy w pó¼niejszym rozdziale.
  
 Implementacja IPC Systemu V dla Linuksa zosta³a stworzona przez {\em Krishna Balasubramanian\/},
 {\tt balasub@cis.ohio-state.edu}.
@@ -896,13 +896,13 @@ Implementacja IPC Systemu V dla Linuksa zosta³a stworzona przez {\em Krishna Bal
 
 
 Ka¿dy {\em obiekt\/} IPC posiada unikalny identyfikator. Kiedy mówimy 'obiekt IPC'
-mamy na my¶li pojedyñcz± kolejkê wiadomo¶ci, zestaw semaforów lub segment pamiêci
-dzielonel. Identyfikator u¿ywany jest przez j±dro w celu identyfikacji obiektu IPC.
+mamy na my¶li pojedyncz± kolejkê wiadomo¶ci, zestaw semaforów lub segment pamiêci
+dzielonej. Identyfikator u¿ywany jest przez j±dro w celu identyfikacji obiektu IPC.
 Dla przyk³adu, aby u¿yæ segmentu pamiêci dzielonej musimy znaæ jedynie unikaln±
 warto¶æ ID, która zosta³a przyporz±dkowana temu segmentowi.
 
 Unikalno¶æ identyfikatora uzale¿niona jest od {\em typu\/} obiektu. Aby to
-zilustrowaæ za³u¿my, i¿ pos³ugujemy siê warto¶ci± '12345'. Podczas gdy nie
+zilustrowaæ za³ó¿my, i¿ pos³ugujemy siê warto¶ci± '12345'. Podczas gdy nie
 mog± istnieæ dwie kolejki wiadomo¶ci o tym samym numerze, istnieje mo¿liwo¶æ
 utworzenia kolejki i, powiedzmy, segmentu pamiêci dzielonej o tym samym numerze.
 
@@ -949,21 +949,20 @@ generacjê klucza.
 \addvspace{\medskipamount}
 \nopagebreak\hrule
 \begin{verbatim}
-        key_t   mójklucz;
-        mójklucz = ftok("/tmp/mojaapp", 'a');
+        key_t mojklucz = ftok("/tmp/mojaapp", 'a');
 \end{verbatim} 
 \nopagebreak\hrule 
 \addvspace{\medskipamount}
 
 W powy¿szym przyk³adzie klucz tworzony jest z kombinacji katalogu {\tt /tmp/mojaapp} 
-z liter± {\tt 'a'}. Inn± mo¿liwo¶ci± jest u¿ycie bierz±cego katalogu:
+z liter± {\tt 'a'}. Inn± mo¿liwo¶ci± jest u¿ycie bie¿±cego katalogu:
 
 \par
 \addvspace{\medskipamount}
 \nopagebreak\hrule
 \begin{verbatim}
-        key_t   mójklucz;
-        mykey = ftok(".", 'a');
+        key_t   mojklucz;
+        mojklucz = ftok(".", 'a');
 \end{verbatim} 
 \nopagebreak\hrule 
 \addvspace{\medskipamount}
@@ -973,13 +972,13 @@ nie dopuszcza siê do przypadku wy¶cigu, powieszenia (deadlocks) procesu ka¿da me
 jest dobra. W celu demonstracyjnym u¿ywamy ftok() zak³adamy, ¿e ka¿dy klient
 posiada unikalny katalog 'domowy', a to powinno daæ nam wystarczaj±ce klucze.
 
-Choæ warto¶æ klucza jest odbierana, u¿ywana jest w pó¿niejszych wywo³aniach systemowych
+Choæ warto¶æ klucza jest odbierana, u¿ywana jest w pó¼niejszych wywo³aniach systemowych
 w celu tworzenia lub dostêpu do obiektów IPC.
 
 \subsubsection{Polecenie {\tt ipcs}}
 
-Komendê {\tt ipcs} mo¿na u¿yæ w celu otrzymania statusu wszyskitch obiektów IPC 
-Systemu V. Linuxowa wersja narzêdzia zosta³a stworzona przez {\em Krishna Balasubramanian\/}.
+Komendê {\tt ipcs} mo¿na u¿yæ w celu otrzymania statusu wszystkich obiektów IPC 
+Systemu V. Linuksowa wersja narzêdzia zosta³a stworzona przez {\em Krishna Balasubramanian\/}.
 
 
 
@@ -989,7 +988,7 @@ Systemu V. Linuxowa wersja narzêdzia zosta³a stworzona przez {\em Krishna Balasu
 \begin{verbatim}
 ipcs     -q:    Poka¿ tylko kolejki wiadomo¶ci
 ipcs     -s:    Poka¿ tylko semafory
-ipcs     -m:    Poka¿ tylko pamieæ dzielon±
+ipcs     -m:    Poka¿ tylko pamiêæ dzielon±
 ipcs --help:    Dodatkowe argumenty
 \end{verbatim} 
 \nopagebreak\hrule 
@@ -1014,7 +1013,7 @@ msqid     owner     perms     used-bytes  messages
 \nopagebreak\hrule 
 \addvspace{\medskipamount}
 
-Powy¿ej widzimy pojedyñcz± kolejkê wiadomo¶ci, która ma identyfikator '0'. Jej 
+Powy¿ej widzimy pojedyncz± kolejkê wiadomo¶ci, która ma identyfikator '0'. Jej 
 w³a¶cicielem jest u¿ytkownik {\em root\/}, a jej ósemkowe restrykcje to {\tt 660},
 lub {\tt -rw-rw---}. W kolejce jest jedna wiadomo¶æ o ca³kowitym rozmiarze 5 bajtów.
 
@@ -1022,7 +1021,7 @@ Komenda {\tt ipcs} jest potê¿nym narzêdziem umo¿liwiaj±cym przyjrzenie siê mecha
 sk³adowania obiektów IPC przez j±dro. Poznaj je, u¿ywaj, czcij.
 
 
-\subsubsection{Komemda {\tt ipcrm}}
+\subsubsection{Komenda {\tt ipcrm}}
 
 Komendê {\tt ipcrm} mo¿esz u¿yæ w celu usuniêcia obiektu IPC z j±dra. Obiekty mog±
 byæ u¿ywane poprzez wywo³ania systemowe ( o czym powiemy za chwilê ), jednak
@@ -1069,7 +1068,7 @@ operacji, podczas gdy niektóre przebywaj± na dosyæ niskim poziomie.
 Pierwsz± struktur±, której siê przyjrzymy jest {\tt msgbuf}. Ta struktura mo¿e
 byæ postrzegana jako {\em szablon\/} dla wiadomo¶ci. Spraw± programisty jest
 zdefiniowanie struktury tego typu, jest wa¿ne aby¶ zrozumia³, i¿ {\bf istnieje}
-struktura typu {\tt msgbuf}. Jest ona zadeklorowana w {\tt linux/msg.h} nastêpuj±co:
+struktura typu {\tt msgbuf}. Jest ona zadeklarowana w {\tt linux/msg.h} nastêpuj±co:
 
 
 \par
@@ -1121,14 +1120,14 @@ programistê. Rozwa¿ tak± mo¿liwo¶æ:
 struct moj_msgbuf {
         long    mtype;          /* Typ wiadomo¶ci */
         long    id_zadania;     /* Identyfikator ¿±dania */
-        struct  klient_info;    /* Stuktura informacji dla klienta */
+        struct  klient_info;    /* Struktura informacji dla klienta */
 };
 \end{verbatim} 
 \nopagebreak\hrule 
 \addvspace{\medskipamount}
 
 Powy¿ej widzimy strukturê wiadomo¶ci, jednak¿e jest ona nieco zmieniona - 
-jeden z jej elemntów zosta³ usuniêty, a na jego miejse pojawi³y siê dwa nowe, z
+jeden z jej elementów zosta³ usuniêty, a na jego miejsce pojawi³y siê dwa nowe, z
 których jeden jest struktur±! Oto jest piêkno kolejek wiadomo¶ci! J±dro w ¿aden
 sposób nie przetwarza przesy³anych danych. Mo¿esz przesy³aæ ka¿d± informacjê.
 
@@ -1139,7 +1138,7 @@ jest w {\tt linux/msg.h} nastêpuj±co:
 \addvspace{\medskipamount}
 \nopagebreak\hrule
 \begin{verbatim}
-#define MSGMAX  4056   /* <= 4056 */   /* maxymalny rozmiar wiadomo¶ci ( bajty ) */
+#define MSGMAX  4056   /* <= 4056 */   /* maksymalny rozmiar wiadomo¶ci ( bajty ) */
 \end{verbatim} 
 \nopagebreak\hrule 
 \addvspace{\medskipamount}
@@ -1173,8 +1172,8 @@ struct msg {
 
 \begin{description}
 \item[{\tt msg\_next}] \mbox{}
-Jest to wska¼nik do nastêpnej wiadomo¶æi. S± one przechowywane jako
-pojedyñczo ³±czona lista wewn±trz przestrzeni adresowej j±dra.
+Jest to wska¼nik do nastêpnej wiadomo¶ci. S± one przechowywane jako
+pojedynczo ³±czona lista wewn±trz przestrzeni adresowej j±dra.
 
 \item[{\tt msg\_type}] \mbox{}
 Jest to typ wiadomo¶ci ustalony w strukturze {\tt msgbuf} przez u¿ytkownika.
@@ -1214,7 +1213,7 @@ struct msqid_ds {
     struct wait_queue *rwait;
     ushort msg_cbytes;    
     ushort msg_qnum;     
-    ushort msg_qbytes;      /* maxymalna ilo¶æ bajtów w kolejce */
+    ushort msg_qbytes;      /* maksymalna ilo¶æ bajtów w kolejce */
     ushort msg_lspid;       /* pid ostatniego msgsnd */
     ushort msg_lrpid;       /* ostatnio odebrany pid */
 };
@@ -1251,7 +1250,7 @@ Czas ostatniego odebrania wiadomo¶ci z kolejki.
 
 \item[{\tt msg\_ctime}] \mbox{}
 
-Czas ostatniej 'zmiany' dokonanej na kolejce ( wiêcej dowiesz siê pó¿niej ).
+Czas ostatniej 'zmiany' dokonanej na kolejce ( wiêcej dowiesz siê pó¼niej ).
 
 \item[{\tt wwait}] \mbox{}
 
@@ -1273,7 +1272,7 @@ Liczba wiadomo¶ci w kolejce.
 
 \item[{\tt msg\_qbytes}] \mbox{}
 
-Maxymalna liczba bajtów dla kolejki.
+Maksymalna liczba bajtów dla kolejki.
 
 \item[{\tt msg\_lspid}] \mbox{}
 
@@ -1312,11 +1311,11 @@ struct ipc_perm
 \addvspace{\medskipamount}
 
 Raczej nietrudno odgadn±æ przeznaczenie poszczególnych cz³onków. Klucz przechowywany
-razem z obiektem zaiera informacje na temat twórcy oraz w³a¶ciciela obiektu ( mog± siê
+razem z obiektem zawiera informacje na temat twórcy oraz w³a¶ciciela obiektu ( mog± siê
 ró¿niæ ). Ósemkowe prawa dostêpu s± równie¿ tutaj przechowywane; jako {\tt unsigned short}.
 Mamy tu równie¿ {\em sekwencjê u¿ycia slotu\/} na koñcu. Za ka¿dym razem gdy obiekt IPC
 zamykany jest via wywo³anie systemowe ( jest niszczony ) warto¶æ ta zwiêkszana jest
-przez maxymaln± liczbê obiektów IPC mog±cych przebywaæ w systemie. Nie przejmuj siê
+przez maksymaln± liczbê obiektów IPC mog±cych przebywaæ w systemie. Nie przejmuj siê
 t± warto¶ci±.
 
 {\bf UWAGA:}{\em  Istnieje wspania³a dyskusja na ten temat, oraz na temat powodu
@@ -1341,7 +1340,7 @@ wywo³ania {\tt msgget()}.
                                 EIDRM ( kolejka jest zaznaczona jako do usuniêcia )
                                 ENOENT ( kolejka nie istnieje )
                                 ENOMEM ( brak pamiêci aby utworzyæ kolejkê )
-                                ENOSPC ( maxymalny limit kolejek przekroczony )
+                                ENOSPC ( maksymalny limit kolejek przekroczony )
   UWAGI: 
 \end{verbatim} 
 \nopagebreak\hrule 
@@ -1368,12 +1367,13 @@ U¿yte razem z IPC\_CREAT zwraca b³±d je¿eli kolejka istnieje.
 Je¿eli u¿ywasz samo {\tt IPC\_CREAT} {\tt msgget()} zwraca identyfikator nowo
 utworzonej kolejki lub istniej±cej, której warto¶æ klucza jest taka sama.
 Je¿eli u¿ywasz {\tt IPC\_EXCL} razem z {\tt IPC\_CREAT} zostanie utworzona nowa
-kolejka lub wywo³anie zwróci b³±d. U¿ycie tej flagi gwarantuje nam, ¿e nie istenieje
+kolejka lub wywo³anie zwróci b³±d. U¿ycie tej flagi gwarantuje nam, ¿e nie istnieje
 kolejka z otwartym dostêpem.
 
-Mo¿esz równie¿ z'OR'owaæ dodatkowy ósemkowy tryb z argumentem, gdy¿ ka¿dy
+Mo¿na równie¿ wykonaæ operacjê iloczynu bitowego z flag± podaj±c w ten
+sposób tryb dostêpu, gdy¿ ka¿dy
 obiekt IPC posiada prawa podobne w dzia³aniu do praw pliku z systemu plików
-Unixa !!! 
+Uniksa !!! 
 
 Utwórzmy prost± funkcjê otwieraj±c± lub tworz±c± kolejkê wiadomo¶ci:
 
@@ -1429,7 +1429,7 @@ Aby wys³aæ wiadomo¶æ do kolejki mo¿emy pos³u¿yæ siê wywo³aniem {\tt msgsnd}:
 \addvspace{\medskipamount}
 
 
-Pierwszy agrument ( {\tt msgsnd} ) jest identyfikatorem zwróconym przez {\tt msgget}.
+Pierwszy argument ( {\tt msgsnd} ) jest identyfikatorem zwróconym przez {\tt msgget}.
 Drugi ( {\tt msgp} ) to wska¼nik do naszego bufora wiadomo¶ci. Argument {\tt msgsz}
 zawiera rozmiar wiadomo¶ci w bajtach, wy³±czaj±c d³ugo¶æ typu ( 4 bajty ).
 
@@ -1439,7 +1439,7 @@ Argument {\tt msgflg} mo¿e byæ ustawiony na 0 ( ignorowany ) lub na:
 \begin{description}
 \item[IPC\_NOWAIT] \mbox{}
 
-Je¿eli kolejka jest pe³na wiadomo¶æ nie jest zapisywana, kontrol powraca
+Je¿eli kolejka jest pe³na wiadomo¶æ nie jest zapisywana, kontrola powraca
 do procesu wywo³uj±cego. Je¿eli nie podana proces bêdzie czeka³ na mo¿liwo¶æ zapisu.
 
 \end{description}
@@ -1523,7 +1523,7 @@ Po utworzeniu/otwarciu naszej kolejki tworzymy bufor z danymi testowymi
 Wywo³anie {\tt send\_message} przesy³a wiadomo¶æ do kolejki.
 
 Mamy nasz± wiadomo¶æ w kolejce, aby sprawdziæ status kolejki odpal polecenie {\tt
-ipcs}. Teraz zajmijmy siê odberaniem informacji z kolejki, do tego celu
+ipcs}. Teraz zajmijmy siê odbieraniem informacji z kolejki, do tego celu
 s³u¿y wywo³anie systemowe {\tt msgrcv()}:
 
 \par
@@ -1537,7 +1537,7 @@ s³u¿y wywo³anie systemowe {\tt msgrcv()}:
 	                                 brak MSG_NOERROR)
                                 EACCES ( odczyt zabroniony )
                                 EFAULT ( adres wskazywany przez msgp jest nieprawid³owy )                             EIDRM  (Queue was removed during retrieval)
-                                EINTR  ( przerwano z powodu nadchadz±cego sygna³u )
+                                EINTR  ( przerwano z powodu nadchodz±cego sygna³u )
                                 EINVAL ( nieprawid³owy msgqid invalid lub msgsz ujemny )
                                 ENOMSG ( ustawiono IPC_NOWAIT, a nie ma w kolejce
 					 wiadomo¶ci spe³niaj±cej ¿±danie )
@@ -1549,7 +1549,7 @@ s³u¿y wywo³anie systemowe {\tt msgrcv()}:
 Pierwszy argument okre¶la kolejkê ( powinni¶my go dostaæ po wywo³aniu {\tt msgget}).
 Drugi argument ({\tt msgp}) jest adresem bufora dla otrzymanej wiadomo¶ci. Trzeci
 argument ({\tt msgsz}) okre¶la rozmiar struktury bufora wiadomo¶ci, wy³±czaj±c
-rozmiar cz³onka {\tt mtype}. Pamietaj, ¿e mo¿na to ³atwo obliczyæ:
+rozmiar cz³onka {\tt mtype}. Pamiêtaj, ¿e mo¿na to ³atwo obliczyæ:
 
 
 \par
@@ -1562,7 +1562,7 @@ msgsz = sizeof(struct mymsgbuf) - sizeof(long);
 \addvspace{\medskipamount}
 
 Czwarty argument ({\tt mtype}) okre¶la {\em type\/} typ wiadomo¶ci do odbioru.
-J±dro przeszyka kolejkê w poszukiwaniu najstarszej wiadomo¶ci o podanym typie
+J±dro przeszuka kolejkê w poszukiwaniu najstarszej wiadomo¶ci o podanym typie
 i prze¶le jej kopie pod adres wskazywany przez argument {\tt msgp}. Istnieje jeden
 wyj±tek: je¿eli {\tt mtype} ma warto¶æ zero zostanie przes³ana najstarsza wiadomo¶æ
 nie zwracaj±c uwagi na typ.
@@ -1669,7 +1669,7 @@ mo¿e prowadziæ do nocnych igraszek. Niestety, odpowiedzialno¶æ spoczywaj±ca na
 programi¶cie mo¿e zostaæ zaklasyfikowana jako zabawa pod warunkiem, ¿e lubisz 
 za¶miecaæ podsystem IPC. Wywo³uj±c {\tt msgctl()} z odpowiednio dobranymi poleceniami
 mo¿esz manipulowaæ jednostki, które zbyt ³atwo nie doprowadz± systemu do upadku.
-Przyj¿yjmy siê tym komendom:
+Przyjrzyjmy siê tym komendom:
 
 \begin{description}
 \item[{\bf IPC\_STAT}] \mbox{}
@@ -1692,7 +1692,7 @@ Przypomnij sobie nasz± dyskusjê na temat struktury {\tt msqid\_ds}.
 J±dro przechowuje kopiê tej struktury dla ka¿dej kolejki istniej±cej w systemie.
 U¿ywaj±c polecenia {\bf IPC\_STAT} mo¿emy otrzymaæ kopiê tej struktury.
 
-Przyj¿yjmy siê funkcji odbieraj±cej i kopiuj±cej tê strukturê pod podany adres:
+Przyjrzyjmy siê funkcji odbieraj±cej i kopiuj±cej tê strukturê pod podany adres:
 
 \par
 \addvspace{\medskipamount}
@@ -1752,18 +1752,18 @@ int change_queue_mode( int qid, char *mode )
 \addvspace{\medskipamount}
 
 
-Pobieramy kopiê struktury za pomoc± wywo³ania naszej funckji {\tt get\_queue\_ds}.
+Pobieramy kopiê struktury za pomoc± wywo³ania naszej funkcji {\tt get\_queue\_ds}.
 Nastêpnie wywo³ujemy {\tt sscanf()} aby zmieniæ {\tt mode} w strukturze {\tt msg\_perm}.
 Zmian dokonuje wywo³anie {\tt msgctl()} z poleceniem {\bf IPC\_SET}.
 
-{\em B¡D¯ OSTRO¯NY!\/} Istnieje mo¿liwo¶æ zablokowania siebie zmieniaj±c prawa dostêpu
-dla kolejki! Pamiêtaj, ¿e takie obiekty IPC nie znikaj± do czasu poprawbengo usuniêcia
+{\em B¡D¬ OSTRO¯NY!\/} Istnieje mo¿liwo¶æ zablokowania siebie zmieniaj±c prawa dostêpu
+dla kolejki! Pamiêtaj, ¿e takie obiekty IPC nie znikaj± do czasu poprawnego usuniêcia
 lub restartu systemu. Nawet je¿eli nie mo¿esz zobaczyæ kolejki za pomoc± {\tt ipcs}
 nie oznacza to ¿e jej tam nie ma.
 
 \begin{quotation}
 {\em Aby to zademonstrowaæ przedstawiê pewn± zabawn± anegdotê. Kiedy uczy³em
-budowy wewnêtrznej Unixa na Uniwersytecie Po³udniowej Florydy wpad³em w pewn±
+budowy wewnêtrznej Uniksa na Uniwersytecie Po³udniowej Florydy wpad³em w pewn±
 zawstydzaj±c± blokadê. Dzieñ wcze¶niej przed zajêciami po³±czy³em siê z serwerem 
 laboratoryjnym w celu kompilacji
 i przetestowania pracy laboratoryjnej na dany tydzieñ. Podczas testowania 
@@ -1781,7 +1781,7 @@ uruchomiæ ipcrm. grrrr.\/}
 Po pomy¶lnym odebraniu wiadomo¶ci zostaje ona usuniêta z kolejki. Jednak, jak
 wspomnia³em wcze¶niej, obiekty IPC pozostaj± w systemie do czasu usuniêcia lub
 restartu. Zatem, nasza kolejka istnieje wewn±trz j±dra, gotowa do u¿ytku d³ugo po
-tym jak nasza wiadomo¶æ znikne³a. Aby dokoñczyæ cyklu ¿yciowego kolejki powinni¶my
+tym jak nasza wiadomo¶æ zniknê³a. Aby dokoñczyæ cyklu ¿yciowego kolejki powinni¶my
 j± usun±æ za pomoc± {\tt msgctl()}, podaj±c jako polecenie {\bf IPC\_RMID}:
 
 
@@ -1810,14 +1810,14 @@ zakoñczon± siê marnie.
 
 \subsubsection{msgtool: Interaktywny manipulator kolejk± wiadomo¶ci}
 
-Niewielu mo¿e zaprzeczyæ korzy¶ci p³yn±cych z dostêpu do dok³adnuch technicznych wiadomo¶ci.
+Niewielu mo¿e zaprzeczyæ korzy¶ci p³yn±cych z dostêpu do dok³adnych technicznych wiadomo¶ci.
 Takie materia³y dostarczaj± ogromny mechanizm poznawania i uczenia siê nowych obszarów.
 Podobnie jak posiadanie przyk³adów towarzysz±cych informacjom technicznym przy¶pieszy
 i wzmocni proces uczenia.
 
 Do tej pory, jedynymi u¿ytecznymi przyk³adami by³y nasze przyk³adowe funkcje
 manipuluj±ce kolejk± wiadomo¶ci. S± one bardzo u¿yteczne, jednak nie zosta³y one
-przedstawnione w sposób zapewniaj±cy dalsz± naukê i eksperymentowanie.
+przedstawione w sposób zapewniaj±cy dalsz± naukê i eksperymentowanie.
 W tym celu prezentujê {\em msgtool\/} - interaktywny program zarz±dzaj±cy kolejkami
 wiadomo¶ci, który mo¿esz uruchomiæ w linii poleceñ. Jego g³ównym celem jest
 dalsza edukacja, jednocze¶nie mo¿e zostaæ u¿yty w zwyk³ych zastosowaniach dostarczaj±c
@@ -1829,8 +1829,8 @@ mo¿liwo¶æ manipulacji kolejkami standardowym skryptom pow³oki.
 Program {\tt msgtool} opiera swoje dzia³anie na dostarczonych argumentach.
 To czyni go u¿ytecznym we wszelkich skryptach. Wszelkie mo¿liwo¶ci jak:
 tworzenie, wysy³anie, odbieranie, zmiana praw dostêpu oraz usuwanie kolejki.
-Obecnie u¿ywa on tablic znaków dla danych, umo¿liwiaj±c wysy³anie textowych
-wiadomo¶ci. Obs³ugê dodatkowych typów danych pozostawiam czytelnikowyi jako
+Obecnie u¿ywa on tablic znaków dla danych, umo¿liwiaj±c wysy³anie tekstowych
+wiadomo¶ci. Obs³ugê dodatkowych typów danych pozostawiam czytelnikowi jako
 æwiczenie.
 
 \paragraph{Sk³adnia wywo³ania}
@@ -1889,9 +1889,9 @@ msgtool  t   660
 
 Nastêpuj±cy kod ¼ród³owy to {\tt msgtool}. Powinien skompilowaæ siê bez problemu
 na nowszych ( przyzwoitych ) wersjach j±dra, które wspieraj± System V IPC. Pamiêtaj
-o w³±czeniu IPC Systemu V podczas rekompilacji j±dra!
+o w³±czeniu IPC Systemu V podczas kompilacji j±dra!
 
-Program {\em utowrzy\/} kolejkê wiadomo¶ci je¿eli jeszcze nie istnieje, bez wzglêdu
+Program {\em utworzy\/} kolejkê wiadomo¶ci je¿eli jeszcze nie istnieje, bez wzglêdu
 na rodzaj ¿±danego dzia³ania.
 
 \begin{quotation}
@@ -2050,51 +2050,51 @@ zrozumienia ich dzia³ania zaczniemy od krótkiego opisu, dopiero po tym
 przejdziemy do wywo³añ systemowych i sposobu u¿ycia.
 
 {\em Semafor\/} - urz±dzenia sygnalizacyjne przy torze kolejowym, podaj±ce okre¶lone
-sygna³y, zapewniajacê prawid³owo¶æ w ruchu poci±gów. To samo mo¿emy powiedzieæ
+sygna³y, zapewniaj±ce prawid³owo¶æ w ruchu poci±gów. To samo mo¿emy powiedzieæ
 na temat prostego semafora. Je¿eli jest on {\em w³±czony\/} ( ramiona w górze ) zasób
 jest dostêpny ( mo¿emy przejechaæ ). Gdy semafor jest {\em wy³±czony\/} ( ramiona w dole ) zasób jest
 niedostêpny ( musimy czekaæ ).
 
-Ten prosty przyk³ad ukazyje jedynie podstawy, nale¿y sobie zdaæ sprawê, i¿
+Ten prosty przyk³ad ukazuje jedynie podstawy, nale¿y sobie zdaæ sprawê, i¿
 semafory zaimplementowane s± jako {\em uk³ady\/}. Oczywi¶cie uk³ad mo¿e zawieraæ
 tylko jeden semafor, tak jak w naszym przyk³adzie.
 
 Mo¿emy równie¿ podej¶æ do zagadnienia semaforów w inny sposób - jako {\em liczniki zasobów\/}.
-Wyobra¿my sobie inny rzeczywisty scenariusz. Wyobra¿ sobie zarz±dcê drukowania (spooler)
+Wyobra¼my sobie inny rzeczywisty scenariusz. Wyobra¼ sobie zarz±dcê drukowania (spooler)
 obs³uguj±cego wiele drukarek, ka¿da drukarka obs³uguje wiele ¿±dañ wydruku. Nasz
 hipotetyczny zarz±dca drukowania bêdzie obs³ugiwa³ uk³ad semaforów w celu
 monitorowania dostêpu do ka¿dej z drukarek.
 
-Za³u¿my, ¿e mamy 5 dostêpnych drukarek. Nasz zarz±dca tworzy zestaw semaforów 
+Za³ó¿my, ¿e mamy 5 dostêpnych drukarek. Nasz zarz±dca tworzy zestaw semaforów 
 zawieraj±cy 5 semaforów, po jednym dla drukarki. Ka¿da z drukarek jest zdolna
 do fizycznego drukowania jednego zadania, ka¿dy z semaforów zainicjujemy warto¶ci±
 1 oznaczaj±c±, ¿e drukarka jest pod³±czona i gotowa na ¿±danie.
 
 Ja¶ wysy³a ¿±danie wydruku do zarz±dcy. Zarz±dca spogl±da na zestaw semaforów i
 wyszukuje pierwszego semafora, który równa siê 1. Przed wys³aniem ¿±dania do drukarki
-zarz±dca zmniejsza o jeden u¿ywany semafor. Teraz warto¶ci± semaforu jest 0.
+zarz±dca zmniejsza o jeden u¿ywany semafor. Teraz warto¶ci± semafora jest 0.
 W ¶wiecie Systemu V semafor ustawiony na 0 oznacza 100\% u¿ycia. W naszym
 przyk³adzie ¿adne inne ¿±danie nie mo¿e zostaæ przes³ane do tej drukarki a¿ do
 czasu zmiany warto¶ci. 
 
-Kiedy zadanie Jasia zostanie wykonane zarz±dca zinkrementuje warto¶æ semaforu
-odpowiadaj±cego za u¿yt± drukarkê. Warto¶cia semaforu staje siê 1 - drukarka jest
+Kiedy zadanie Jasia zostanie wykonane zarz±dca zwiêkszy warto¶æ semafora
+odpowiadaj±cego za u¿yt± drukarkê. Warto¶ci± semafora staje siê 1 - drukarka jest
 dostêpna. Kiedy wszystkie semafory s± ustawione na 1 oznacza to brak dostêpnych drukarek.
 
-Nie daj siê zwie¶æ inicjalizacji semaforu jedynk±. Kiedy u¿ywamy semaforów jako
+Nie daj siê zwie¶æ inicjalizacji semafora jedynk±. Kiedy u¿ywamy semaforów jako
 liczników zasobów mo¿emy je inicjowaæ {\em ka¿d± dodatni± warto¶ci± \/}. Gdyby
 ka¿da z drukarek potrafi³a obs³u¿yæ 10 zadañ wydruku jednocze¶nie, ustawiliby¶my
 semafory warto¶ci± 10. W nastêpnym rozdziale odkryjesz powi±zania semaforów
 z segmentami dzielonej pamiêci, które bêd± dzia³aæ jako {\em wartownicy \/} zapobiegaj±cy
 wielu zapisom jednocze¶nie.
 
-Zanim siêgniemy do wywo³añ systemowych przyj¿yjmy siê strukturom wykorzystywanym
+Zanim siêgniemy do wywo³añ systemowych przyjrzyjmy siê strukturom wykorzystywanym
 podczas operowania semaforami.
 
 
 \subsubsection{Wewnêtrzne struktury j±dra}
 
-Przyj¿yjmy siê strukturom utrzymywanym przez jadro dla zestawów semaforów.
+Przyjrzyjmy siê strukturom utrzymywanym przez jadro dla zestawów semaforów.
 
 
 \paragraph{Struktura {\tt semid\_ds} w j±drze}
@@ -2113,7 +2113,7 @@ Struktura ta jest typu {\tt semid\_ds}, który zdefiniowany jest w {\tt linux/sem
                 struct ipc_perm sem_perm;       /* restrykcje .. zobacz ipc.h */
                 time_t          sem_otime;      /* czas ostatniej operacji semop */
                 time_t          sem_ctime;      /* czas ostatniej zmiany */
-                struct sem      *sem_base;      /* wka¼nik do pierwszego semaforu w tablicy */
+                struct sem      *sem_base;      /* wka¼nik do pierwszego semafora w tablicy */
                 struct wait_queue *eventn;
                 struct wait_queue *eventz;
                 struct sem_undo  *undo;         /* odwo³aj ¿±dania dla tej tablicy */
@@ -2135,7 +2135,7 @@ Przechowuje prawa dostêpu, oraz informacje o twórcy i w³a¶cicielu zestawu.
 
 \item[{\tt sem\_otime}] \mbox{}
 
-Czas ostaniej operacji {\tt semop()} ( wiêcej o tym za chwilkê )
+Czas ostatniej operacji {\tt semop()} ( wiêcej o tym za chwilkê )
 
 \item[{\tt sem\_ctime}] \mbox{}
 
@@ -2167,7 +2167,7 @@ w {\tt linux/sem.h}:
 \nopagebreak\hrule
 \begin{verbatim}
 
-        /* jedna struktura dla ka¿dego semaforu w systemie. */
+        /* jedna struktura dla ka¿dego semafora w systemie. */
         struct sem {
                 short   sempid;         /* pid ostatniej operacji */
                 ushort  semval;         /* obecna warto¶æ */
@@ -2186,7 +2186,7 @@ PID ( ID procesu ), który przeprowadzi³ ostatni± operacjê
 
 \item[{\tt sem\_semval}] \mbox{}
 
-Obecna warto¶æ semaforu
+Obecna warto¶æ semafora
 
 \item[{\tt sem\_semncnt}] \mbox{}
 
@@ -2239,7 +2239,7 @@ Utwórz zestaw semaforów je¿eli jeszcze nie istnieje w j±drze.
 
 \item[IPC\_EXCL] \mbox{}
 
-U¿yte z IPC\_CREAT zwraca b³±d je¿eli zestaw ju¿ isnieje.
+U¿yte z IPC\_CREAT zwraca b³±d je¿eli zestaw ju¿ istnieje.
 
 \end{description}
 
@@ -2248,20 +2248,20 @@ zestawu, który zosta³ utworzony lub identyfikator ju¿ istniej±cego, który
 posiada podan± warto¶æ klucza. Je¿eli podano równie¿ {\tt IPC\_EXCL} zostanie
 utworzony nowy zestaw lub wywo³anie zwróci -1. Podanie tylko {\tt IPC\_EXCL} jest
 bezu¿yteczne, jednak w po³±czeniu z {\tt IPC\_CREAT} gwarantuje nam, i¿
-nie u¿ywamy istniej±cego semaforu.
+nie u¿ywamy istniej±cego semafora.
 
-Tak jak dla ka¿dej innej formy IPC Systemu V mo¿emy podaæ ósemkowe prawa dostêpu,
-które zostan± z'OR'owane z umask± aby utworzyæ prawa dostêpu dla zestawu.
+Tak jak dla ka¿dej innej formy IPC Systemu V mo¿emy 
+wykonaæ operacjê iloczynu bitowego z flag± w celu okre¶lenia praw dostêpu.
 
 Argument {\tt nsems} okre¶la liczbê semaforów, które zostan± utworzone dla
 nowego zestawu. Reprezentuje to liczbê drukarek w naszym przyk³adzie.
-Maxymalna liczba semaforów jest zdefiniowana w {\tt linux/sem.h\/}:
+Maksymalna liczba semaforów jest zdefiniowana w {\tt linux/sem.h\/}:
 
 \begin{verbatim}
-        #define SEMMSL  32      /* <=512 maxymalna liczba semaforów dla id */
+        #define SEMMSL  32      /* <=512 maksymalna liczba semaforów dla id */
 \end{verbatim}
 
-Zauwa¿, i¿ arument {\tt nsems} jest ignorowany gdy otwieramy ju¿ instniej±cy
+Zauwa¿, i¿ argument {\tt nsems} jest ignorowany gdy otwieramy ju¿ istniej±cy
 zestaw.
 
 Stwórzmy szkielet funkcji otwieraj±cej lub tworz±cej zestaw semaforów:
@@ -2304,7 +2304,7 @@ IPC\_EXCL w celu sprawdzenia czy semafor istnieje.
   WYWO£ANIE SYSTEMOWE: semop();                                                          
   PROTOTYP: int semop ( int semid, struct sembuf *sops, unsigned nsops);
     ZWRACA: 0 - sukces ( przeprowadzono wszystkie operacje )
-            -1 - b³±d: errno = E2BIG ( nsops wiêkszy od maxymalnej liczby 
+            -1 - b³±d: errno = E2BIG ( nsops wiêkszy od maksymalnej liczby 
 	                               dozwolonych operacji atomowych )
                                EACCESS ( brak prawa dostêpu )
                                EAGAIN ( IPC_NOWAIT ustawione, nie mo¿na 
@@ -2315,7 +2315,7 @@ IPC\_EXCL w celu sprawdzenia czy semafor istnieje.
                                EINTR ( otrzymano sygna³ w czasie spania )
                                EINVAL ( zestaw nie istnieje lub nieprawid³owy semid )
 			       ENOMEM ( SEM_UNDO ustawione, brak pamiêci aby utworzyæ strukturê anulowania (undo) )
-                               ERANGE ( warto¶æ semoforu poza zakresem )
+                               ERANGE ( warto¶æ semafora poza zakresem )
   UWAGI: 
 \end{verbatim} 
 \nopagebreak\hrule 
@@ -2338,7 +2338,7 @@ w {\tt linux/sem.h}:
         struct sembuf {
                 ushort  sem_num;        /* index semafora w tablicy */
                 short   sem_op;         /* opercja */
-                short   sem_flg;        /* flagi oparacji */
+                short   sem_flg;        /* flagi operacji */
         };
 \end{verbatim} 
 \nopagebreak\hrule 
@@ -2378,7 +2378,7 @@ który bêdzie dynamicznie zmienia³ rozmiar zbioru semaforów je¿eli ten bêdzie w 1
 u¿yty.
 
 W celu wyt³umaczenia wywo³ania {\tt semop} przywo³ajmy nasz przyk³ad z drukarkami.
-Za³u¿my, i¿ mamy tylko jedn± drukarkê, która potrafi drukowaæ tylko jedn± pracê.
+Za³ó¿my, i¿ mamy tylko jedn± drukarkê, która potrafi drukowaæ tylko jedn± pracê.
 Utworzymy zestaw tylko z jednym semaforem ( tylko jedna drukarka ) i zainicjujemy
 go warto¶ci± jeden ( tylko jedna praca ).
 
@@ -2441,12 +2441,12 @@ powraca do zestawu.
   PROTOTYP: int semctl ( int semid, int semnum, int cmd, union semun arg );
     ZWRACA: liczba dodatnia je¿eli sukces 
              -1 - b³±d: errno = EACCESS ( brak prawa dostêpu )
-                                EFAULT ( nieprawid³owy adres wskazywant przez argument arg )
+                                EFAULT ( nieprawid³owy adres wskazywany przez argument arg )
                                 EIDRM ( zestaw zosta³ usuniêty )
                                 EINVAL ( zestaw nie istnieje lub semid nieprawid³owy )
                                 EPERM (EUID nie ma prawa do cmd w arg)
 				ERANGE ( warto¶æ semafora przekroczona )
-  UWAGI: Przeprowadza operacje kotrolne na zestawie semaforów
+  UWAGI: Przeprowadza operacje kontrolne na zestawie semaforów
 \end{verbatim} 
 \nopagebreak\hrule 
 \addvspace{\medskipamount}
@@ -2455,10 +2455,10 @@ powraca do zestawu.
 
 
 Wywo³anie systemowe {\em semctl\/} u¿ywane jest do kontrolowania zestawu semaforów.
-Jest ono analogiczne do wywo³ania {\em msgctl\/}, które jest opdowiednie dla kolejek.
+Jest ono analogiczne do wywo³ania {\em msgctl\/}, które jest odpowiednie dla kolejek.
 Je¿eli porównasz listê argumentów obu wywo³añ zauwa¿ysz, ¿e s± one nieco odmienne.
 Przypomnij sobie, i¿ aktualnie semafory s± zaimplementowane jako zestawy, rzadziej ni¿
-pojedyñcze jednostki. Do operowania semaforem potrzeba nie tylko klucz IPC, ale
+pojedyncze jednostki. Do operowania semaforem potrzeba nie tylko klucz IPC, ale
 tak¿e numer semafora w zestawie. 
 
 Oba wywo³ania systemowe posiadaj± argument {\em cmd\/} u¿ywany do okre¶lenia operacji.
@@ -2470,7 +2470,7 @@ U¿ycie {\em union\/} myli wielu pocz±tkuj±cych programistów. W celu zapobie¿enia
 temu przeanalizujemy tê strukturê dok³adnie.
 
 Pierwszym argumentem dla {\tt semctl()} jest klucz ( zwrócony przez {\tt semget}). 
-Drugi argument ({\tt semun}) to numer semaforu, którym jeste¶my zainteresowani.
+Drugi argument ({\tt semun}) to numer semafora, którym jeste¶my zainteresowani.
 Jest to {\em index \/} elementu w zestawie, pierwszy element ma index o warto¶ci 0.
 
 Argument {\tt cmd} przedstawia komendê, która ma zostaæ wykonana. Jak widzisz, mamy
@@ -2495,7 +2495,7 @@ Usuwa zestaw z j±dra.
 
 U¿ywany do pobierania warto¶ci wszystkich semaforów z zestawu
 Warto¶ci ca³kowite przechowywane s± w tablicy unsigned short int
-wkazywanej przez {\em array\/} - cz³onka unii.
+wskazywanej przez {\em array\/} - cz³onka unii.
 
 \item[{\bf GETNCNT}] \mbox{}
 
@@ -2507,7 +2507,7 @@ Zwraca PID procesu, który jako ostatni wywo³a³ {\em semop\/}.
 
 \item[{\bf GETVAL}] \mbox{}
 
-Zwaraca warto¶æ pojedyñczego semaforu z zestawu.
+Zwraca warto¶æ pojedynczego semafora z zestawu.
 
 \item[{\bf GETZCNT}] \mbox{}
 
@@ -2520,7 +2520,7 @@ Ustawia warto¶ci wszystkich semaforów warto¶ciami z tablicy
 
 \item[{\bf SETVAL}] \mbox{}
 
-Ustawia warto¶æ jednego semaforu z zestawu. Warto¶æ pobierana
+Ustawia warto¶æ jednego semafora z zestawu. Warto¶æ pobierana
 z {\em val\/} zawartego w unii.
 
 \end{description}
@@ -2567,12 +2567,12 @@ warto¶ci semaforów.
  
 Pozosta³e argumenty {\em \_\_buf\/} i {\em \_\_pad\/} s± u¿ywane przez j±dro,
 dla programisty nie s± one zbyt u¿yteczne. Gwoli ¶cis³o¶ci s± one specyficzne dla 
-Linuksa, nie znajdziesz ich w innych Unixach.
+Linuksa, nie znajdziesz ich w innych Uniksach.
 
 Wywo³anie to jest jednym z najtrudniejszych do zrozumienia wywo³añ IPC Systemu V,
 dlatego poka¿emy kilka przyk³adów.
 
-Nastêpuj±ca funkcja zwraca warto¶æ podanego semaforu. Ostatni argument wywo³ania
+Nastêpuj±ca funkcja zwraca warto¶æ podanego semafora. Ostatni argument wywo³ania
 semctl ( unia ) jest ignorowany dla komendy GETVAL:
 
 \par
@@ -2588,7 +2588,7 @@ int get_sem_val( int sid, int semnum )
 \addvspace{\medskipamount}
 
 
-Za³u¿my, ¿e potrzebujemy status wszystkich drukarek z naszego przyk³adu:
+Za³ó¿my, ¿e potrzebujemy status wszystkich drukarek z naszego przyk³adu:
 
 \par
 \addvspace{\medskipamount}
@@ -2608,7 +2608,7 @@ Za³u¿my, ¿e potrzebujemy status wszystkich drukarek z naszego przyk³adu:
 \nopagebreak\hrule 
 \addvspace{\medskipamount}
 
-Rozwa¿ nastepuj±c± funkcjê inicjuj±c± semafor now± warto¶ci±:
+Rozwa¿ nastêpuj±ca funkcjê inicjuj±c± semafor now± warto¶ci±:
 
 \par
 \addvspace{\medskipamount}
@@ -2626,13 +2626,13 @@ void init_semaphore( int sid, int semnum, int initval)
 \addvspace{\medskipamount}
 
 Zauwa¿, i¿ ostatni argument dla {\em semctl\/} jest kopi± unii czê¶ciej ni¿ wska¼nikiem
-do niej. Je¿eli ju¿ mówimy o przekazywaniu unii jako argument powolê sobie przedstawiæ
+do niej. Je¿eli ju¿ mówimy o przekazywaniu unii jako argument pozwolê sobie przedstawiæ
 czêste b³êdy podczas u¿ywania tego wywo³ania.
 
 W projekcie msgtool komendy IPC\_STAT i IPC\_SET by³y u¿ywane do ustawiania/pobierania
 praw dostêpu do kolejki. S± one równie¿ zaimplementowane dla semaforów, jednak ich
 sposób u¿ycia jest nieco odmienny dlatego, i¿ wewnêtrzna struktura jest odbierana i kopiowana z unii,
-rzadziej ni¿ z pojedyñczej jednostki. Czy potrafisz zlokalizowaæ b³±d w nastêpuj±cym kodzie ?
+rzadziej ni¿ z pojedynczej jednostki. Czy potrafisz zlokalizowaæ b³±d w nastêpuj±cym kodzie ?
 
 
 \par
@@ -2733,19 +2733,19 @@ u¿yty do kontrolowania dzielonych zasobów za pomoc± skryptów pow³oki.
 \subparagraph{Tworzenie zestawu semaforów}
 
 \begin{verbatim}
-semtool s ( licza semaforów w zestawie )
+semtool s ( liczba semaforów w zestawie )
 \end{verbatim}
 
-\subparagraph{Blokowanie semaforu}
+\subparagraph{Blokowanie semafora}
 
 \begin{verbatim}
-semtool z ( numer semaforu do zablokowania )
+semtool z ( numer semafora do zablokowania )
 \end{verbatim}
 
-\subparagraph{Odblokowywanie semaforu}
+\subparagraph{Odblokowywanie semafora}
 
 \begin{verbatim}
-semtool o ( numer semaforu do odblokowania )
+semtool o ( numer semafora do odblokowania )
 \end{verbatim}
 
 \subparagraph{Zmiana praw dostêpu ( trybu )}
@@ -2876,7 +2876,7 @@ void createsem(int *sid, key_t key, int members)
         union semun semopts;
 
         if(members > SEMMSL) {
-                printf("Przykro mi, maxymaln± liczb± semaforów w zestawie jest %d\n",
+                printf("Przykro mi, maksymaln± liczb± semaforów w zestawie jest %d\n",
                         SEMMSL);
                 exit(1);
         }
@@ -2911,7 +2911,7 @@ void locksem(int sid, int member)
         /* Próba zablokowania zestawu semaforów */
         if(!getval(sid, member))
         {
-                fprintf(stderr, "Zasoby semaforu wyczerpane ( brak blokady )!\n");
+                fprintf(stderr, "Zasoby semafora wyczerpane ( brak blokady )!\n");
                 exit(1);
         }
         
@@ -2923,7 +2923,7 @@ void locksem(int sid, int member)
                 exit(1);
         }
         else
-                printf("Zasoby semaforu zmiejszone o jeden ( zablokowane )\n");
+                printf("Zasoby semafora zmiejszone o jeden ( zablokowane )\n");
 
         dispval(sid, member);
 }
@@ -3152,7 +3152,7 @@ dowolna liczba procesów.
 
 \subsubsection{Struktury danych: wewnêtrzne i u¿ytkownika}
 
-Przyj¿yjmy siê strukturom danych, które j±dro utrzymuje dla pamiêci dzielonej.
+Przyjrzyjmy siê strukturom danych, które j±dro utrzymuje dla pamiêci dzielonej.
 
 \paragraph{Struktura {\tt shmid\_ds} w j±drze}
 
@@ -3271,7 +3271,8 @@ segmentu istniej±cego lub utworzonego. W po³±czeniu z {\tt IPC\_EXCL}
 tworzony jest nowy segment lub wywo³anie zwraca b³±d. Gwarantuje nam to, i¿
 to my tworzymy segment pamiêci.
 
-I tym razem mo¿esz równie¿ z'OR'owaæ z mask± ósemkowy tryb.
+I tym razem mo¿esz równie¿ wykonaæ operacjê iloczynu bitowego
+z flag± w celu okre¶lenia praw dostêpu.
 
 Utwórzmy szkielet funkcji tworz±cej segment pamiêci:
 
@@ -3324,7 +3325,7 @@ lub mapowanie segmentu w obszar adresowy.
 Je¿eli argument addr = 0 j±dro próbuje znale¼æ niemapowany region. Jest to
 zalecany sposób u¿ycia. Jednak¿e mo¿na równie¿ podaæ adres, jest to u¿ywane
 aby u³atwiæ dostêp do sprzêtu, lub rozwi±zaæ konflikty z innymi programami.
-Flaga SHM\_RND mo¿e byæ z'OR'owana z argumentem shmflg aby wymusiæ stronicowe
+Flaga SHM\_RND mo¿e byæ pomno¿ona bitowo z argumentem shmflg aby wymusiæ stronicowe
 wyrównanie adresu ( zaokr±glenie w dó³ do najbli¿szego rozmiaru strony ).
 
 Dodatkowo, je¿eli podano flagê SHM\_RDONLY segment zostanie wmapowany 
